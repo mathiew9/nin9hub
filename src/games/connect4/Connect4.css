@@ -1,0 +1,47 @@
+.connect4 {
+  text-align: center;
+  font-family: sans-serif;
+  padding: 20px;
+}
+
+.connect4 .board {
+  display: inline-block;
+  background-color: #0044cc;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.connect4 .board .row {
+  display: flex;
+}
+
+.connect4 .board .row .cell {
+  width: 60px;
+  height: 60px;
+  margin: 4px;
+  background-color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.connect4 .board .row .cell:hover {
+  transform: scale(1.1);
+}
+
+.connect4 .board .row .cell.red {
+  background-color: red;
+}
+
+.connect4 .board .row .cell.yellow {
+  background-color: gold;
+}
+
+.connect4-restart-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}

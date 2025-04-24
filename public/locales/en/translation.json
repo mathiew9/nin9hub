@@ -1,0 +1,39 @@
+{
+  "header": {
+    "menu": "Games"
+  },
+  "tictactoe": {
+    "name": "Tic-Tac-Toe",
+    "playwithfriend": "Play with a friend",
+    "playwithai": "Play with AI",
+    "choosegamemode": "Choose game mode",
+    "gridsize": "Gridsize"
+  },
+  "chess": {
+    "name": "Chess"
+  },
+  "connect4": {
+    "name": "Connect 4"
+  },
+  "snake": {
+    "name": "Snake"
+  },
+  "hangman": {
+    "name": "Hangman"
+  },
+  "minesweeper": {
+    "name": "Minesweeper"
+  },
+  "2048": {
+    "name": "2048"
+  },
+  "solitaire": {
+    "name": "Solitaire"
+  },
+  "ultimatetictactoe": {
+    "name": "Ultimate Tic-Tac-Toe"
+  },
+  "sudoku": {
+    "name": "Sudoku"
+  }
+}

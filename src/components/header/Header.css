@@ -1,0 +1,153 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 1000;
+  border-bottom: 2px solid;
+}
+
+/* DARK THEME */
+body[data-theme="dark"] .header {
+  background-color: #1f1f1f;
+  color: white;
+  border-color: #444;
+}
+body[data-theme="dark"] .header-title,
+body[data-theme="dark"] .header-back {
+  color: white;
+}
+body[data-theme="dark"] .header-back:hover {
+  color: #ccc;
+}
+body[data-theme="dark"] .header-game {
+  color: #ccc;
+}
+
+/* LIGHT THEME */
+body[data-theme="light"] .header {
+  background-color: #f5f5f5;
+  color: #222;
+  border-color: #ccc;
+}
+body[data-theme="light"] .header-title {
+  color: #222;
+}
+body[data-theme="light"] .header-back {
+  color: #007acc;
+}
+body[data-theme="light"] .header-back:hover {
+  color: #000;
+}
+body[data-theme="light"] .header-game {
+  color: #444;
+}
+
+/* Positionnement et taille */
+.empty-space-header-hide {
+  display: none;
+}
+.empty-space-header-show {
+  width: 25%;
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-decoration: none;
+}
+
+.header-title.center {
+  text-align: center;
+  flex: 1;
+  width: 50%;
+}
+
+.header-title.left {
+  width: 25%;
+  text-align: left;
+}
+
+.header-game {
+  font-size: 1.8rem;
+}
+
+.header-controls {
+  width: 25%;
+  display: flex;
+  justify-content: end;
+  gap: 5px;
+}
+
+/* === LANGUAGE === */
+
+.language-selector {
+  position: relative;
+}
+
+.lang-toggle-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.lang-dropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0;
+  list-style: none;
+  z-index: 999;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lang-option {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* DARK THEME */
+body[data-theme="dark"] .lang-dropdown {
+  background-color: #2a2a2a;
+  border-color: #555;
+  color: white;
+}
+
+body[data-theme="dark"] .lang-option {
+  color: white;
+}
+
+body[data-theme="dark"] .lang-option:hover,
+body[data-theme="dark"] .lang-option.active {
+  background-color: #3c3c3c;
+}
+
+/* LIGHT THEME */
+body[data-theme="light"] .lang-dropdown {
+  background-color: #fff;
+  border-color: #ccc;
+  color: #222;
+}
+
+body[data-theme="light"] .lang-option {
+  color: #222;
+}
+
+body[data-theme="light"] .lang-option:hover,
+body[data-theme="light"] .lang-option.active {
+  background-color: #eee;
+}

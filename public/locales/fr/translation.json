@@ -1,0 +1,39 @@
+{
+  "header": {
+    "menu": "Jeux"
+  },
+  "tictactoe": {
+    "name": "Morpion",
+    "playwithfriend": "Jouer avec un ami",
+    "playwithai": "Jouer contre l'IA",
+    "choosegamemode": "Choisir le mode de jeu",
+    "gridsize": "Taille de la grille"
+  },
+  "chess": {
+    "name": "Échecs"
+  },
+  "connect4": {
+    "name": "Puissance 4"
+  },
+  "snake": {
+    "name": "Snake"
+  },
+  "hangman": {
+    "name": "Pendu"
+  },
+  "minesweeper": {
+    "name": "Démineur"
+  },
+  "2048": {
+    "name": "2048"
+  },
+  "solitaire": {
+    "name": "Solitaire"
+  },
+  "ultimatetictactoe": {
+    "name": "Morpion Ultime"
+  },
+  "sudoku": {
+    "name": "Sudoku"
+  }
+}
