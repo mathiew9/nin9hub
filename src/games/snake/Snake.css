@@ -1,0 +1,148 @@
+.snake {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  padding-top: 1em;
+}
+
+.snake .top-bar {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.snake .top-bar button {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.snake .top-bar button:hover {
+  background-color: #555;
+}
+
+.snake .board {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background-color: #444;
+  padding: 5px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.snake .board .row {
+  display: flex;
+  gap: 1px;
+}
+
+.snake .board .row .cell {
+  width: 24px;
+  height: 24px;
+  background-color: #222;
+  transition: background-color 0.1s;
+}
+
+.snake .board .row .cell.snakeHead {
+  position: relative;
+  box-shadow: inset 0 0 5px #00ccff;
+  border-radius: 4px;
+}
+
+/* Yeux (petits cercles blancs) */
+.snake .board .row .cell.snakeHead::before,
+.snake .board .row .cell.snakeHead::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #fff;
+  border-radius: 50%;
+  top: 5px;
+}
+
+/* Positionner les yeux gauche/droite */
+.snake .board .row .cell.snakeHead::before {
+  left: 6px;
+}
+
+.snake .board .row .cell.snakeHead::after {
+  right: 6px;
+}
+
+/* Serpent — effet néon sans casser l'alignement */
+.snake .board .row .cell.snakeCell {
+  background-color: #00aa00;
+  outline: 1px solid #003300;
+  box-shadow: inset 0 0 2px #007700;
+}
+
+/* Fruit — effet rond propre avec un fond carré derrière */
+.snake .board .row .cell.food {
+  position: relative;
+  background-color: #2a2a2a;
+}
+
+.snake .board .row .cell.food::before {
+  content: "";
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(circle at 30% 30%, #ff4d4d, #990000);
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ff4d4d, inset 0 0 2px #660000;
+  animation: pulseFruit 0.8s infinite alternate;
+}
+
+@keyframes pulseFruit {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.snakeEndGame {
+  margin-top: 20px;
+  color: #ff3333;
+  font-size: 20px;
+  text-align: center;
+  animation: blink 1s step-start 0s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.snakeEndGame button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #ff3333;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.snakeEndGame button:hover {
+  background-color: #cc0000;
+  transform: scale(1.05);
+}

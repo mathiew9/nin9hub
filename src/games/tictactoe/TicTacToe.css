@@ -1,0 +1,201 @@
+.tictactoe {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  color: #fff;
+  font-family: "Segoe UI", sans-serif;
+  box-sizing: border-box;
+}
+
+.mode {
+  font-size: 18px;
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
+
+.gameLayout {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.gameLayout .side {
+  width: 25%;
+  min-width: 200px;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.gameLayout .side.right {
+  visibility: hidden; /* équilibre visuel mais invisible */
+}
+
+.gameLayout .center {
+  width: 50%;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.scoreCard {
+  background-color: #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  width: 260px;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 1rem;
+  border: 1px solid #334155;
+}
+
+.cardHeader {
+  background-color: #0f172a;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 20px;
+  color: #facc15;
+  border-bottom: 1px solid #334155;
+}
+
+.cardBody {
+  padding: 12px;
+  color: #e2e8f0;
+  border-bottom: 1px solid #334155;
+}
+
+.cardFooter {
+  padding: 10px;
+}
+
+.resetScore {
+  padding: 6px 14px;
+  background-color: #475569;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.resetScore:hover {
+  background-color: #64748b;
+}
+
+.tictactoe h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #a5f3fc;
+}
+
+.board {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.square {
+  width: 80px;
+  height: 80px;
+  font-size: 2rem;
+  font-weight: bold;
+  background-color: #282c34;
+  border: 2px solid #444;
+  cursor: pointer;
+  color: white;
+  border-radius: 8px;
+  transition: transform 0.1s ease, background-color 0.2s;
+}
+
+.squareEmpty:hover {
+  background-color: #3a3f4c;
+  transform: scale(1.05);
+}
+
+.squareFilled:hover {
+  cursor: default;
+}
+
+.reset {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #f43f5e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.reset:hover {
+  background-color: #e23d58;
+  transform: scale(1.05);
+}
+
+.squareXToPlay.squareEmpty:hover {
+  background-image: url("/images/x-ghost.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60%;
+  opacity: 0.9;
+}
+
+.squareOToPlay.squareEmpty:hover {
+  background-image: url("/images/o-ghost.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60%;
+  opacity: 0.9;
+}
+
+.symbol {
+  width: 60px;
+  height: 60px;
+  stroke: #facc15;
+  stroke-width: 8;
+  fill: none;
+  stroke-linecap: round;
+  display: block;
+  margin: 0 auto;
+}
+
+.draw-x line,
+.draw-o circle {
+  stroke-dasharray: 250;
+  stroke-dashoffset: 250;
+  animation: draw 0.5s ease-out forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes glowWin {
+  0% {
+    box-shadow: 0 0 0 transparent;
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 15px #facc15;
+    transform: scale(1.04);
+  }
+}
+
+.square.win {
+  animation: glowWin 0.6s ease-in-out infinite alternate;
+  border-color: #facc15;
+}

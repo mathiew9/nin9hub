@@ -1,0 +1,58 @@
+.menuContainer {
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.menuContainer h2 {
+  font-size: 36px;
+  margin-bottom: 30px;
+  color: #f0db4f;
+  text-shadow: 0 0 6px #000;
+}
+
+.gridSizeSelector {
+  margin-bottom: 40px;
+  font-size: 18px;
+}
+
+.gridSizeSelector label {
+  margin-right: 10px;
+}
+
+.gridSizeSelector select {
+  font-size: 18px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: #333;
+  color: #fff;
+}
+
+.selectModeButtonContainer {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.selectModeButton {
+  background: linear-gradient(135deg, #3b2f80, #5e3cc4);
+  border: none;
+  color: white;
+  padding: 16px 28px;
+  font-size: 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.selectModeButton:hover {
+  background: linear-gradient(135deg, #5e3cc4, #3b2f80);
+  transform: scale(1.05);
+}
