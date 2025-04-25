@@ -6,8 +6,18 @@
     "name": "Tic-Tac-Toe",
     "playwithfriend": "Play with a friend",
     "playwithai": "Play with AI",
-    "choosegamemode": "Choose game mode",
-    "gridsize": "Gridsize"
+    "selectgamemode": "Select game mode",
+    "gridsize": "Gridsize",
+    "changeGameMode": "Change game mode",
+    "gamemode": "Game mode",
+    "withfriend": "With a friend",
+    "withai": "Against the computer",
+    "toPlayRich": "Player <player>{{player}}</player>'s turn",
+    "wonByRich": "<player>{{player}}</player> wins the round",
+    "draw": "Draw",
+    "score": "Score",
+    "resetScore": "Reset score",
+    "playAgain": "Play again"
   },
   "chess": {
     "name": "Chess"

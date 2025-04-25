@@ -1,12 +1,15 @@
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   color-scheme: light dark;
-  background-color: #242424;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
+body[data-theme="dark"] {
+  background-color: #242424;
+  color: white;
+}
+
+/* LIGHT THEME */
+body[data-theme="light"] {
+  background-color: #ffffff;
+  color: #213547;
 }

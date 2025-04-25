@@ -1,3 +1,4 @@
+/* === GLOBAL HEADER === */
 .header {
   position: fixed;
   top: 0;
@@ -12,50 +13,7 @@
   border-bottom: 2px solid;
 }
 
-/* DARK THEME */
-body[data-theme="dark"] .header {
-  background-color: #1f1f1f;
-  color: white;
-  border-color: #444;
-}
-body[data-theme="dark"] .header-title,
-body[data-theme="dark"] .header-back {
-  color: white;
-}
-body[data-theme="dark"] .header-back:hover {
-  color: #ccc;
-}
-body[data-theme="dark"] .header-game {
-  color: #ccc;
-}
-
-/* LIGHT THEME */
-body[data-theme="light"] .header {
-  background-color: #f5f5f5;
-  color: #222;
-  border-color: #ccc;
-}
-body[data-theme="light"] .header-title {
-  color: #222;
-}
-body[data-theme="light"] .header-back {
-  color: #007acc;
-}
-body[data-theme="light"] .header-back:hover {
-  color: #000;
-}
-body[data-theme="light"] .header-game {
-  color: #444;
-}
-
-/* Positionnement et taille */
-.empty-space-header-hide {
-  display: none;
-}
-.empty-space-header-show {
-  width: 25%;
-}
-
+/* === HEADER CONTENT === */
 .header-title {
   font-size: 1.5rem;
   font-weight: bold;
@@ -85,18 +43,41 @@ body[data-theme="light"] .header-game {
   gap: 5px;
 }
 
-/* === LANGUAGE === */
+/* === SPACING FIXES === */
+.empty-space-header-hide {
+  display: none;
+}
 
+.empty-space-header-show {
+  width: 25%;
+}
+
+/* === LANGUAGE SELECTOR === */
 .language-selector {
   position: relative;
+  display: flex;
 }
 
 .lang-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   background: none;
   border: none;
-  color: inherit;
   cursor: pointer;
   font-weight: bold;
+  font-size: 16px;
+  padding: 4px 6px;
+}
+
+.lang-text {
+  display: inline-block;
+}
+
+.lang-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lang-dropdown {
@@ -120,7 +101,41 @@ body[data-theme="light"] .header-game {
   cursor: pointer;
 }
 
-/* DARK THEME */
+/* === THEME TOGGLE BUTTON === */
+.theme-toggle {
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* === DARK THEME === */
+body[data-theme="dark"] .header {
+  background-color: #1f1f1f;
+  color: white;
+  border-color: #444;
+}
+
+body[data-theme="dark"] .header-title,
+body[data-theme="dark"] .header-back,
+body[data-theme="dark"] .lang-toggle-btn {
+  color: white;
+}
+
+body[data-theme="dark"] .header-back:hover {
+  color: #ccc;
+}
+
+body[data-theme="dark"] .header-game {
+  color: #ccc;
+}
+
 body[data-theme="dark"] .lang-dropdown {
   background-color: #2a2a2a;
   border-color: #555;
@@ -136,7 +151,43 @@ body[data-theme="dark"] .lang-option.active {
   background-color: #3c3c3c;
 }
 
-/* LIGHT THEME */
+body[data-theme="dark"] .theme-toggle {
+  color: white;
+  border-color: #666;
+}
+
+body[data-theme="dark"] .theme-toggle:hover {
+  background-color: #333;
+  border-color: #aaa;
+}
+
+/* === LIGHT THEME === */
+body[data-theme="light"] .header {
+  background-color: #f5f5f5;
+  color: #222;
+  border-color: #ccc;
+}
+
+body[data-theme="light"] .header-title {
+  color: #222;
+}
+
+body[data-theme="light"] .header-back {
+  color: #007acc;
+}
+
+body[data-theme="light"] .header-back:hover {
+  color: #000;
+}
+
+body[data-theme="light"] .header-game {
+  color: #444;
+}
+
+body[data-theme="light"] .lang-toggle-btn {
+  color: #222;
+}
+
 body[data-theme="light"] .lang-dropdown {
   background-color: #fff;
   border-color: #ccc;
@@ -150,4 +201,14 @@ body[data-theme="light"] .lang-option {
 body[data-theme="light"] .lang-option:hover,
 body[data-theme="light"] .lang-option.active {
   background-color: #eee;
+}
+
+body[data-theme="light"] .theme-toggle {
+  color: #222;
+  border-color: #aaa;
+}
+
+body[data-theme="light"] .theme-toggle:hover {
+  background-color: #eee;
+  border-color: #666;
 }

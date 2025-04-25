@@ -5,9 +5,19 @@
   "tictactoe": {
     "name": "Morpion",
     "playwithfriend": "Jouer avec un ami",
-    "playwithai": "Jouer contre l'IA",
-    "choosegamemode": "Choisir le mode de jeu",
-    "gridsize": "Taille de la grille"
+    "playwithai": "Jouer Contre l'ordinateur",
+    "selectgamemode": "Choisir le mode de jeu",
+    "gridsize": "Taille de la grille",
+    "changeGameMode": "Changer de mode de jeu",
+    "gamemode": "Mode de jeu",
+    "withfriend": "Avec un ami",
+    "withai": "Contre l'ordinateur",
+    "toPlayRich": "Joueur <player>{{player}}</player> à jouer",
+    "wonByRich": "Manche gagnée par <player>{{player}}</player>",
+    "draw": "Match nul",
+    "score": "Score",
+    "resetScore": "Reinitialiser le score",
+    "playAgain": "Rejouer"
   },
   "chess": {
     "name": "Échecs"

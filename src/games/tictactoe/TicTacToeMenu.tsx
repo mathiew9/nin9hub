@@ -16,7 +16,7 @@ export default function TicTacToeMenu({
 
   return (
     <div className="menuContainer">
-      <h2>{t("tictactoe.choosegamemode")}</h2>
+      <h2>{t("tictactoe.selectgamemode")}</h2>
 
       <div className="gridSizeSelector">
         <label htmlFor="gridSize">{t("tictactoe.gridsize")} : </label>

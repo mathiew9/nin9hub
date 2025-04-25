@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { games } from "../../data/games";
 import { languages } from "../../data/languages";
 import { useTranslation } from "react-i18next";
+import { FaSun, FaMoon, FaAngleDown, FaAngleUp } from "react-icons/fa";
 import "./Header.css";
 const projectName = import.meta.env.VITE_PROJECT_NAME;
 
@@ -82,14 +83,17 @@ export default function Header() {
           </Link>
         )}
         <button className="theme-toggle" onClick={toggleTheme}>
-          {theme === "light" ? "🌙" : "☀️"}
+          {theme === "light" ? <FaMoon /> : <FaSun />}
         </button>
         <div className="language-selector" ref={dropdownRef}>
           <button
             className="lang-toggle-btn"
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
-            🌐 {i18n.language.toUpperCase()}
+            <span className="lang-text">{i18n.language.toUpperCase()}</span>
+            <span className="lang-icon">
+              {dropdownOpen ? <FaAngleUp /> : <FaAngleDown />}
+            </span>
           </button>
           {dropdownOpen && (
             <ul className="lang-dropdown">

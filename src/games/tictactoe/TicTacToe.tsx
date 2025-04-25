@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import "./TicTacToe.css";
 import XIcon from "./XIcon.tsx";
 import OIcon from "./OIcon.tsx";
@@ -13,6 +14,7 @@ type Player = "X" | "O";
 type SquareValue = Player | null;
 
 export default function TicTacToe({ mode, gridSize }: Props) {
+  const { t } = useTranslation();
   const [board, setBoard] = useState<SquareValue[]>(() =>
     Array(gridSize * gridSize).fill(null)
   );
@@ -62,7 +64,7 @@ export default function TicTacToe({ mode, gridSize }: Props) {
       // Petite pause pour simuler la réflexion de l'IA
       const timeout = setTimeout(() => {
         playAiMove();
-      }, 300);
+      }, 800);
 
       return () => clearTimeout(timeout);
     }
@@ -87,27 +89,56 @@ export default function TicTacToe({ mode, gridSize }: Props) {
   return (
     <div className="tictactoe">
       <p className="mode">
-        Mode : {mode === "ai" ? "Contre l'ordinateur" : "Avec un ami"}
+        {t("tictactoe.gamemode")}
+        {" : "}
+        {mode === "ai" ? t("tictactoe.withai") : t("tictactoe.withfriend")}
       </p>
 
       <h2>
-        {winner
-          ? `Gagné par ${winner}`
-          : draw
-          ? "Match nul"
-          : `Joueur ${currentPlayer} à jouer`}
+        {winner ? (
+          <Trans
+            i18nKey="tictactoe.wonByRich"
+            values={{ player: winner }}
+            components={{
+              player: (
+                <span
+                  className={`symbol-badge symbol-${winner.toLowerCase()}`}
+                />
+              ),
+            }}
+          />
+        ) : draw ? (
+          t("tictactoe.draw")
+        ) : (
+          <Trans
+            i18nKey="tictactoe.toPlayRich"
+            values={{ player: currentPlayer }}
+            components={{
+              player: (
+                <span
+                  className={`symbol-badge symbol-${currentPlayer.toLowerCase()}`}
+                />
+              ),
+            }}
+          />
+        )}
       </h2>
 
       <div className="gameLayout">
         <div className="side left">
           <div className="scoreCard">
-            <div className="cardHeader">Score</div>
-            <div className="cardBody">
-              X - {scoreX} | O - {scoreO}
+            <div className="scoreCardHeader">{t("tictactoe.score")}</div>
+            <div className="scoreCardBody">
+              <p>
+                <span className="symbol-badge symbol-x">X</span>- {scoreX}
+              </p>
+              <p>
+                <span className="symbol-badge symbol-o">O</span>- {scoreO}
+              </p>
             </div>
-            <div className="cardFooter">
+            <div className="scoreCardFooter">
               <button className="resetScore" onClick={resetScore}>
-                Reset
+                {t("tictactoe.resetScore")}
               </button>
             </div>
           </div>
@@ -146,14 +177,13 @@ export default function TicTacToe({ mode, gridSize }: Props) {
               </button>
             ))}
           </div>
-
-          <button onClick={reset} className="reset">
-            Recommencer
-          </button>
         </div>
 
         <div className="side right" />
       </div>
+      <button onClick={reset} className="tictactoeReset">
+        {t("tictactoe.playAgain")}
+      </button>
     </div>
   );
 }

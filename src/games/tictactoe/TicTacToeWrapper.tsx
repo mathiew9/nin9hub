@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import "./TicTacToeWrapper.css";
 
 import TicTacToeMenu from "./TicTacToeMenu";
 import TicTacToe from "./TicTacToe";
 export default function TicTacToeWrapper() {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<"ai" | "friend" | null>(null);
   const [gridSize, setGridSize] = useState(3);
 
@@ -12,7 +14,7 @@ export default function TicTacToeWrapper() {
     <div className="tictactoeWrapper">
       {mode ? (
         <button className="back_button" onClick={() => setMode(null)}>
-          Changer de mode
+          {t("tictactoe.changeGameMode")}
         </button>
       ) : null}
 
