@@ -1,65 +1,156 @@
+/* === SNAKE GENERAL === */
 .snake {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #fff;
   padding-top: 1em;
+  font-family: "Segoe UI", sans-serif;
 }
 
+/* Color mode */
+body[data-theme="dark"] .snake {
+  color: #fff;
+}
+
+body[data-theme="light"] .snake {
+  color: #222;
+}
+
+/* === TOP BAR === */
 .snake .top-bar {
   width: 100%;
   max-width: 600px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 10px;
   margin-bottom: 20px;
+  font-size: 18px;
+  height: 30px;
+  border: 1px solid;
 }
 
-.snake .top-bar button {
-  background-color: #333;
-  color: #fff;
-  border: 1px solid #555;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
+/* Dark mode */
+body[data-theme="dark"] .snake .top-bar {
+  background-color: #1f2937;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+/* Light mode */
+body[data-theme="light"] .snake .top-bar {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #222;
+}
+
+/* Score */
+.scoreText {
   font-weight: bold;
-  transition: background-color 0.2s;
 }
 
-.snake .top-bar button:hover {
-  background-color: #555;
+/* === TIMER CONTAINER === */
+.timerContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
 }
 
-.snake .board {
+/* Dark mode */
+body[data-theme="dark"] .timerContainer {
+  background-color: #374151;
+}
+
+/* Light mode */
+body[data-theme="light"] .timerContainer {
+  background-color: #e2e8f0;
+}
+
+/* Timer Icon */
+.timerIcon {
+  font-size: 20px;
+}
+
+/* Dark mode */
+body[data-theme="dark"] .timerIcon {
+  color: #38bdf8;
+}
+
+/* Light mode */
+body[data-theme="light"] .timerIcon {
+  color: #3b82f6;
+}
+
+/* Timer Text */
+.timerText {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* === SNAKE BOARD === */
+.snake .snake-board {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1px;
-  background-color: #444;
-  padding: 5px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  padding: 8px;
+  border-radius: 10px;
+  border: 2px solid;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.snake .board .row {
+/* Dark mode */
+body[data-theme="dark"] .snake .snake-board {
+  background-color: #3b3b3b;
+  border-color: #555;
+}
+
+/* Light mode */
+body[data-theme="light"] .snake .snake-board {
+  background-color: #f9fafb;
+  border-color: #ccc;
+}
+
+/* Board when game over */
+.snake .snake-board.gameover {
+  margin-top: 68px;
+}
+
+/* === BOARD ROWS AND CELLS === */
+.snake .snake-board .row {
   display: flex;
   gap: 1px;
 }
 
-.snake .board .row .cell {
+.snake .snake-board .row .cell {
   width: 24px;
   height: 24px;
-  background-color: #222;
   transition: background-color 0.1s;
 }
 
-.snake .board .row .cell.snakeHead {
+/* Default cell background */
+body[data-theme="dark"] .snake .snake-board .row .cell {
+  background-color: #222;
+}
+
+body[data-theme="light"] .snake .snake-board .row .cell {
+  background-color: #e5e7eb;
+}
+
+/* Snake head */
+.snake .snake-board .row .cell.snakeHead {
   position: relative;
   box-shadow: inset 0 0 5px #00ccff;
   border-radius: 4px;
 }
 
-/* Yeux (petits cercles blancs) */
-.snake .board .row .cell.snakeHead::before,
-.snake .board .row .cell.snakeHead::after {
+/* Snake head eyes */
+.snake .snake-board .row .cell.snakeHead::before,
+.snake .snake-board .row .cell.snakeHead::after {
   content: "";
   position: absolute;
   width: 4px;
@@ -69,29 +160,33 @@
   top: 5px;
 }
 
-/* Positionner les yeux gauche/droite */
-.snake .board .row .cell.snakeHead::before {
+.snake .snake-board .row .cell.snakeHead::before {
   left: 6px;
 }
 
-.snake .board .row .cell.snakeHead::after {
+.snake .snake-board .row .cell.snakeHead::after {
   right: 6px;
 }
 
-/* Serpent — effet néon sans casser l'alignement */
-.snake .board .row .cell.snakeCell {
+/* Snake body */
+body[data-theme="dark"] .snake .snake-board .row .cell.snakeCell,
+body[data-theme="light"] .snake .snake-board .row .cell.snakeCell {
   background-color: #00aa00;
   outline: 1px solid #003300;
   box-shadow: inset 0 0 2px #007700;
 }
-
-/* Fruit — effet rond propre avec un fond carré derrière */
-.snake .board .row .cell.food {
+/* Food */
+.snake .snake-board .row .cell.food {
   position: relative;
   background-color: #2a2a2a;
 }
 
-.snake .board .row .cell.food::before {
+body[data-theme="light"] .snake .snake-board .row .cell.food {
+  background-color: #cbd5e1;
+}
+
+/* Food animation */
+.snake .snake-board .row .cell.food::before {
   content: "";
   position: absolute;
   top: 15%;
@@ -104,6 +199,7 @@
   animation: pulseFruit 0.8s infinite alternate;
 }
 
+/* Animations for fruit and blinking */
 @keyframes pulseFruit {
   0% {
     transform: scale(1);
@@ -115,34 +211,92 @@
   }
 }
 
-.snakeEndGame {
-  margin-top: 20px;
-  color: #ff3333;
-  font-size: 20px;
-  text-align: center;
-  animation: blink 1s step-start 0s infinite;
-}
-
 @keyframes blink {
   50% {
     opacity: 0.4;
   }
 }
 
+/* === END GAME SCREEN === */
+.snakeEndGame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 24px 48px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.5s ease-out;
+  z-index: 10;
+}
+
+/* Dark mode */
+body[data-theme="dark"] .snakeEndGame {
+  background-color: #374151;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+/* Light mode */
+body[data-theme="light"] .snakeEndGame {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #222;
+}
+
+/* End stats */
+.endStats {
+  margin: 20px 0;
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Restart button */
 .snakeEndGame button {
-  margin-top: 10px;
-  padding: 8px 16px;
+  margin-top: 12px;
+  padding: 10px 24px;
   font-size: 16px;
   font-weight: bold;
-  background-color: #ff3333;
   border: none;
-  border-radius: 6px;
-  color: #fff;
+  border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
 }
 
-.snakeEndGame button:hover {
-  background-color: #cc0000;
+/* Dark mode */
+body[data-theme="dark"] .snakeEndGame button {
+  background-color: #22c55e;
+  color: #fff;
+}
+
+body[data-theme="dark"] .snakeEndGame button:hover {
+  background-color: #16a34a;
   transform: scale(1.05);
+}
+
+/* Light mode */
+body[data-theme="light"] .snakeEndGame button {
+  background-color: #34d399;
+  color: #222;
+}
+
+body[data-theme="light"] .snakeEndGame button:hover {
+  background-color: #10b981;
+  transform: scale(1.05);
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }

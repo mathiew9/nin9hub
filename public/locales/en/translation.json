@@ -1,4 +1,8 @@
 {
+  "general": {
+    "score": "Score",
+    "playAgain": "Play again"
+  },
   "header": {
     "menu": "Games"
   },
@@ -8,16 +12,14 @@
     "playwithai": "Play with AI",
     "selectgamemode": "Select game mode",
     "gridsize": "Gridsize",
-    "changeGameMode": "Change game mode",
+    "changeGameMode": "Change mode",
     "gamemode": "Game mode",
     "withfriend": "With a friend",
-    "withai": "Against the computer",
+    "withai": "Against AI",
     "toPlayRich": "Player <player>{{player}}</player>'s turn",
     "wonByRich": "<player>{{player}}</player> wins the round",
     "draw": "Draw",
-    "score": "Score",
-    "resetScore": "Reset score",
-    "playAgain": "Play again"
+    "resetScore": "Reset score"
   },
   "chess": {
     "name": "Chess"
@@ -26,7 +28,8 @@
     "name": "Connect 4"
   },
   "snake": {
-    "name": "Snake"
+    "name": "Snake",
+    "time": "Time"
   },
   "hangman": {
     "name": "Hangman"

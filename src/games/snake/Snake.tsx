@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { FaStopwatch } from "react-icons/fa";
 import "./Snake.css";
 
 type Position = {
@@ -20,6 +22,7 @@ function getRandomPosition(exclude: Position[]): Position {
 }
 
 export default function Snake() {
+  const { t } = useTranslation();
   const [snake, setSnake] = useState<Position[]>([{ x: 5, y: 5 }]);
   const [food, setFood] = useState<Position>(
     getRandomPosition([{ x: 5, y: 5 }])
@@ -32,12 +35,35 @@ export default function Snake() {
   );
   const [isGameOver, setIsGameOver] = useState(false);
   const gameInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [timer, setTimer] = useState(0);
+  const timerInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [isRunning, setIsRunning] = useState(false);
+
+  useEffect(() => {
+    if (!isRunning) return;
+
+    timerInterval.current = setInterval(() => {
+      setTimer((prev) => prev + 1);
+    }, 1000);
+
+    return () => {
+      if (timerInterval.current) clearInterval(timerInterval.current);
+    };
+  }, [isRunning]);
+
+  function formatTime(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  }
 
   // Gestion clavier
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isGameOver) return;
-
+      if (!isRunning) setIsRunning(true);
       const current = direction;
 
       if (e.key === "ArrowUp" && current !== "DOWN") {
@@ -129,6 +155,7 @@ export default function Snake() {
   // Fin du jeu
   const endGame = () => {
     setIsGameOver(true);
+    setIsRunning(false);
     if (gameInterval.current) clearInterval(gameInterval.current);
   };
 
@@ -138,15 +165,25 @@ export default function Snake() {
     setFood(getRandomPosition([{ x: 5, y: 5 }]));
     setDirection(null);
     setIsGameOver(false);
+    setIsRunning(false);
+    setTimer(0);
   };
 
   return (
     <div className="snake">
-      <div className="top-bar">
-        <span>Score : {snake.length - 1}</span>
-        <button onClick={restartGame}>🔄 Rejouer</button>
-      </div>
-      <div className="board">
+      {!isGameOver && (
+        <div className="top-bar">
+          <span className="scoreText">
+            {t("general.score")} : {snake.length - 1}
+          </span>
+          <div className="timerContainer">
+            <FaStopwatch className="timerIcon" />
+            <span className="timerText">{formatTime(timer)}</span>
+          </div>
+        </div>
+      )}
+
+      <div className={`snake-board ${isGameOver ? "gameover" : ""}`}>
         {Array.from({ length: BOARD_SIZE }).map((_, y) => (
           <div className="row" key={y}>
             {Array.from({ length: BOARD_SIZE }).map((_, x) => {
@@ -167,13 +204,22 @@ export default function Snake() {
             })}
           </div>
         ))}
+
+        {isGameOver && (
+          <div className="snakeEndGame">
+            <h2>Game Over !</h2>
+            <div className="endStats">
+              <p>
+                {t("general.score")} : {snake.length - 1}
+              </p>
+              <p>
+                {t("snake.time")} : {formatTime(timer)}
+              </p>
+            </div>
+            <button onClick={restartGame}>{t("general.playAgain")}</button>
+          </div>
+        )}
       </div>
-      {isGameOver && (
-        <div className="snakeEndGame">
-          <p>💀 Game Over !</p>
-          <button onClick={restartGame}>Rejouer</button>
-        </div>
-      )}
     </div>
   );
 }

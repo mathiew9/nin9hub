@@ -7,13 +7,14 @@ import OIcon from "./OIcon.tsx";
 interface Props {
   mode: "ai" | "friend";
   gridSize: number;
+  setMode: (mode: "ai" | "friend" | null) => void;
 }
 
 type Player = "X" | "O";
 
 type SquareValue = Player | null;
 
-export default function TicTacToe({ mode, gridSize }: Props) {
+export default function TicTacToe({ mode, gridSize, setMode }: Props) {
   const { t } = useTranslation();
   const [board, setBoard] = useState<SquareValue[]>(() =>
     Array(gridSize * gridSize).fill(null)
@@ -88,12 +89,6 @@ export default function TicTacToe({ mode, gridSize }: Props) {
 
   return (
     <div className="tictactoe">
-      <p className="mode">
-        {t("tictactoe.gamemode")}
-        {" : "}
-        {mode === "ai" ? t("tictactoe.withai") : t("tictactoe.withfriend")}
-      </p>
-
       <h2>
         {winner ? (
           <Trans
@@ -127,18 +122,34 @@ export default function TicTacToe({ mode, gridSize }: Props) {
       <div className="gameLayout">
         <div className="side left">
           <div className="scoreCard">
-            <div className="scoreCardHeader">{t("tictactoe.score")}</div>
+            <div className="scoreCardMode">
+              <div className="modeText">
+                {t("tictactoe.gamemode")} :{" "}
+                {mode === "ai"
+                  ? t("tictactoe.withai")
+                  : t("tictactoe.withfriend")}
+              </div>
+            </div>
+            <div className="scoreCardHeader">
+              <div className="scoreTitle">{t("general.score")}</div>
+            </div>
             <div className="scoreCardBody">
               <p>
-                <span className="symbol-badge symbol-x">X</span>- {scoreX}
+                <span className="symbol-badge symbol-x">X</span> - {scoreX}
               </p>
               <p>
-                <span className="symbol-badge symbol-o">O</span>- {scoreO}
+                <span className="symbol-badge symbol-o">O</span> - {scoreO}
               </p>
             </div>
             <div className="scoreCardFooter">
               <button className="resetScore" onClick={resetScore}>
                 {t("tictactoe.resetScore")}
+              </button>
+              <button
+                className="changeModeButton"
+                onClick={() => setMode(null)}
+              >
+                {t("tictactoe.changeGameMode")}
               </button>
             </div>
           </div>
@@ -146,7 +157,7 @@ export default function TicTacToe({ mode, gridSize }: Props) {
 
         <div className="center">
           <div
-            className="board"
+            className="tictactoe-board"
             style={{
               gridTemplateColumns: `repeat(${gridSize}, 80px)`,
               gridTemplateRows: `repeat(${gridSize}, 80px)`,
@@ -182,7 +193,7 @@ export default function TicTacToe({ mode, gridSize }: Props) {
         <div className="side right" />
       </div>
       <button onClick={reset} className="tictactoeReset">
-        {t("tictactoe.playAgain")}
+        {t("general.playAgain")}
       </button>
     </div>
   );

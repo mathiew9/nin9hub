@@ -1,4 +1,8 @@
 {
+  "general": {
+    "score": "Score",
+    "playAgain": "Rejouer"
+  },
   "header": {
     "menu": "Jeux"
   },
@@ -8,16 +12,14 @@
     "playwithai": "Jouer Contre l'ordinateur",
     "selectgamemode": "Choisir le mode de jeu",
     "gridsize": "Taille de la grille",
-    "changeGameMode": "Changer de mode de jeu",
+    "changeGameMode": "Changer de mode",
     "gamemode": "Mode de jeu",
     "withfriend": "Avec un ami",
     "withai": "Contre l'ordinateur",
     "toPlayRich": "Joueur <player>{{player}}</player> à jouer",
     "wonByRich": "Manche gagnée par <player>{{player}}</player>",
     "draw": "Match nul",
-    "score": "Score",
-    "resetScore": "Reinitialiser le score",
-    "playAgain": "Rejouer"
+    "resetScore": "Reinitialiser le score"
   },
   "chess": {
     "name": "Échecs"
@@ -26,7 +28,8 @@
     "name": "Puissance 4"
   },
   "snake": {
-    "name": "Snake"
+    "name": "Snake",
+    "time": "Temps"
   },
   "hangman": {
     "name": "Pendu"

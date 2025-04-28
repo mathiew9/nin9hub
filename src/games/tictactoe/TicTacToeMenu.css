@@ -1,19 +1,40 @@
+/* === MENU CONTAINER === */
 .menuContainer {
   padding: 40px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #fff;
   font-family: "Segoe UI", sans-serif;
 }
 
+/* Color mode */
+body[data-theme="dark"] .menuContainer {
+  color: #fff;
+}
+
+body[data-theme="light"] .menuContainer {
+  color: #222;
+}
+
+/* === TITLE === */
 .menuContainer h2 {
   font-size: 36px;
   margin-bottom: 30px;
+}
+
+/* DARK THEME */
+body[data-theme="dark"] .menuContainer h2 {
   color: #f0db4f;
   text-shadow: 0 0 6px #000;
 }
 
+/* LIGHT THEME */
+body[data-theme="light"] .menuContainer h2 {
+  color: #3b82f6;
+  text-shadow: 0 0 4px #cbd5e1;
+}
+
+/* === GRID SIZE SELECTOR === */
 .gridSizeSelector {
   margin-bottom: 40px;
   font-size: 18px;
@@ -28,10 +49,22 @@
   padding: 6px 12px;
   border-radius: 6px;
   border: none;
+  cursor: pointer;
+}
+
+/* Dark mode select */
+body[data-theme="dark"] .gridSizeSelector select {
   background-color: #333;
   color: #fff;
 }
 
+/* Light mode select */
+body[data-theme="light"] .gridSizeSelector select {
+  background-color: #eee;
+  color: #222;
+}
+
+/* === SELECT MODE BUTTONS === */
 .selectModeButtonContainer {
   display: flex;
   gap: 2rem;
@@ -40,9 +73,7 @@
 }
 
 .selectModeButton {
-  background: linear-gradient(135deg, #3b2f80, #5e3cc4);
   border: none;
-  color: white;
   padding: 16px 28px;
   font-size: 18px;
   border-radius: 10px;
@@ -52,7 +83,24 @@
   transition: transform 0.2s, background 0.2s;
 }
 
-.selectModeButton:hover {
+/* Dark mode button */
+body[data-theme="dark"] .selectModeButton {
+  background: linear-gradient(135deg, #3b2f80, #5e3cc4);
+  color: white;
+}
+
+body[data-theme="dark"] .selectModeButton:hover {
   background: linear-gradient(135deg, #5e3cc4, #3b2f80);
+  transform: scale(1.05);
+}
+
+/* Light mode button */
+body[data-theme="light"] .selectModeButton {
+  background: linear-gradient(135deg, #7faaff, #4d88ff);
+  color: white;
+}
+
+body[data-theme="light"] .selectModeButton:hover {
+  background: linear-gradient(135deg, #4d88ff, #7faaff);
   transform: scale(1.05);
 }
