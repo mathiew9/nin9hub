@@ -1,6 +1,10 @@
 {
   "general": {
+    "availableSoon": "Available soon",
     "score": "Score",
+    "selectgamemode": "Select game mode",
+    "playwithfriend": "Play with a friend",
+    "playwithai": "Play with AI",
     "playAgain": "Play again"
   },
   "header": {
@@ -8,9 +12,6 @@
   },
   "tictactoe": {
     "name": "Tic-Tac-Toe",
-    "playwithfriend": "Play with a friend",
-    "playwithai": "Play with AI",
-    "selectgamemode": "Select game mode",
     "gridsize": "Gridsize",
     "changeGameMode": "Change mode",
     "gamemode": "Game mode",
@@ -25,7 +26,11 @@
     "name": "Chess"
   },
   "connect4": {
-    "name": "Connect 4"
+    "name": "Connect 4",
+    "red": "Red",
+    "yellow": "Yellow",
+    "turn": "'s turn",
+    "wins": "wins"
   },
   "snake": {
     "name": "Snake",

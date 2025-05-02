@@ -26,15 +26,33 @@ function App() {
 
 function GameSelection() {
   const { t } = useTranslation();
+
   return (
     <div className="game_selection">
-      {games.map((game) => (
-        <Link key={game.id} to={`/${game.id}`}>
-          <button className={`${game.id}_button select_game_button`}>
+      {games.map((game) => {
+        const isAvailable = game.available;
+        const classes = `${game.id}_button select_game_button ${
+          isAvailable ? "" : "game_unavailable"
+        }`;
+
+        const button = (
+          <button
+            className={classes}
+            disabled={!isAvailable}
+            title={!isAvailable ? t("general.availableSoon") : undefined}
+          >
             {t(`${game.id}.name`)}
           </button>
-        </Link>
-      ))}
+        );
+
+        return isAvailable ? (
+          <Link key={game.id} to={`/${game.id}`}>
+            {button}
+          </Link>
+        ) : (
+          <div key={game.id}>{button}</div>
+        );
+      })}
     </div>
   );
 }

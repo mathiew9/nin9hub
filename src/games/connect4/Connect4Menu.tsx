@@ -1,37 +1,16 @@
-import "./TicTacToeMenu.css";
+import "./Connect4Menu.css";
 import { useTranslation } from "react-i18next";
 
 interface Props {
   onSelectMode: (mode: "ai" | "friend") => void;
-  onSelectGridSize: (size: number) => void;
-  gridSize: number;
 }
 
-export default function TicTacToeMenu({
-  onSelectMode,
-  onSelectGridSize,
-  gridSize,
-}: Props) {
+export default function Connect4Menu({ onSelectMode }: Props) {
   const { t } = useTranslation();
 
   return (
     <div className="menuContainer">
       <h2>{t("general.selectgamemode")}</h2>
-
-      <div className="gridSizeSelector">
-        <label htmlFor="gridSize">{t("tictactoe.gridsize")} : </label>
-        <select
-          id="gridSize"
-          value={gridSize}
-          onChange={(e) => onSelectGridSize(parseInt(e.target.value))}
-        >
-          {[3, 4, 5].map((size) => (
-            <option key={size} value={size}>
-              {size} x {size}
-            </option>
-          ))}
-        </select>
-      </div>
 
       <div className="selectModeButtonContainer">
         <button

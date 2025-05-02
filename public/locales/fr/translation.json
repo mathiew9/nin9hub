@@ -1,6 +1,10 @@
 {
   "general": {
+    "availableSoon": "Disponible bientot",
     "score": "Score",
+    "selectgamemode": "Choisir le mode de jeu",
+    "playwithfriend": "Jouer avec un ami",
+    "playwithai": "Jouer Contre l'ordinateur",
     "playAgain": "Rejouer"
   },
   "header": {
@@ -8,13 +12,10 @@
   },
   "tictactoe": {
     "name": "Morpion",
-    "playwithfriend": "Jouer avec un ami",
-    "playwithai": "Jouer Contre l'ordinateur",
-    "selectgamemode": "Choisir le mode de jeu",
     "gridsize": "Taille de la grille",
     "changeGameMode": "Changer de mode",
-    "gamemode": "Mode de jeu",
     "withfriend": "Avec un ami",
+    "gamemode": "Mode de jeu",
     "withai": "Contre l'ordinateur",
     "toPlayRich": "Joueur <player>{{player}}</player> à jouer",
     "wonByRich": "Manche gagnée par <player>{{player}}</player>",
@@ -25,7 +26,11 @@
     "name": "Échecs"
   },
   "connect4": {
-    "name": "Puissance 4"
+    "name": "Puissance 4",
+    "red": "Rouge",
+    "yellow": "Jaune",
+    "turn": "à jouer",
+    "wins": "à gagné"
   },
   "snake": {
     "name": "Snake",

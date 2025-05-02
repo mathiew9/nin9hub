@@ -24,6 +24,9 @@ body[data-theme="light"] {
   justify-items: center;
   padding: 20px;
 }
+.game_selection a {
+  cursor: default;
+}
 
 .game_selection h1 {
   grid-column: 1 / -1;
@@ -55,6 +58,7 @@ body[data-theme="light"] .game_selection h1 {
   }
 }
 
+/* === BOUTON DE SÉLECTION DE JEU === */
 .select_game_button {
   width: 250px;
   height: 120px;
@@ -70,31 +74,43 @@ body[data-theme="light"] .game_selection h1 {
   text-shadow: 2px 2px 5px #000;
 }
 
-/* DARK THEME pour les boutons */
+/* === DARK THEME === */
 body[data-theme="dark"] .select_game_button {
   color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* LIGHT THEME pour les boutons */
-body[data-theme="light"] .select_game_button {
-  /* color: black; */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  /* text-shadow: 2px 2px 5px #ccc; */
-}
-
-.select_game_button:hover {
-  transform: scale(1.05);
-}
-
-/* DARK THEME hover */
 body[data-theme="dark"] .select_game_button:hover {
+  transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(255, 255, 255, 0.2);
 }
 
-/* LIGHT THEME hover */
+/* === LIGHT THEME === */
+body[data-theme="light"] .select_game_button {
+  /* color: #222; */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 body[data-theme="light"] .select_game_button:hover {
+  transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* === BOUTONS NON DISPONIBLES === */
+.select_game_button.game_unavailable {
+  cursor: not-allowed;
+  filter: grayscale(90%) brightness(0.8);
+  opacity: 0.6;
+  transform: none !important;
+  box-shadow: none !important;
+  text-shadow: none;
+}
+
+/* Désactiver l'effet hover même en mode clair ou sombre */
+.select_game_button.game_unavailable:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 /* 🎨 Images de fond par jeu */

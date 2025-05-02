@@ -1,22 +1,46 @@
+/* === LAYOUT GLOBAL === */
 .connect4 {
   text-align: center;
   font-family: sans-serif;
   padding: 20px;
 }
 
-.connect4 .board {
+/* === TITRE === */
+.connect4 h2 {
+  font-size: 24px;
+  margin-top: 2em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Color theme pour h2 */
+body[data-theme="dark"] .connect4 h2 {
+  color: #a5f3fc;
+}
+
+body[data-theme="light"] .connect4 h2 {
+  color: #0d6efd;
+}
+
+/* === PLATEAU === */
+.connect4-board {
+  position: relative;
   display: inline-block;
   background-color: #0044cc;
   padding: 10px;
   border-radius: 10px;
-  margin-top: 20px;
+  margin-top: 60px;
+  z-index: 2;
 }
 
-.connect4 .board .row {
-  display: flex;
+.connect4-board .row {
+  display: grid;
+  grid-template-columns: repeat(7, 68px);
+  justify-content: center;
+  position: relative;
 }
 
-.connect4 .board .row .cell {
+.connect4-board .row .cell {
   width: 60px;
   height: 60px;
   margin: 4px;
@@ -25,23 +49,185 @@
   cursor: pointer;
   transition: transform 0.2s;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 3;
 }
 
-.connect4 .board .row .cell:hover {
+/* === CELLULES SPÉCIALES === */
+.connect4-board .row .cell.hoverable {
   transform: scale(1.1);
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  transition: transform 0.2s, border 0.2s;
 }
 
-.connect4 .board .row .cell.red {
+.connect4-board .row .cell.hoverable-red {
+  border-color: #e74c3c;
+}
+
+.connect4-board .row .cell.hoverable-yellow {
+  border-color: #f1c40f;
+}
+
+.connect4-board .row .cell.red {
   background-color: red;
+  cursor: default;
 }
 
-.connect4 .board .row .cell.yellow {
+.connect4-board .row .cell.yellow {
   background-color: gold;
+  cursor: default;
 }
 
+.connect4-board .row .cell.yellow:hover,
+.connect4-board .row .cell.red:hover {
+  transform: none;
+}
+
+/* === TOKEN FANTÔME === */
+.ghost-token {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  opacity: 0.5;
+  z-index: 5;
+}
+
+.ghost-token.red {
+  background-color: #e74c3c;
+}
+
+.ghost-token.yellow {
+  background-color: #f1c40f;
+}
+
+/* === EFFET CHUTE === */
+@keyframes fallToken {
+  0% {
+    transform: translateY(var(--fall-distance, -400px));
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(-50px);
+  }
+  85% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.cell.falling {
+  animation: fallToken 0.6s ease;
+  z-index: 1;
+}
+
+/* === CELLULE VICTORIEUSE === */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 0px #00ffff;
+  }
+  50% {
+    box-shadow: 0 0 12px 3px #00ffff;
+  }
+  100% {
+    box-shadow: 0 0 0px #00ffff;
+  }
+}
+
+.cell--win {
+  animation: glow 2s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+/* === OVERLAY INTERACTIF POUR COLONNES === */
+.column-overlays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 68px);
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.column-overlay {
+  height: 100%;
+  pointer-events: auto;
+}
+
+.column-overlay.col-playable {
+  cursor: pointer;
+}
+
+.column-overlay.col-full {
+  cursor: default;
+}
+
+/* === BADGES JOUEURS === */
+.connect4Badge {
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1.2;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  min-width: 60px;
+  text-align: center;
+}
+
+.connect4RedBadge {
+  background-color: #e74c3c;
+  color: #fcefee;
+}
+
+.connect4YellowBadge {
+  background-color: #f1c40f;
+  color: #4a3d00;
+}
+
+/* === BOUTON RESTART === */
 .connect4-restart-button {
   margin-top: 20px;
   padding: 10px 20px;
   font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+/* DARK THEME */
+body[data-theme="dark"] .connect4-restart-button {
+  background-color: #22c55e;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+body[data-theme="dark"] .connect4-restart-button:hover {
+  background-color: #16a34a;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* LIGHT THEME */
+body[data-theme="light"] .connect4-restart-button {
+  background-color: #34d399;
+  color: #222;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+body[data-theme="light"] .connect4-restart-button:hover {
+  background-color: #10b981;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
