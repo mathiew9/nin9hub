@@ -32,6 +32,12 @@ export const games: GameInfo[] = [
     available: true,
   },
   {
+    id: "minesweeper",
+    name: "Minesweeper",
+    component: <MinesweeperWrapper />,
+    available: true,
+  },
+  {
     id: "chess",
     name: "Chess",
     component: <Chess />,
@@ -47,12 +53,6 @@ export const games: GameInfo[] = [
     id: "hangman",
     name: "Hangman",
     component: <div>Hangman</div>,
-    available: false,
-  },
-  {
-    id: "minesweeper",
-    name: "Minesweeper",
-    component: <MinesweeperWrapper />,
     available: false,
   },
   {

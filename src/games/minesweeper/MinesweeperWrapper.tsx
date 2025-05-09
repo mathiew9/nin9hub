@@ -15,7 +15,7 @@ export default function MinesweeperWrapper() {
     <div className="minesweeperWrapper">
       {hasStarted ? (
         <button className="back_button" onClick={() => setHasStarted(false)}>
-          Retour
+          Changer de taille
         </button>
       ) : null}
 

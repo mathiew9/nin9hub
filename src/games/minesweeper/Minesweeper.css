@@ -1,6 +1,77 @@
+/* === LAYOUT GENERAL === */
+.minesweeper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* === TOP BAR === */
+.minesweeper .top-bar {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 18px;
+  border: 1px solid;
+  box-sizing: border-box;
+}
+body[data-theme="dark"] .minesweeper .top-bar {
+  background-color: #1f2937;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+body[data-theme="light"] .minesweeper .top-bar {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #222;
+}
+
+.scoreText {
+  font-weight: bold;
+}
+
+.timerContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.timerIcon {
+  font-size: 18px;
+}
+
+.timerText {
+  font-weight: bold;
+}
+
+.topBarCenter {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.topBarMessage.victory {
+  color: #22c55e;
+}
+
+.topBarMessage.gameOver {
+  color: #ef4444;
+}
+
+/* === GRILLE === */
 .minesweeperGrid {
-  display: inline-block;
-  margin-top: 20px;
+  margin: 10px 0;
 }
 
 .minesweeperGrid .row {
@@ -10,28 +81,132 @@
 .minesweeperGrid .row .cell {
   width: 30px;
   height: 30px;
-  border: 1px solid #ccc;
-  background: #aaa;
-  color: #000;
-  text-align: center;
-  line-height: 30px;
+  background-color: #aaa;
+  color: black;
   font-weight: bold;
   cursor: pointer;
   user-select: none;
+  box-sizing: border-box;
+  border: 2px solid;
+  border-top-color: #fff;
+  border-left-color: #fff;
+  border-right-color: #666;
+  border-bottom-color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
 }
 
-.cell.revealed {
-  background: #ddd;
+.minesweeperGrid .row .cell.active {
+  background-color: #ddd;
+  border: 1px solid #999;
 }
 
-.cell.mine {
-  background: #e74c3c;
-  color: white;
+.minesweeperGrid .row .cell.revealed {
+  background-color: #ddd;
+  border: 1px solid #999;
+}
+
+.minesweeperGrid .row .cell.wrongBomb {
+  background-color: #e74c3c;
+}
+
+.minesweeperGrid .row .cell .wrongFlag {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.minesweeperGrid .row .cell .wrongFlag .crossIcon {
+  position: absolute;
+  color: red;
+  font-size: 2em;
+  pointer-events: none;
+}
+
+/* === NUMÉROS === */
+.minesweeperGrid .row .cell .number-1 {
+  color: #0000ff;
+}
+.minesweeperGrid .row .cell .number-2 {
+  color: #008000;
+}
+.minesweeperGrid .row .cell .number-3 {
+  color: #ff0000;
+}
+.minesweeperGrid .row .cell .number-4 {
+  color: #000080;
+}
+.minesweeperGrid .row .cell .number-5 {
+  color: #800000;
+}
+.minesweeperGrid .row .cell .number-6 {
+  color: #008080;
+}
+.minesweeperGrid .row .cell .number-7 {
+  color: #000000;
+}
+.minesweeperGrid .row .cell .number-8 {
+  color: #808080;
+}
+
+/* === STATUT DU JEU === */
+.gameStatus {
+  margin-top: 10px;
+  text-align: center;
 }
 
 .gameOver {
-  margin-top: 15px;
-  font-size: 20px;
-  font-weight: bold;
   color: red;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.victory {
+  color: green;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* === BOUTON RECOMMENCER === */
+.restartButton {
+  padding: 8px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+body[data-theme="dark"] .restartButton {
+  background-color: #22c55e;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+body[data-theme="dark"] .restartButton:hover {
+  background-color: #16a34a;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="light"] .restartButton {
+  background-color: #34d399;
+  color: #222;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+body[data-theme="light"] .restartButton:hover {
+  background-color: #10b981;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* === FLAG COUNTER === */
+.flagCounter {
+  font-size: 16px;
+  margin-bottom: 8px;
 }
