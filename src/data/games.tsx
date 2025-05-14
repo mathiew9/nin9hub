@@ -4,6 +4,7 @@ import Chess from "../games/chess/Chess";
 import Connect4Wrapper from "../games/connect4/Connect4Wrapper";
 import MinesweeperWrapper from "../games/minesweeper/MinesweeperWrapper";
 import Snake from "../games/snake/Snake";
+import _2048 from "../games/2048/2048";
 
 export interface GameInfo {
   id: string;
@@ -38,6 +39,18 @@ export const games: GameInfo[] = [
     available: true,
   },
   {
+    id: "2048",
+    name: "2048",
+    component: <_2048 />,
+    available: true,
+  },
+  {
+    id: "sudoku",
+    name: "Sudoku",
+    component: <div>Sudoku</div>,
+    available: false,
+  },
+  {
     id: "chess",
     name: "Chess",
     component: <Chess />,
@@ -56,21 +69,9 @@ export const games: GameInfo[] = [
     available: false,
   },
   {
-    id: "2048",
-    name: "2048",
-    component: <div>2048</div>,
-    available: false,
-  },
-  {
     id: "solitaire",
     name: "Solitaire",
     component: <div>Solitaire</div>,
-    available: false,
-  },
-  {
-    id: "sudoku",
-    name: "Sudoku",
-    component: <div>Sudoku</div>,
     available: false,
   },
   {
