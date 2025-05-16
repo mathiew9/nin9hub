@@ -5,6 +5,7 @@ import Connect4Wrapper from "../games/connect4/Connect4Wrapper";
 import MinesweeperWrapper from "../games/minesweeper/MinesweeperWrapper";
 import Snake from "../games/snake/Snake";
 import _2048 from "../games/2048/2048";
+import Hangman from "../games/hangman/HangmanWrapper";
 
 export interface GameInfo {
   id: string;
@@ -45,6 +46,12 @@ export const games: GameInfo[] = [
     available: true,
   },
   {
+    id: "hangman",
+    name: "Hangman",
+    component: <Hangman />,
+    available: true,
+  },
+  {
     id: "sudoku",
     name: "Sudoku",
     component: <div>Sudoku</div>,
@@ -60,12 +67,6 @@ export const games: GameInfo[] = [
     id: "ultimatetictactoe",
     name: "Ultimate Tic-Tac-Toe",
     component: <div>Ultimate Tic-Tac-Toe</div>,
-    available: false,
-  },
-  {
-    id: "hangman",
-    name: "Hangman",
-    component: <div>Hangman</div>,
     available: false,
   },
   {
