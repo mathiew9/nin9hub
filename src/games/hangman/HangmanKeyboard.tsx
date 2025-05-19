@@ -1,3 +1,6 @@
+import { keyboardLayouts } from "./KeyboardLayouts";
+import { useTranslation } from "react-i18next";
+
 interface Props {
   guessedLetters: string[];
   onLetterClick: (letter: string) => void;
@@ -9,24 +12,36 @@ export default function HangmanKeyboard({
   onLetterClick,
   disabled = false,
 }: Props) {
-  const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+  const { i18n } = useTranslation();
+  const lang = (i18n.language.split("-")[0] ??
+    "en") as keyof typeof keyboardLayouts;
+
+  const layout = keyboardLayouts[lang]?.rows;
+
+  if (!layout) {
+    return <p>Clavier non disponible pour cette langue : {lang}</p>;
+  }
 
   return (
     <div className="hangmanKeyboard">
-      {alphabet.map((letter) => {
-        const isGuessed = guessedLetters.includes(letter);
+      {layout.map((row: string[], rowIndex: number) => (
+        <div key={rowIndex} className="keyboardRow">
+          {row.map((letter: string) => {
+            const isGuessed = guessedLetters.includes(letter);
 
-        return (
-          <button
-            key={letter}
-            onClick={() => onLetterClick(letter)}
-            disabled={isGuessed || disabled}
-            className={`letterBtn ${isGuessed ? "guessed" : ""}`}
-          >
-            {letter}
-          </button>
-        );
-      })}
+            return (
+              <button
+                key={letter}
+                onClick={() => onLetterClick(letter)}
+                disabled={isGuessed || disabled}
+                className={`letterBtn ${isGuessed ? "guessed" : ""}`}
+              >
+                {letter}
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

@@ -5,10 +5,11 @@ import { getWord } from "./HangmanUtils";
 
 interface Props {
   mode: "infinite" | "daily";
+  onBack: () => void;
 }
 
-export default function HangmanGame({ mode }: Props) {
-  const [word] = useState(() => getWord(mode));
+export default function HangmanGame({ mode, onBack }: Props) {
+  const [word, setWord] = useState(() => getWord(mode));
   const [guesses, setGuesses] = useState<string[]>([]);
   const [wrongGuesses, setWrongGuesses] = useState<string[]>([]);
 
@@ -22,6 +23,12 @@ export default function HangmanGame({ mode }: Props) {
     }
   };
 
+  const resetGame = () => {
+    setWord(getWord(mode));
+    setGuesses([]);
+    setWrongGuesses([]);
+  };
+
   const isWon = word.split("").every((l) => guesses.includes(l));
   const isLost = wrongGuesses.length >= 6;
 
@@ -32,8 +39,18 @@ export default function HangmanGame({ mode }: Props) {
 
   return (
     <div className="hangmanGame">
-      <HangmanDrawing errors={wrongGuesses.length} />
+      <div className="hangmanControls">
+        <button className="btn-back" onClick={onBack}>
+          ← Retour
+        </button>
+        {mode === "infinite" && (
+          <button className="btn-restart" onClick={resetGame}>
+            ↻ Recommencer
+          </button>
+        )}
+      </div>
 
+      <HangmanDrawing errors={wrongGuesses.length} />
       <p className="hangmanWord">{displayWord}</p>
       <p className="hangmanErrors">Erreurs : {wrongGuesses.join(", ")}</p>
 
