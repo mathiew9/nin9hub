@@ -32,11 +32,6 @@ export default function HangmanGame({ mode, onBack }: Props) {
   const isWon = word.split("").every((l) => guesses.includes(l));
   const isLost = wrongGuesses.length >= 6;
 
-  const displayWord = word
-    .split("")
-    .map((letter) => (guesses.includes(letter) || isLost ? letter : "_"))
-    .join(" ");
-
   return (
     <div className="hangmanGame">
       <div className="hangmanControls">
@@ -51,8 +46,13 @@ export default function HangmanGame({ mode, onBack }: Props) {
       </div>
 
       <HangmanDrawing errors={wrongGuesses.length} />
-      <p className="hangmanWord">{displayWord}</p>
-      <p className="hangmanErrors">Erreurs : {wrongGuesses.join(", ")}</p>
+      <div className="hangmanWord">
+        {word.split("").map((letter, idx) => (
+          <span key={idx}>
+            {guesses.includes(letter) || isLost ? letter : ""}
+          </span>
+        ))}
+      </div>
 
       {isWon && <p className="win">Bravo, tu as trouvé le mot ! 🎉</p>}
       {isLost && <p className="lose">Perdu ! Le mot était : {word}</p>}
@@ -61,6 +61,7 @@ export default function HangmanGame({ mode, onBack }: Props) {
         guessedLetters={[...guesses, ...wrongGuesses]}
         onLetterClick={handleLetterClick}
         disabled={isWon || isLost}
+        wrongLetters={wrongGuesses}
       />
     </div>
   );

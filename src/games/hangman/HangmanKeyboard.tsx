@@ -5,12 +5,14 @@ interface Props {
   guessedLetters: string[];
   onLetterClick: (letter: string) => void;
   disabled?: boolean;
+  wrongLetters: string[];
 }
 
 export default function HangmanKeyboard({
   guessedLetters,
   onLetterClick,
   disabled = false,
+  wrongLetters,
 }: Props) {
   const { i18n } = useTranslation();
   const lang = (i18n.language.split("-")[0] ??
@@ -24,17 +26,20 @@ export default function HangmanKeyboard({
 
   return (
     <div className="hangmanKeyboard">
-      {layout.map((row: string[], rowIndex: number) => (
+      {layout.map((row, rowIndex) => (
         <div key={rowIndex} className="keyboardRow">
-          {row.map((letter: string) => {
+          {row.map((letter) => {
             const isGuessed = guessedLetters.includes(letter);
+            const isWrong = wrongLetters.includes(letter);
 
             return (
               <button
                 key={letter}
                 onClick={() => onLetterClick(letter)}
                 disabled={isGuessed || disabled}
-                className={`letterBtn ${isGuessed ? "guessed" : ""}`}
+                className={`letterBtn ${
+                  isWrong ? "wrong" : isGuessed ? "correct" : ""
+                }`}
               >
                 {letter}
               </button>

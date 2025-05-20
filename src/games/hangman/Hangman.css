@@ -2,8 +2,25 @@
   text-align: center;
   padding: 20px;
 }
-.hangmanDrawing {
-  margin-bottom: 20px;
+
+.hangmanWord {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.hangmanWord span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 48px;
+  border-bottom: 3px solid #888;
+  font-size: 2rem;
+  font-family: monospace;
+  color: #f0f0f0;
+  text-transform: uppercase;
 }
 
 .hangmanControls {
@@ -127,4 +144,29 @@
   background-color: #555;
   color: #999;
   border-color: #444;
+}
+
+.letterBtn.correct {
+  background-color: #224422;
+  color: #66ff66;
+  border-color: #44aa44;
+}
+
+.letterBtn.wrong {
+  background-color: #552222;
+  color: #ff5555;
+  border-color: #aa4444;
+}
+
+/* ===== HANGMAN DRAWING ===== */
+.hangmanDrawing {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.hangmanSvg {
+  stroke: #f0f0f0;
+  stroke-width: 4;
+  fill: none;
 }
