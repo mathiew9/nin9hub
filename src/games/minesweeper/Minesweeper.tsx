@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "./Minesweeper.css";
-import { useTranslation } from "react-i18next";
 import { FaBomb, FaFlag, FaQuestion, FaStopwatch } from "react-icons/fa";
 import { LiaTimesSolid } from "react-icons/lia";
 interface Cell {
@@ -25,7 +24,6 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
   const [victory, setVictory] = useState(false);
   const [activeCells, setActiveCells] = useState<Set<string>>(new Set());
   const [timer, setTimer] = useState(0);
-  const { t } = useTranslation();
 
   const getKey = (x: number, y: number) => `${x}-${y}`;
 
