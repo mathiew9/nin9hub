@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
 import Header from "./components/header/Header";
 import { games } from "./data/games";
 import { useTranslation } from "react-i18next";
@@ -16,9 +16,16 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<GameSelection />} />
-        {games.map((game) => (
-          <Route key={game.id} path={`/${game.id}`} element={game.component} />
-        ))}
+        {games
+          .filter((game) => game.available)
+          .map((game) => (
+            <Route
+              key={game.id}
+              path={`/${game.id}`}
+              element={game.component}
+            />
+          ))}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>
   );

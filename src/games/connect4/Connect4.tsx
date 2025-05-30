@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import "./Connect4.css";
 
@@ -28,6 +28,15 @@ export default function Connect4({ mode, setMode }: Props) {
   const [winningCells, setWinningCells] = useState<
     { row: number; col: number }[]
   >([]);
+  const fallTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (fallTimeoutRef.current !== null) {
+        clearTimeout(fallTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const dropDisc = (col: number) => {
     if (winner || isDraw) return;
@@ -36,8 +45,12 @@ export default function Connect4({ mode, setMode }: Props) {
       if (!newBoard[row][col]) {
         newBoard[row][col] = currentPlayer;
         setLastMove({ row, col });
-        setTimeout(() => {
-          setLastMove(null); // enlève la classe "falling" après l'animation
+        if (fallTimeoutRef.current) {
+          clearTimeout(fallTimeoutRef.current);
+        }
+        fallTimeoutRef.current = window.setTimeout(() => {
+          setLastMove(null);
+          fallTimeoutRef.current = null;
         }, 1000);
         setBoard(newBoard);
         const result = checkWinner(newBoard, row, col, currentPlayer);
@@ -267,7 +280,11 @@ export default function Connect4({ mode, setMode }: Props) {
               <div key={rowIndex} className="row">
                 {row.map((cell, colIndex) => (
                   <div
-                    key={colIndex}
+                    key={`${colIndex}-${
+                      lastMove?.row === rowIndex && lastMove?.col === colIndex
+                        ? Date.now()
+                        : ""
+                    }`}
                     className={`cell ${cell || ""}
                     ${
                       !winner &&

@@ -124,6 +124,7 @@
   border-radius: 6px;
   background-color: #222;
   color: #f0f0f0;
+  text-transform: uppercase;
   transition: background-color 0.2s, transform 0.2s, border-color 0.2s;
 }
 
