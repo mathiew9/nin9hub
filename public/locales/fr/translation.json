@@ -1,11 +1,16 @@
 {
-  "general": {
+  "common": {
     "availableSoon": "Disponible bientot",
     "score": "Score",
     "selectgamemode": "Choisir le mode de jeu",
     "playwithfriend": "Jouer avec un ami",
     "playwithai": "Jouer Contre l'ordinateur",
-    "playAgain": "Rejouer"
+    "playAgain": "Rejouer",
+    "selectDifficulty": "Choisissez un niveau",
+    "easy": "Facile",
+    "medium": "Moyen",
+    "hard": "Difficile",
+    "ofTheDay": "{{game}} du jour"
   },
   "header": {
     "menu": "Jeux"
@@ -37,10 +42,23 @@
     "time": "Temps"
   },
   "hangman": {
-    "name": "Pendu"
+    "name": "Pendu",
+    "infiniteMode": "Mode infini"
   },
   "minesweeper": {
-    "name": "Démineur"
+    "name": "Démineur",
+    "beginner": "Débutant",
+    "intermediate": "Intermédiaire",
+    "expert": "Expert",
+    "custom": "Personnalisé",
+    "rows": "Lignes",
+    "cols": "Colonnes",
+    "mines": "Mines",
+    "start": "Commencer",
+    "grid": "Grille",
+    "changeSize": "Changer de taille",
+    "victory": "Victoire",
+    "defeat": "Défaite"
   },
   "2048": {
     "name": "2048"

@@ -48,57 +48,6 @@
   transform: scale(1.05);
 }
 
-/* ===== HANGMAN MENU ===== */
-.hangmanMenu {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
-  gap: 20px;
-  color: #f0f0f0; /* texte clair */
-  min-height: 100vh;
-}
-
-.hangmanMenuTitle {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #ffffff;
-}
-
-.hangmanMenuButtons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-  max-width: 300px;
-}
-
-.hangmanMenuButtons button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 2px solid #444;
-  background-color: #1e1e1e;
-  color: #f0f0f0;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s, border-color 0.2s;
-}
-
-.hangmanMenuButtons button:hover {
-  background-color: #2a2a2a;
-  border-color: #666;
-  transform: scale(1.02);
-}
-
-.hangmanMenuButtons button:active {
-  transform: scale(0.98);
-}
-
 /* ===== HANGMAN KEYBOARD ===== */
 .hangmanKeyboard {
   display: flex;

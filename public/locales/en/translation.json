@@ -1,11 +1,16 @@
 {
-  "general": {
+  "common": {
     "availableSoon": "Available soon",
     "score": "Score",
     "selectgamemode": "Select game mode",
     "playwithfriend": "Play with a friend",
     "playwithai": "Play with AI",
-    "playAgain": "Play again"
+    "playAgain": "Play again",
+    "selectDifficulty": "Select difficulty",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "ofTheDay": "{{game}} of the day"
   },
   "header": {
     "menu": "Games"
@@ -37,10 +42,23 @@
     "time": "Time"
   },
   "hangman": {
-    "name": "Hangman"
+    "name": "Hangman",
+    "infiniteMode": "Infinite mode"
   },
   "minesweeper": {
-    "name": "Minesweeper"
+    "name": "Minesweeper",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "expert": "Expert",
+    "custom": "Custom",
+    "rows": "Rows",
+    "cols": "Cols",
+    "mines": "Mines",
+    "start": "Start",
+    "grid": "Grid",
+    "changeSize": "Change size",
+    "victory": "Victory",
+    "defeat": "Defeat"
   },
   "2048": {
     "name": "2048"

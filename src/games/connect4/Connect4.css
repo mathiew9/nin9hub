@@ -194,31 +194,6 @@ body[data-theme="light"] .connect4 h2 {
   color: #4a3d00;
 }
 
-/* === BOUTON RESTART === */
-.connect4-restart-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-}
-
-/* DARK THEME */
-body[data-theme="dark"] .connect4-restart-button {
-  background-color: #22c55e;
-  color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-body[data-theme="dark"] .connect4-restart-button:hover {
-  background-color: #16a34a;
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-}
-
 /* LIGHT THEME */
 body[data-theme="light"] .connect4-restart-button {
   background-color: #34d399;

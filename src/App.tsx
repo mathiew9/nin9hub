@@ -1,4 +1,5 @@
 import "./App.css";
+import "./Common.css";
 import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
 import Header from "./components/header/Header";
 import { games } from "./data/games";
@@ -46,7 +47,7 @@ function GameSelection() {
           <button
             className={classes}
             disabled={!isAvailable}
-            title={!isAvailable ? t("general.availableSoon") : undefined}
+            title={!isAvailable ? t("common.availableSoon") : undefined}
           >
             {t(`${game.id}.name`)}
           </button>

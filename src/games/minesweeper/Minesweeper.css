@@ -171,7 +171,7 @@ body[data-theme="light"] .minesweeper .top-bar {
 }
 
 /* === BOUTON RECOMMENCER === */
-.restartButton {
+/* .restartButton {
   padding: 8px 16px;
   font-size: 16px;
   border: none;
@@ -179,9 +179,9 @@ body[data-theme="light"] .minesweeper .top-bar {
   cursor: pointer;
   font-weight: bold;
   transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-}
+} */
 
-body[data-theme="dark"] .restartButton {
+/* body[data-theme="dark"] .restartButton {
   background-color: #22c55e;
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
@@ -203,7 +203,7 @@ body[data-theme="light"] .restartButton:hover {
   background-color: #10b981;
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
+} */
 
 /* === FLAG COUNTER === */
 .flagCounter {

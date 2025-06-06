@@ -1,11 +1,12 @@
 import { useState } from "react";
 
 import "./MinesweeperWrapper.css";
-
+import { useTranslation } from "react-i18next";
 import MinesweeperMenu from "./MinesweeperMenu";
 import Minesweeper from "./Minesweeper";
 
 export default function MinesweeperWrapper() {
+  const { t } = useTranslation();
   const [hasStarted, setHasStarted] = useState(false);
   const [rows, setRows] = useState(9);
   const [cols, setCols] = useState(9);
@@ -14,8 +15,11 @@ export default function MinesweeperWrapper() {
   return (
     <div className="minesweeperWrapper">
       {hasStarted ? (
-        <button className="back_button" onClick={() => setHasStarted(false)}>
-          Changer de taille
+        <button
+          className="commonButton commonMediumButton"
+          onClick={() => setHasStarted(false)}
+        >
+          {t("minesweeper.changeSize")}
         </button>
       ) : null}
 

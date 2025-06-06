@@ -1,6 +1,7 @@
 import { useReducer, useEffect, useRef } from "react";
 import Tile from "./Tile.tsx"; // adapte le chemin si besoin
 import "./2048.css";
+import { useTranslation } from "react-i18next";
 import { TileMeta, reducer, initialState, State } from "./reducer";
 import {
   FaChevronDown,
@@ -15,6 +16,7 @@ function generateTileId() {
   return tileIdCounter++;
 }
 export default function Game2048() {
+  const { t } = useTranslation();
   const [state, dispatch] = useReducer(reducer, initialState);
   type Direction = "left" | "right" | "up" | "down";
   const stateRef = useRef(state);
@@ -251,8 +253,11 @@ export default function Game2048() {
             <Tile key={tile.id} tile={tile} />
           ))}
         </div>
-        <button className="restart-button" onClick={restartGame}>
-          Recommencer
+        <button
+          className="commonButton commonMediumButton"
+          onClick={restartGame}
+        >
+          {t("common.playAgain")}
         </button>
         <div className="controls2048">
           <button onClick={() => handleMove("left")}>

@@ -6,6 +6,7 @@ import MinesweeperWrapper from "../games/minesweeper/MinesweeperWrapper";
 import Snake from "../games/snake/Snake";
 import _2048 from "../games/2048/2048";
 import Hangman from "../games/hangman/HangmanWrapper";
+import SudokuWrapper from "../games/sudoku/SudokuWrapper";
 
 export interface GameInfo {
   id: string;
@@ -54,8 +55,8 @@ export const games: GameInfo[] = [
   {
     id: "sudoku",
     name: "Sudoku",
-    component: <div>Sudoku</div>,
-    available: false,
+    component: <SudokuWrapper />,
+    available: true,
   },
   {
     id: "chess",

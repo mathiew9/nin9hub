@@ -1,18 +1,26 @@
 import { FaInfinity, FaCalendarAlt } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 interface Props {
   onSelectMode: (mode: "infinite" | "daily") => void;
 }
 
 export default function HangmanMenu({ onSelectMode }: Props) {
+  const { t } = useTranslation();
   return (
-    <div className="hangmanMenu">
-      <h2 className="hangmanMenuTitle">Choisis un mode de jeu</h2>
-      <div className="hangmanMenuButtons">
-        <button onClick={() => onSelectMode("daily")}>
-          <FaCalendarAlt /> Mot du Jour
+    <div className="commonMenu">
+      <h2 className="commonMenuTitle">{t("common.selectgamemode")}</h2>
+      <div className="commonMenuButtons">
+        <button
+          className="commonButton commonMenuButton"
+          onClick={() => onSelectMode("daily")}
+        >
+          <FaCalendarAlt /> {t("common.ofTheDay", { game: "Hangman" })}
         </button>
-        <button onClick={() => onSelectMode("infinite")}>
-          <FaInfinity /> Mode Infini
+        <button
+          className="commonButton commonMenuButton"
+          onClick={() => onSelectMode("infinite")}
+        >
+          <FaInfinity /> {t("hangman.infiniteMode")}
         </button>
       </div>
     </div>

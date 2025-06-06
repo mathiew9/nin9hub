@@ -230,6 +230,9 @@ body[data-theme="light"] .snake .snake-board .row .cell.food {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   animation: fadeIn 0.5s ease-out;
   z-index: 10;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Dark mode */
@@ -248,45 +251,10 @@ body[data-theme="light"] .snakeEndGame {
 
 /* End stats */
 .endStats {
-  margin: 20px 0;
   font-size: 18px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-/* Restart button */
-.snakeEndGame button {
-  margin-top: 12px;
-  padding: 10px 24px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-}
-
-/* Dark mode */
-body[data-theme="dark"] .snakeEndGame button {
-  background-color: #22c55e;
-  color: #fff;
-}
-
-body[data-theme="dark"] .snakeEndGame button:hover {
-  background-color: #16a34a;
-  transform: scale(1.05);
-}
-
-/* Light mode */
-body[data-theme="light"] .snakeEndGame button {
-  background-color: #34d399;
-  color: #222;
-}
-
-body[data-theme="light"] .snakeEndGame button:hover {
-  background-color: #10b981;
-  transform: scale(1.05);
+  margin-bottom: 20px;
 }
 
 /* Fade in animation */

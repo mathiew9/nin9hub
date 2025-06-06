@@ -204,7 +204,7 @@ export default function Connect4({ mode, setMode }: Props) {
               </div>
             </div>
             <div className="scoreCardHeader">
-              <div className="scoreTitle">{t("general.score")}</div>
+              <div className="scoreTitle">{t("common.score")}</div>
             </div>
             <div className="scoreCardBody">
               <p>
@@ -329,13 +329,12 @@ export default function Connect4({ mode, setMode }: Props) {
               </div>
             ))}
           </div>
-
-          <button className="connect4-restart-button" onClick={resetGame}>
-            {t("general.playAgain")}
-          </button>
         </div>
 
         <div className="side right"></div>
+        <button className="commonButton commonMediumButton" onClick={resetGame}>
+          {t("common.playAgain")}
+        </button>
       </div>
     </div>
   );
