@@ -1,0 +1,276 @@
+.sudokuButtonOfTheDay {
+  margin-bottom: 1em;
+}
+
+.sudoku {
+  text-align: center;
+  padding: 1em;
+}
+
+.sudoku-table {
+  display: table;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.sudoku-row {
+  display: table-row;
+}
+
+.sudoku-cell {
+  display: table-cell;
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #3b3733;
+  color: #f1f1f1;
+  box-sizing: border-box;
+  cursor: pointer;
+  border: 1px solid #5f5b57;
+  user-select: none;
+}
+
+/* Cases fixes */
+.sudoku-cell.readonly {
+  font-weight: bold;
+  color: #ffffff;
+  cursor: default;
+}
+
+.sudoku-cell.user-value {
+  color: #d4a373; /* Exemple de couleur différente */
+}
+
+/* Sélection */
+.sudoku-cell.selected {
+  background-color: #5b5650;
+}
+
+.sudoku-cell.same-value {
+  background-color: #4a4642;
+}
+
+.sudoku-cell.same-row,
+.sudoku-cell.same-col,
+.sudoku-cell.same-block {
+  background-color: #4a4642;
+}
+
+.sudoku-cell.selected.same-row,
+.sudoku-cell.selected.same-col,
+.sudoku-cell.selected.same-block {
+  background-color: #5b5650;
+}
+
+.cell-pos-1,
+.cell-pos-2,
+.cell-pos-3 {
+  border-top: 3px solid #d4a373;
+}
+
+.cell-pos-7,
+.cell-pos-8,
+.cell-pos-9 {
+  border-bottom: 3px solid #d4a373;
+}
+
+.cell-pos-1,
+.cell-pos-4,
+.cell-pos-7 {
+  border-left: 3px solid #d4a373;
+}
+
+.cell-pos-3,
+.cell-pos-6,
+.cell-pos-9 {
+  border-right: 3px solid #d4a373;
+}
+
+/*keyboard*/
+.sudoku-keyboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ✅ centre le contenu à l’intérieur */
+  gap: 1rem;
+}
+
+.keyboard-controls {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.keyboard-numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  gap: 0.9rem;
+  justify-content: center;
+}
+
+.keyboard-button {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  font-size: 1.25rem;
+  background-color: #4a4541;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.keyboard-button:hover {
+  background-color: #5c5753;
+}
+
+.keyboard-button.control {
+  width: auto;
+  padding: 0 1rem;
+  background-color: #66605b;
+}
+
+.keyboard-button.control.active {
+  background-color: #8d7d5d;
+}
+
+.number-counter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  font-size: 0.7em;
+  background: crimson;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 999px;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.note-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  font-size: 0.6rem;
+  color: #aaa;
+  pointer-events: none;
+  user-select: none;
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.commonGameLayout .side.sudoku-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-right: 10em;
+}
+
+.sudokuNewGridButton {
+  margin-top: 20px;
+}
+
+.sudoku-end-banner {
+  background-color: #4ade80;
+  color: #1a1a1a;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+  font-weight: bold;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: popIn 0.3s ease;
+  margin-top: 20px;
+}
+
+.sudoku-end-title {
+  font-weight: 600;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.sudoku-menu-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sudoku-menu-icon {
+  font-size: 1.2rem;
+  margin-left: 8px;
+}
+
+.sudoku-confirm-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* semi-transparent backdrop */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.sudoku-confirm-popup-content {
+  background-color: #222;
+  padding: 28px 40px;
+  border-radius: 14px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  color: white;
+  width: 380px;
+  max-width: 90%;
+}
+
+.sudoku-confirm-popup-content p {
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+}
+
+.sudoku-confirm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.sudoku-confirm-buttons .commonButton {
+  padding: 10px 20px;
+  min-width: 120px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.sudoku-current-level {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}

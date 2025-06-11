@@ -1,6 +1,8 @@
 import "./App.css";
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+import "./Common.css";
+import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
 import Header from "./components/header/Header";
+import Footer from "./components/footer/Footer";
 import { games } from "./data/games";
 import { useTranslation } from "react-i18next";
 
@@ -14,12 +16,22 @@ function App() {
       }`}
     >
       <Header />
-      <Routes>
-        <Route path="/" element={<GameSelection />} />
-        {games.map((game) => (
-          <Route key={game.id} path={`/${game.id}`} element={game.component} />
-        ))}
-      </Routes>
+      <main>
+        <Routes>
+          <Route path="/" element={<GameSelection />} />
+          {games
+            .filter((game) => game.available)
+            .map((game) => (
+              <Route
+                key={game.id}
+                path={`/${game.id}`}
+                element={game.component}
+              />
+            ))}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </main>
+      <Footer />
     </div>
   );
 }
@@ -39,7 +51,7 @@ function GameSelection() {
           <button
             className={classes}
             disabled={!isAvailable}
-            title={!isAvailable ? t("general.availableSoon") : undefined}
+            title={!isAvailable ? t("common.availableSoon") : undefined}
           >
             {t(`${game.id}.name`)}
           </button>

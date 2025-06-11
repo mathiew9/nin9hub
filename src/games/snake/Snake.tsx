@@ -174,7 +174,7 @@ export default function Snake() {
       {!isGameOver && (
         <div className="top-bar">
           <span className="scoreText">
-            {t("general.score")} : {snake.length - 1}
+            {t("common.score")} : {snake.length - 1}
           </span>
           <div className="timerContainer">
             <FaStopwatch className="timerIcon" />
@@ -207,16 +207,21 @@ export default function Snake() {
 
         {isGameOver && (
           <div className="snakeEndGame">
-            <h2>Game Over !</h2>
+            <h2 className="commonMenuTitle">Game Over !</h2>
             <div className="endStats">
               <p>
-                {t("general.score")} : {snake.length - 1}
+                {t("common.score")} : {snake.length - 1}
               </p>
               <p>
                 {t("snake.time")} : {formatTime(timer)}
               </p>
             </div>
-            <button onClick={restartGame}>{t("general.playAgain")}</button>
+            <button
+              className="commonButton commonMediumButton"
+              onClick={restartGame}
+            >
+              {t("common.playAgain")}
+            </button>
           </div>
         )}
       </div>

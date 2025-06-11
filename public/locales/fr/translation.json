@@ -1,11 +1,18 @@
 {
-  "general": {
+  "common": {
     "availableSoon": "Disponible bientot",
     "score": "Score",
     "selectgamemode": "Choisir le mode de jeu",
     "playwithfriend": "Jouer avec un ami",
     "playwithai": "Jouer Contre l'ordinateur",
-    "playAgain": "Rejouer"
+    "playAgain": "Rejouer",
+    "selectDifficulty": "Choisissez un niveau",
+    "easy": "Facile",
+    "medium": "Moyen",
+    "hard": "Difficile",
+    "ofTheDay": "{{game}} du jour",
+    "changeLevel": "Changer de niveau",
+    "level": "Niveau"
   },
   "header": {
     "menu": "Jeux"
@@ -37,10 +44,23 @@
     "time": "Temps"
   },
   "hangman": {
-    "name": "Pendu"
+    "name": "Pendu",
+    "infiniteMode": "Mode infini"
   },
   "minesweeper": {
-    "name": "Démineur"
+    "name": "Démineur",
+    "beginner": "Débutant",
+    "intermediate": "Intermédiaire",
+    "expert": "Expert",
+    "custom": "Personnalisé",
+    "rows": "Lignes",
+    "cols": "Colonnes",
+    "mines": "Mines",
+    "start": "Commencer",
+    "grid": "Grille",
+    "changeSize": "Changer de taille",
+    "victory": "Victoire",
+    "defeat": "Défaite"
   },
   "2048": {
     "name": "2048"
@@ -52,6 +72,13 @@
     "name": "Morpion Ultime"
   },
   "sudoku": {
-    "name": "Sudoku"
+    "name": "Sudoku",
+    "newGrid": "Nouvelle grille",
+    "completed": "Sudoku terminé",
+    "cancel": "Annuler",
+    "continue": "Continuer",
+    "popupWarning1": "Une partie est déjà en cours.",
+    "popupWarning2": "Lancer une nouvelle grille l’écrasera.",
+    "popupWarning3": "Continuer ?"
   }
 }

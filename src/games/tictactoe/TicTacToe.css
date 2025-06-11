@@ -17,39 +17,6 @@ body[data-theme="light"] .tictactoe {
   color: #222;
 }
 
-/* === GAME LAYOUT STRUCTURE === */
-.gameLayout {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin-top: 20px;
-  flex-wrap: wrap;
-  box-sizing: border-box;
-}
-
-.gameLayout .side {
-  width: 25%;
-  min-width: 200px;
-  display: flex;
-  justify-content: center;
-  box-sizing: border-box;
-  align-self: center;
-}
-
-.gameLayout .side.right {
-  visibility: hidden;
-}
-
-.gameLayout .center {
-  width: 50%;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-}
-
 /* === SCORE CARD === */
 .scoreCard {
   border-radius: 10px;
@@ -139,44 +106,6 @@ body[data-theme="light"] .scoreCardBody {
   justify-content: center;
   gap: 10px;
   flex-wrap: nowrap;
-}
-
-/* === SCORE CARD BUTTONS === */
-.changeModeButton,
-.resetScore {
-  padding: 8px 14px;
-  font-size: 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
-  text-align: center;
-  white-space: nowrap;
-  height: 34px;
-  flex: none;
-}
-
-body[data-theme="dark"] .changeModeButton,
-body[data-theme="dark"] .resetScore {
-  background-color: #475569;
-  color: white;
-}
-
-body[data-theme="dark"] .changeModeButton:hover,
-body[data-theme="dark"] .resetScore:hover {
-  background-color: #64748b;
-}
-
-body[data-theme="light"] .changeModeButton,
-body[data-theme="light"] .resetScore {
-  background-color: #d2dae2;
-  color: #222;
-}
-
-body[data-theme="light"] .changeModeButton:hover,
-body[data-theme="light"] .resetScore:hover {
-  background-color: #c0c9d3;
 }
 
 /* === BOARD === */
@@ -286,37 +215,6 @@ h2 .symbol-badge {
 .symbol-o {
   background-color: #1e88e5;
   color: white;
-}
-
-/* === RESET BUTTON === */
-.tictactoeReset {
-  margin-top: 40px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
-}
-
-body[data-theme="dark"] .tictactoeReset {
-  background-color: #f43f5e;
-  color: white;
-}
-
-body[data-theme="dark"] .tictactoeReset:hover {
-  background-color: #e23d58;
-  transform: scale(1.05);
-}
-
-body[data-theme="light"] .tictactoeReset {
-  background-color: #f5425f;
-  color: white;
-}
-
-body[data-theme="light"] .tictactoeReset:hover {
-  background-color: #ec3d58;
-  transform: scale(1.05);
 }
 
 /* === ANIMATIONS === */

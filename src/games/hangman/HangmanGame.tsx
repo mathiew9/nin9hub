@@ -54,9 +54,6 @@ export default function HangmanGame({ mode, onBack }: Props) {
         ))}
       </div>
 
-      {isWon && <p className="win">Bravo, tu as trouvé le mot ! 🎉</p>}
-      {isLost && <p className="lose">Perdu ! Le mot était : {word}</p>}
-
       <HangmanKeyboard
         guessedLetters={[...guesses, ...wrongGuesses]}
         onLetterClick={handleLetterClick}

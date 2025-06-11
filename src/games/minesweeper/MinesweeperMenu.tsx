@@ -1,4 +1,5 @@
 import "./MinesweeperMenu.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   onStart: () => void;
@@ -19,6 +20,7 @@ export default function MinesweeperMenu({
   setCols,
   setMines,
 }: Props) {
+  const { t } = useTranslation();
   const launchPreset = (rows: number, cols: number, mines: number) => {
     setRows(rows);
     setCols(cols);
@@ -28,20 +30,20 @@ export default function MinesweeperMenu({
 
   return (
     <div className="menuContainer">
-      <h2>Sélection du mode</h2>
+      <h2 className="commonMenuTitle">{t("common.selectDifficulty")}</h2>
 
       <div className="cardGrid">
         <div
           className="modeCard beginner"
           onClick={() => launchPreset(9, 9, 10)}
         >
-          <h3>🟢 Débutant</h3>
+          <h3>🟢 {t("minesweeper.beginner")}</h3>
           <div className="modeStats">
             <div className="infoBox">
-              <span className="infoLabel">Grille</span>9 × 9
+              <span className="infoLabel">{t("minesweeper.grid")}</span>9 × 9
             </div>
             <div className="infoBox">
-              <span className="infoLabel">Mines</span>10
+              <span className="infoLabel">{t("minesweeper.mines")}</span>10
             </div>
           </div>
         </div>
@@ -50,13 +52,13 @@ export default function MinesweeperMenu({
           className="modeCard intermediate"
           onClick={() => launchPreset(16, 16, 40)}
         >
-          <h3>🟠 Intermédiaire</h3>
+          <h3>🟠 {t("minesweeper.intermediate")}</h3>
           <div className="modeStats">
             <div className="infoBox">
-              <span className="infoLabel">Grille</span>16 × 16
+              <span className="infoLabel">{t("minesweeper.grid")}</span>16 × 16
             </div>
             <div className="infoBox">
-              <span className="infoLabel">Mines</span>40
+              <span className="infoLabel">{t("minesweeper.mines")}</span>40
             </div>
           </div>
         </div>
@@ -65,21 +67,21 @@ export default function MinesweeperMenu({
           className="modeCard expert"
           onClick={() => launchPreset(16, 30, 99)}
         >
-          <h3>🔴 Expert</h3>
+          <h3>🔴 {t("minesweeper.expert")}</h3>
           <div className="modeStats">
             <div className="infoBox">
-              <span className="infoLabel">Grille</span>30 × 16
+              <span className="infoLabel">{t("minesweeper.grid")}</span>30 × 16
             </div>
             <div className="infoBox">
-              <span className="infoLabel">Mines</span>99
+              <span className="infoLabel">{t("minesweeper.mines")}</span>99
             </div>
           </div>
         </div>
 
         <div className="modeCard custom">
-          <h3>⚙️ Personnalisé</h3>
+          <h3>⚙️ {t("minesweeper.custom")}</h3>
           <label>
-            Lignes :
+            {t("minesweeper.rows")} :
             <input
               type="number"
               min={5}
@@ -89,7 +91,7 @@ export default function MinesweeperMenu({
             />
           </label>
           <label>
-            Colonnes :
+            {t("minesweeper.cols")} :
             <input
               type="number"
               min={5}
@@ -99,7 +101,7 @@ export default function MinesweeperMenu({
             />
           </label>
           <label>
-            Mines :
+            {t("minesweeper.mines")} :
             <input
               type="number"
               min={1}
@@ -108,7 +110,7 @@ export default function MinesweeperMenu({
               onChange={(e) => setMines(parseInt(e.target.value))}
             />
           </label>
-          <button onClick={onStart}>Démarrer</button>
+          <button onClick={onStart}>{t("minesweeper.start")}</button>
         </div>
       </div>
     </div>

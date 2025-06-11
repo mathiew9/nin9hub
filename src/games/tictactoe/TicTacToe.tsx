@@ -119,8 +119,8 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
         )}
       </h2>
 
-      <div className="gameLayout">
-        <div className="side left">
+      <div className="commonGameLayout">
+        <div className="side">
           <div className="scoreCard">
             <div className="scoreCardMode">
               <div className="modeText">
@@ -131,7 +131,7 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
               </div>
             </div>
             <div className="scoreCardHeader">
-              <div className="scoreTitle">{t("general.score")}</div>
+              <div className="scoreTitle">{t("common.score")}</div>
             </div>
             <div className="scoreCardBody">
               <p>
@@ -142,11 +142,14 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
               </p>
             </div>
             <div className="scoreCardFooter">
-              <button className="resetScore" onClick={resetScore}>
+              <button
+                className="commonScoreButton commonButton"
+                onClick={resetScore}
+              >
                 {t("tictactoe.resetScore")}
               </button>
               <button
-                className="changeModeButton"
+                className="commonScoreButton commonButton"
                 onClick={() => setMode(null)}
               >
                 {t("tictactoe.changeGameMode")}
@@ -190,10 +193,10 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
           </div>
         </div>
 
-        <div className="side right" />
+        <div className="side hidden" />
       </div>
-      <button onClick={reset} className="tictactoeReset">
-        {t("general.playAgain")}
+      <button onClick={reset} className="commonButton commonMediumButton">
+        {t("common.playAgain")}
       </button>
     </div>
   );

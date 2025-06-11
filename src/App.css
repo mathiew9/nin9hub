@@ -3,6 +3,13 @@
   font-family: "Segoe UI", sans-serif;
   padding-top: 60px;
   color: white;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+.app_container > main {
+  flex-grow: 1;
 }
 
 /* LIGHT THEME : fond clair sur tout le body */

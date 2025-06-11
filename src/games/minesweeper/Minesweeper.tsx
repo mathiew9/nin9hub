@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./Minesweeper.css";
 import { FaBomb, FaFlag, FaQuestion, FaStopwatch } from "react-icons/fa";
 import { LiaTimesSolid } from "react-icons/lia";
+import { useTranslation } from "react-i18next";
 interface Cell {
   isMine: boolean;
   revealed: boolean;
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export default function Minesweeper({ rows, cols, mines }: Props) {
+  const { t } = useTranslation();
   const [grid, setGrid] = useState<Cell[][]>([]);
   const [gameOver, setGameOver] = useState(false);
   const [victory, setVictory] = useState(false);
@@ -352,9 +354,15 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
         </span>
 
         <div className="topBarCenter">
-          {victory && <span className="topBarMessage victory">Victoire !</span>}
+          {victory && (
+            <span className="topBarMessage victory">
+              {t("minesweeper.victory")} !
+            </span>
+          )}
           {gameOver && !victory && (
-            <span className="topBarMessage gameOver">Perdu !</span>
+            <span className="topBarMessage gameOver">
+              {t("minesweeper.defeat")} !
+            </span>
           )}
         </div>
 
@@ -426,8 +434,8 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
       </div>
 
       <div className="gameStatus">
-        <button onClick={initGrid} className="restartButton">
-          Recommencer
+        <button onClick={initGrid} className="commonButton commonMediumButton">
+          {t("common.playAgain")}
         </button>
       </div>
     </div>

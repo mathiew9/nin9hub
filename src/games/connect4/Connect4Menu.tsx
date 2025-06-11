@@ -1,4 +1,3 @@
-import "./Connect4Menu.css";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -9,18 +8,21 @@ export default function Connect4Menu({ onSelectMode }: Props) {
   const { t } = useTranslation();
 
   return (
-    <div className="menuContainer">
-      <h2>{t("general.selectgamemode")}</h2>
+    <div className="commonMenu">
+      <h2 className="commonMenuTitle">{t("common.selectgamemode")}</h2>
 
-      <div className="selectModeButtonContainer">
+      <div className="commonMenuButtons">
         <button
-          className="selectModeButton"
+          className="commonButton commonMenuButton"
           onClick={() => onSelectMode("friend")}
         >
-          {t("general.playwithfriend")}
+          {t("common.playwithfriend")}
         </button>
-        <button className="selectModeButton" onClick={() => onSelectMode("ai")}>
-          {t("general.playwithai")}
+        <button
+          className="commonButton commonMenuButton"
+          onClick={() => onSelectMode("ai")}
+        >
+          {t("common.playwithai")}
         </button>
       </div>
     </div>
