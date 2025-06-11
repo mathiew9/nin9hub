@@ -10,7 +10,9 @@
     "easy": "Easy",
     "medium": "Medium",
     "hard": "Hard",
-    "ofTheDay": "{{game}} of the day"
+    "ofTheDay": "{{game}} of the day",
+    "changeLevel": "Change level",
+    "level": "Level"
   },
   "header": {
     "menu": "Games"
@@ -70,6 +72,13 @@
     "name": "Ultimate Tic-Tac-Toe"
   },
   "sudoku": {
-    "name": "Sudoku"
+    "name": "Sudoku",
+    "newGrid": "New grid",
+    "completed": "Sudoku completed",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "popupWarning1": "A game is already in progress.",
+    "popupWarning2": "Starting a new grid will overwrite it.",
+    "popupWarning3": "Continue?"
   }
 }

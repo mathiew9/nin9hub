@@ -192,8 +192,8 @@ export default function Connect4({ mode, setMode }: Props) {
       </h2>
 
       {isDraw && !winner && <h2>{t("tictactoe.draw")}</h2>}
-      <div className="gameLayout">
-        <div className="side left">
+      <div className="commonGameLayout">
+        <div className="side">
           <div className="scoreCard">
             <div className="scoreCardMode">
               <div className="modeText">
@@ -331,11 +331,11 @@ export default function Connect4({ mode, setMode }: Props) {
           </div>
         </div>
 
-        <div className="side right"></div>
-        <button className="commonButton commonMediumButton" onClick={resetGame}>
-          {t("common.playAgain")}
-        </button>
+        <div className="side hidden" />
       </div>
+      <button className="commonButton commonMediumButton" onClick={resetGame}>
+        {t("common.playAgain")}
+      </button>
     </div>
   );
 }

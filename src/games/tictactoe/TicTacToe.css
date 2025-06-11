@@ -17,39 +17,6 @@ body[data-theme="light"] .tictactoe {
   color: #222;
 }
 
-/* === GAME LAYOUT STRUCTURE === */
-.gameLayout {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin-top: 20px;
-  flex-wrap: wrap;
-  box-sizing: border-box;
-}
-
-.gameLayout .side {
-  width: 25%;
-  min-width: 200px;
-  display: flex;
-  justify-content: center;
-  box-sizing: border-box;
-  align-self: center;
-}
-
-.gameLayout .side.right {
-  visibility: hidden;
-}
-
-.gameLayout .center {
-  width: 50%;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-}
-
 /* === SCORE CARD === */
 .scoreCard {
   border-radius: 10px;

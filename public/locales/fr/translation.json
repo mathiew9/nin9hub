@@ -10,7 +10,9 @@
     "easy": "Facile",
     "medium": "Moyen",
     "hard": "Difficile",
-    "ofTheDay": "{{game}} du jour"
+    "ofTheDay": "{{game}} du jour",
+    "changeLevel": "Changer de niveau",
+    "level": "Niveau"
   },
   "header": {
     "menu": "Jeux"
@@ -70,6 +72,13 @@
     "name": "Morpion Ultime"
   },
   "sudoku": {
-    "name": "Sudoku"
+    "name": "Sudoku",
+    "newGrid": "Nouvelle grille",
+    "completed": "Sudoku terminé",
+    "cancel": "Annuler",
+    "continue": "Continuer",
+    "popupWarning1": "Une partie est déjà en cours.",
+    "popupWarning2": "Lancer une nouvelle grille l’écrasera.",
+    "popupWarning3": "Continuer ?"
   }
 }

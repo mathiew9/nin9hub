@@ -1,3 +1,13 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 /* ===== COMMON MENU ===== */
 .commonMenu {
   display: flex;
@@ -101,4 +111,40 @@ body[data-theme="light"] .commonButton:hover {
   padding: 8px 18px;
   font-size: 16px;
   font-weight: 600;
+}
+
+/* ===== COMMON GAME LAYOUT ===== */
+.commonGameLayout {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  gap: 1rem;
+}
+
+.commonGameLayout .side {
+  width: 25%;
+  min-width: 200px;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.commonGameLayout .center {
+  flex: 1;
+  min-width: 320px;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Cacher les colonnes latérales si inutiles */
+.commonGameLayout .side.hidden {
+  visibility: hidden;
 }

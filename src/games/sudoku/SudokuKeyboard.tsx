@@ -5,6 +5,7 @@ type Props = {
   onDelete: () => void;
   onToggleNoteMode: () => void;
   noteMode: boolean;
+  numberCounts: number[]; // index 1 à 9
 };
 
 export default function SudokuKeyboard({
@@ -12,6 +13,7 @@ export default function SudokuKeyboard({
   onDelete,
   onToggleNoteMode,
   noteMode,
+  numberCounts,
 }: Props) {
   return (
     <div className="sudoku-keyboard">
@@ -28,15 +30,23 @@ export default function SudokuKeyboard({
       </div>
 
       <div className="keyboard-numbers">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-          <button
-            key={num}
-            className="keyboard-button"
-            onClick={() => onInput(num)}
-          >
-            {num}
-          </button>
-        ))}
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => {
+          const count = numberCounts[num];
+          const remaining = 9 - count;
+          const disabled = remaining <= 0;
+
+          return (
+            <button
+              key={num}
+              className="keyboard-button"
+              onClick={() => onInput(num)}
+              disabled={disabled}
+            >
+              {num}
+              <span className="number-counter">{remaining}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
