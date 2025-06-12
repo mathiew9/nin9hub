@@ -1,7 +1,8 @@
 export type Cell = {
-  value: number | null; // Valeur principale (1-9 ou null)
-  notes: number[]; // Petits chiffres en mode note
-  readonly: boolean; // true si c'est une case fixe
+  value: number | null;
+  notes: number[];
+  readonly: boolean;
+  hasError?: boolean;
 };
 
 export type SudokuGrid = Cell[][];

@@ -12,7 +12,8 @@
     "hard": "Difficile",
     "ofTheDay": "{{game}} du jour",
     "changeLevel": "Changer de niveau",
-    "level": "Niveau"
+    "level": "Niveau",
+    "daily": "Journalier"
   },
   "header": {
     "menu": "Jeux"
@@ -79,6 +80,11 @@
     "continue": "Continuer",
     "popupWarning1": "Une partie est déjà en cours.",
     "popupWarning2": "Lancer une nouvelle grille l’écrasera.",
-    "popupWarning3": "Continuer ?"
+    "popupWarning3": "Continuer ?",
+    "erase": "Effacer",
+    "noteMode": "Mode note"
+  },
+  "pacxon": {
+    "name": "Pacxon"
   }
 }

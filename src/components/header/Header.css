@@ -19,6 +19,7 @@
   font-weight: bold;
   letter-spacing: 1px;
   text-decoration: none;
+  font-family: "Orbitron", sans-serif;
 }
 
 .header-title.center {
@@ -115,7 +116,28 @@
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
+/* === HOME BUTTON === */
+.header-back {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
 /* === DARK THEME === */
+body[data-theme="dark"] .header-back {
+  color: white;
+  border-color: #666;
+}
+
+body[data-theme="dark"] .header-back:hover {
+  background-color: #ffffff10;
+  color: #ccc;
+}
+
 body[data-theme="dark"] .header {
   background-color: #1f1f1f;
   color: white;
@@ -123,13 +145,8 @@ body[data-theme="dark"] .header {
 }
 
 body[data-theme="dark"] .header-title,
-body[data-theme="dark"] .header-back,
 body[data-theme="dark"] .lang-toggle-btn {
   color: white;
-}
-
-body[data-theme="dark"] .header-back:hover {
-  color: #ccc;
 }
 
 body[data-theme="dark"] .header-game {
@@ -172,14 +189,6 @@ body[data-theme="light"] .header-title {
   color: #222;
 }
 
-body[data-theme="light"] .header-back {
-  color: #007acc;
-}
-
-body[data-theme="light"] .header-back:hover {
-  color: #000;
-}
-
 body[data-theme="light"] .header-game {
   color: #444;
 }
@@ -211,4 +220,14 @@ body[data-theme="light"] .theme-toggle {
 body[data-theme="light"] .theme-toggle:hover {
   background-color: #eee;
   border-color: #666;
+}
+
+body[data-theme="light"] .header-back {
+  color: #007acc;
+  border-color: #007acc;
+}
+
+body[data-theme="light"] .header-back:hover {
+  background-color: #007acc10;
+  color: #000;
 }

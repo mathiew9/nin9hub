@@ -79,6 +79,7 @@ body[data-theme="light"] .game_selection h1 {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   text-shadow: 2px 2px 5px #000;
+  font-family: "Rajdhani";
 }
 
 /* === DARK THEME === */

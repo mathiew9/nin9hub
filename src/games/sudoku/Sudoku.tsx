@@ -4,6 +4,7 @@ import { generateCompleteGrid, removeCells, isValid } from "./sudokuUtils";
 import { generateDailyGrid } from "./sudokuDailyUtils";
 import { saveGame, loadGame } from "../../utils/storage";
 import { useTranslation } from "react-i18next";
+import { FaExclamation } from "react-icons/fa";
 import SudokuKeyboard from "./SudokuKeyboard";
 
 type Props = {
@@ -51,18 +52,9 @@ export default function Sudoku({ level, onBack }: Props) {
     if (gameFinished) return;
     if (!selectedCell) return;
 
-    if (typeof input === "number") {
-      const count = numberCounts[input];
-      const { row, col } = selectedCell;
-      const currentValue = grid[row][col].value;
-
-      const isTryingToRemoveSameValue = currentValue === input;
-
-      if (count >= 9 && !isTryingToRemoveSameValue) return;
-    }
-
     const { row, col } = selectedCell;
     const cell = grid[row][col];
+
     if (
       !hasUserStarted.current &&
       typeof input === "number" &&
@@ -83,50 +75,63 @@ export default function Sudoku({ level, onBack }: Props) {
         ? target.notes.filter((n) => n !== input)
         : [...target.notes, input].sort();
     } else {
-      if (target.value === input) {
+      const count = numberCounts[input];
+      const currentValue = grid[row][col].value;
+      const isTryingToRemoveSameValue = currentValue === input;
+
+      if (count >= 9 && !isTryingToRemoveSameValue) return;
+
+      const isSameValue = target.value === input;
+
+      if (isSameValue) {
         target.value = null;
+        // On ne touche pas aux notes dans ce cas
       } else {
         target.value = input;
-      }
-      target.notes = [];
+        target.notes = [];
 
-      // Supprimer ce chiffre des notes de la même ligne, colonne et bloc
-      for (let i = 0; i < 9; i++) {
-        // Ligne
-        if (
-          !newGrid[row][i].readonly &&
-          newGrid[row][i].notes.includes(input)
-        ) {
-          newGrid[row][i].notes = newGrid[row][i].notes.filter(
-            (n) => n !== input
-          );
-        }
-        // Colonne
-        if (
-          !newGrid[i][col].readonly &&
-          newGrid[i][col].notes.includes(input)
-        ) {
-          newGrid[i][col].notes = newGrid[i][col].notes.filter(
-            (n) => n !== input
-          );
-        }
-      }
-
-      // Bloc 3x3
-      const startRow = Math.floor(row / 3) * 3;
-      const startCol = Math.floor(col / 3) * 3;
-      for (let r = startRow; r < startRow + 3; r++) {
-        for (let c = startCol; c < startCol + 3; c++) {
-          if (!newGrid[r][c].readonly && newGrid[r][c].notes.includes(input)) {
-            newGrid[r][c].notes = newGrid[r][c].notes.filter(
+        // Supprimer ce chiffre des notes de la même ligne, colonne et bloc
+        for (let i = 0; i < 9; i++) {
+          // Ligne
+          if (
+            !newGrid[row][i].readonly &&
+            newGrid[row][i].notes.includes(input)
+          ) {
+            newGrid[row][i].notes = newGrid[row][i].notes.filter(
               (n) => n !== input
             );
+          }
+          // Colonne
+          if (
+            !newGrid[i][col].readonly &&
+            newGrid[i][col].notes.includes(input)
+          ) {
+            newGrid[i][col].notes = newGrid[i][col].notes.filter(
+              (n) => n !== input
+            );
+          }
+        }
+
+        // Bloc 3x3
+        const startRow = Math.floor(row / 3) * 3;
+        const startCol = Math.floor(col / 3) * 3;
+        for (let r = startRow; r < startRow + 3; r++) {
+          for (let c = startCol; c < startCol + 3; c++) {
+            if (
+              !newGrid[r][c].readonly &&
+              newGrid[r][c].notes.includes(input)
+            ) {
+              newGrid[r][c].notes = newGrid[r][c].notes.filter(
+                (n) => n !== input
+              );
+            }
           }
         }
       }
     }
 
-    setGrid(newGrid);
+    setGrid(markGridErrors(newGrid));
+
     hasUserStarted.current = true;
     if (isGridComplete(newGrid)) {
       setGameFinished(true);
@@ -289,7 +294,14 @@ export default function Sudoku({ level, onBack }: Props) {
                       }
                     >
                       {cell.value !== null ? (
-                        cell.value
+                        <>
+                          {cell.value}
+                          {cell.hasError && (
+                            <span className="sudoku-error-icon">
+                              <FaExclamation />
+                            </span>
+                          )}
+                        </>
                       ) : cell.notes.length > 0 ? (
                         <div className="note-grid">
                           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
@@ -302,9 +314,18 @@ export default function Sudoku({ level, onBack }: Props) {
                               {cell.notes.includes(n) ? n : ""}
                             </span>
                           ))}
+                          {cell.hasError && (
+                            <span className="sudoku-error-icon">
+                              <FaExclamation />
+                            </span>
+                          )}
                         </div>
                       ) : (
-                        ""
+                        cell.hasError && (
+                          <span className="sudoku-error-icon">
+                            <FaExclamation />
+                          </span>
+                        )
                       )}
                     </div>
                   );
@@ -404,4 +425,47 @@ function isGridComplete(grid: SudokuGrid): boolean {
   }
   console.log("Grille complete");
   return true;
+}
+
+function markGridErrors(grid: SudokuGrid): SudokuGrid {
+  const newGrid = grid.map((row) =>
+    row.map((cell) => ({ ...cell, hasError: false }))
+  );
+
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const value = grid[row][col].value;
+      if (value === null) continue;
+
+      // Check row
+      for (let c = 0; c < 9; c++) {
+        if (c !== col && grid[row][c].value === value) {
+          newGrid[row][col].hasError = true;
+          newGrid[row][c].hasError = true;
+        }
+      }
+
+      // Check column
+      for (let r = 0; r < 9; r++) {
+        if (r !== row && grid[r][col].value === value) {
+          newGrid[row][col].hasError = true;
+          newGrid[r][col].hasError = true;
+        }
+      }
+
+      // Check block
+      const startRow = Math.floor(row / 3) * 3;
+      const startCol = Math.floor(col / 3) * 3;
+      for (let r = startRow; r < startRow + 3; r++) {
+        for (let c = startCol; c < startCol + 3; c++) {
+          if ((r !== row || c !== col) && grid[r][c].value === value) {
+            newGrid[row][col].hasError = true;
+            newGrid[r][c].hasError = true;
+          }
+        }
+      }
+    }
+  }
+
+  return newGrid;
 }

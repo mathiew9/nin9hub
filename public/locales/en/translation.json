@@ -12,7 +12,8 @@
     "hard": "Hard",
     "ofTheDay": "{{game}} of the day",
     "changeLevel": "Change level",
-    "level": "Level"
+    "level": "Level",
+    "daily": "Daily"
   },
   "header": {
     "menu": "Games"
@@ -79,6 +80,11 @@
     "continue": "Continue",
     "popupWarning1": "A game is already in progress.",
     "popupWarning2": "Starting a new grid will overwrite it.",
-    "popupWarning3": "Continue?"
+    "popupWarning3": "Continue?",
+    "erase": "Erase",
+    "noteMode": "Note mode"
+  },
+  "pacxman": {
+    "name": "PacXman"
   }
 }

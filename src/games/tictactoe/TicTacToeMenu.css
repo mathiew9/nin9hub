@@ -14,6 +14,10 @@
   font-size: 20px;
 }
 
+body[data-theme="light"] .gridSizeSelector label {
+  color: #000;
+}
+
 .gridSizeSelector select {
   padding: 8px 12px;
   border: 2px solid #44403c;
