@@ -1,12 +1,14 @@
-.sudokuButtonOfTheDay {
-  margin-bottom: 1em;
-}
-
+/* ========== SUDOKU - GLOBAL ========== */
 .sudoku {
   text-align: center;
   padding: 1em;
 }
 
+.sudokuButtonOfTheDay {
+  margin-bottom: 1em;
+}
+
+/* ========== SUDOKU TABLE ========== */
 .sudoku-table {
   display: table;
   border-collapse: collapse;
@@ -18,6 +20,7 @@
 }
 
 .sudoku-cell {
+  position: relative;
   display: table-cell;
   width: 48px;
   height: 48px;
@@ -32,24 +35,44 @@
   user-select: none;
 }
 
-/* Cases fixes */
+body[data-theme="light"] .sudoku-cell {
+  background-color: #f1f1f1;
+  color: #1a1a1a;
+  border: 1px solid #ccc;
+}
+
+/* ========== FIXED / USER / SELECTION ========== */
 .sudoku-cell.readonly {
   font-weight: bold;
   color: #ffffff;
   cursor: default;
 }
 
-.sudoku-cell.user-value {
-  color: #d4a373; /* Exemple de couleur différente */
+body[data-theme="light"] .sudoku-cell.readonly {
+  color: #000;
 }
 
-/* Sélection */
+.sudoku-cell.user-value {
+  color: #d4a373;
+}
+body[data-theme="light"] .sudoku-cell.user-value {
+  color: #0d6efd;
+}
+
 .sudoku-cell.selected {
   background-color: #5b5650;
 }
 
+body[data-theme="light"] .sudoku-cell.selected {
+  background-color: #c9c9c9;
+}
+
 .sudoku-cell.same-value {
   background-color: #4a4642;
+}
+
+body[data-theme="light"] .sudoku-cell.same-value {
+  background-color: #ddd;
 }
 
 .sudoku-cell.same-row,
@@ -58,12 +81,25 @@
   background-color: #4a4642;
 }
 
+body[data-theme="light"] .sudoku-cell.same-row,
+body[data-theme="light"] .sudoku-cell.same-col,
+body[data-theme="light"] .sudoku-cell.same-block {
+  background-color: #ddd;
+}
+
 .sudoku-cell.selected.same-row,
 .sudoku-cell.selected.same-col,
 .sudoku-cell.selected.same-block {
   background-color: #5b5650;
 }
 
+body[data-theme="light"] .sudoku-cell.selected.same-row,
+body[data-theme="light"] .sudoku-cell.selected.same-col,
+body[data-theme="light"] .sudoku-cell.selected.same-block {
+  background-color: #c9c9c9;
+}
+
+/* ========== BLOCK BORDERS ========== */
 .cell-pos-1,
 .cell-pos-2,
 .cell-pos-3 {
@@ -88,11 +124,35 @@
   border-right: 3px solid #d4a373;
 }
 
-/*keyboard*/
+body[data-theme="light"] .cell-pos-1,
+body[data-theme="light"] .cell-pos-2,
+body[data-theme="light"] .cell-pos-3 {
+  border-top: 3px solid #0d6efd;
+}
+
+body[data-theme="light"] .cell-pos-7,
+body[data-theme="light"] .cell-pos-8,
+body[data-theme="light"] .cell-pos-9 {
+  border-bottom: 3px solid #0d6efd;
+}
+
+body[data-theme="light"] .cell-pos-1,
+body[data-theme="light"] .cell-pos-4,
+body[data-theme="light"] .cell-pos-7 {
+  border-left: 3px solid #0d6efd;
+}
+
+body[data-theme="light"] .cell-pos-3,
+body[data-theme="light"] .cell-pos-6,
+body[data-theme="light"] .cell-pos-9 {
+  border-right: 3px solid #0d6efd;
+}
+
+/* ========== KEYBOARD ========== */
 .sudoku-keyboard {
   display: flex;
   flex-direction: column;
-  align-items: center; /* ✅ centre le contenu à l’intérieur */
+  align-items: center;
   gap: 1rem;
 }
 
@@ -129,6 +189,15 @@
   background-color: #5c5753;
 }
 
+body[data-theme="light"] .keyboard-button {
+  background-color: #ddd;
+  color: #000;
+}
+
+body[data-theme="light"] .keyboard-button:hover {
+  background-color: #ccc;
+}
+
 .keyboard-button.control {
   width: auto;
   padding: 0 1rem;
@@ -137,6 +206,14 @@
 
 .keyboard-button.control.active {
   background-color: #8d7d5d;
+}
+
+body[data-theme="light"] .keyboard-button.control {
+  background-color: #bbb;
+}
+
+body[data-theme="light"] .keyboard-button.control.active {
+  background-color: #0d6efd;
 }
 
 .number-counter {
@@ -153,6 +230,7 @@
   pointer-events: none;
 }
 
+/* ========== NOTES ========== */
 .note-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -165,12 +243,17 @@
   user-select: none;
 }
 
+body[data-theme="light"] .note-grid {
+  color: #666;
+}
+
 .note {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* ========== RIGHT PANEL ========== */
 .commonGameLayout .side.sudoku-right {
   display: flex;
   flex-direction: column;
@@ -179,6 +262,7 @@
   padding-right: 10em;
 }
 
+/* ========== MISC ========== */
 .sudokuNewGridButton {
   margin-top: 20px;
 }
@@ -225,13 +309,14 @@
   margin-left: 8px;
 }
 
+/* ========== CONFIRM POPUP ========== */
 .sudoku-confirm-popup {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4); /* semi-transparent backdrop */
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -247,6 +332,11 @@
   color: white;
   width: 380px;
   max-width: 90%;
+}
+
+body[data-theme="light"] .sudoku-confirm-popup-content {
+  background-color: #fff;
+  color: #1a1a1a;
 }
 
 .sudoku-confirm-popup-content p {
@@ -269,8 +359,43 @@
 }
 
 .sudoku-current-level {
-  text-align: center;
+  position: relative;
+  padding-left: 16px;
   font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-weight: 700;
+  color: #d4a373;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+  text-align: left;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sudoku-current-level::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: #d4a373;
+  border-radius: 2px;
+}
+
+body[data-theme="light"] .sudoku-current-level {
+  color: #0d6efd;
+}
+
+body[data-theme="light"] .sudoku-current-level::before {
+  background-color: #0d6efd;
+}
+
+.sudoku-error-icon {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 0.8rem;
+  color: #e57373;
+  pointer-events: none;
 }

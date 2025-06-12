@@ -1,5 +1,6 @@
 import { FaEraser } from "react-icons/fa";
 import { FaRegPenToSquare } from "react-icons/fa6";
+import { useTranslation } from "react-i18next";
 type Props = {
   onInput: (value: number) => void;
   onDelete: () => void;
@@ -15,15 +16,21 @@ export default function SudokuKeyboard({
   noteMode,
   numberCounts,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="sudoku-keyboard">
       <div className="keyboard-controls">
-        <button className="keyboard-button control" onClick={onDelete}>
+        <button
+          className="keyboard-button control"
+          onClick={onDelete}
+          title={t("sudoku.erase")}
+        >
           <FaEraser />
         </button>
         <button
           className={`keyboard-button control ${noteMode ? "active" : ""}`}
           onClick={onToggleNoteMode}
+          title={t("sudoku.noteMode")}
         >
           <FaRegPenToSquare />
         </button>
