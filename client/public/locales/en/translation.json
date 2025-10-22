@@ -1,0 +1,90 @@
+{
+  "common": {
+    "availableSoon": "Available soon",
+    "score": "Score",
+    "selectgamemode": "Select game mode",
+    "playwithfriend": "Play with a friend",
+    "playwithai": "Play with AI",
+    "playAgain": "Play again",
+    "selectDifficulty": "Select difficulty",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "ofTheDay": "{{game}} of the day",
+    "changeLevel": "Change level",
+    "level": "Level",
+    "daily": "Daily"
+  },
+  "header": {
+    "menu": "Games"
+  },
+  "tictactoe": {
+    "name": "Tic-Tac-Toe",
+    "gridsize": "Gridsize",
+    "changeGameMode": "Change mode",
+    "gamemode": "Game mode",
+    "withfriend": "With a friend",
+    "withai": "Against AI",
+    "toPlayRich": "Player <player>{{player}}</player>'s turn",
+    "wonByRich": "<player>{{player}}</player> wins the round",
+    "draw": "Draw",
+    "resetScore": "Reset score"
+  },
+  "chess": {
+    "name": "Chess"
+  },
+  "connect4": {
+    "name": "Connect 4",
+    "red": "Red",
+    "yellow": "Yellow",
+    "turn": "'s turn",
+    "wins": "wins"
+  },
+  "snake": {
+    "name": "Snake",
+    "time": "Time"
+  },
+  "hangman": {
+    "name": "Hangman",
+    "infiniteMode": "Infinite mode"
+  },
+  "minesweeper": {
+    "name": "Minesweeper",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "expert": "Expert",
+    "custom": "Custom",
+    "rows": "Rows",
+    "cols": "Cols",
+    "mines": "Mines",
+    "start": "Start",
+    "grid": "Grid",
+    "changeSize": "Change size",
+    "victory": "Victory",
+    "defeat": "Defeat"
+  },
+  "2048": {
+    "name": "2048"
+  },
+  "solitaire": {
+    "name": "Solitaire"
+  },
+  "ultimatetictactoe": {
+    "name": "Ultimate Tic-Tac-Toe"
+  },
+  "sudoku": {
+    "name": "Sudoku",
+    "newGrid": "New grid",
+    "completed": "Sudoku completed",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "popupWarning1": "A game is already in progress.",
+    "popupWarning2": "Starting a new grid will overwrite it.",
+    "popupWarning3": "Continue?",
+    "erase": "Erase",
+    "noteMode": "Note mode"
+  },
+  "pacxman": {
+    "name": "PacXman"
+  }
+}

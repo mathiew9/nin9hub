@@ -1,0 +1,150 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+/* ===== COMMON MENU ===== */
+.commonMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* ===== COMMON MENU BUTTONS ===== */
+.commonMenuButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  max-width: fit-content;
+  min-width: 300px;
+  margin: 0 auto;
+}
+
+.commonMenuButtons .commonButton {
+  width: 100%;
+  text-align: center;
+}
+
+/* ===== COMMON MENU TITLE ===== */
+.commonMenuTitle {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-align: center;
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.commonMenuTitle::after {
+  content: "";
+  display: block;
+  width: 60%;
+  height: 3px;
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+body[data-theme="dark"] .commonMenuTitle {
+  color: #a5f3fc;
+}
+
+body[data-theme="dark"] .commonMenuTitle::after {
+  background-color: #a5f3fc;
+}
+
+body[data-theme="light"] .commonMenuTitle {
+  color: #0d6efd;
+}
+
+body[data-theme="light"] .commonMenuTitle::after {
+  background-color: #0d6efd;
+}
+
+/* ===== COMMON BUTTON ===== */
+body[data-theme="dark"] .commonButton,
+body[data-theme="light"] .commonButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #78716c;
+  color: white;
+  border: 2px solid #44403c;
+  border-radius: 0;
+  cursor: pointer;
+  letter-spacing: 2px;
+  box-shadow: 1px 1px 0px 0px #44403c, 2px 2px 0px 0px #44403c,
+    3px 3px 0px 0px #44403c, 4px 4px 0px 0px #44403c, 5px 5px 0px 0px #44403c;
+  transition: transform 0.1s ease, box-shadow 0.1s ease,
+    letter-spacing 0.2s ease;
+}
+
+body[data-theme="dark"] .commonButton:hover,
+body[data-theme="light"] .commonButton:hover {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+  letter-spacing: 1px;
+}
+
+.commonMenuButton {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.commonScoreButton {
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.commonMediumButton {
+  padding: 8px 18px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ===== COMMON GAME LAYOUT ===== */
+.commonGameLayout {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  gap: 1rem;
+}
+
+.commonGameLayout .side {
+  width: 25%;
+  min-width: 200px;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.commonGameLayout .center {
+  flex: 1;
+  min-width: 320px;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Cacher les colonnes latérales si inutiles */
+.commonGameLayout .side.hidden {
+  visibility: hidden;
+}

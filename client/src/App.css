@@ -1,0 +1,159 @@
+.app_container {
+  width: 100%;
+  font-family: "Segoe UI", sans-serif;
+  padding-top: 60px;
+  color: white;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+.app_container > main {
+  flex-grow: 1;
+}
+
+/* LIGHT THEME : fond clair sur tout le body */
+body[data-theme="light"] {
+  background-color: white;
+}
+/* Centrage complet uniquement pour la home */
+.home_layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game_selection {
+  text-align: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-items: center;
+  padding: 20px;
+}
+.game_selection a {
+  cursor: default;
+}
+
+.game_selection h1 {
+  grid-column: 1 / -1;
+  font-size: 48px;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px 10px #000;
+}
+
+/* DARK THEME pour le h1 */
+body[data-theme="dark"] .game_selection h1 {
+  color: #f0db4f;
+}
+
+/* LIGHT THEME pour le h1 */
+body[data-theme="light"] .game_selection h1 {
+  color: #ffcc00;
+  text-shadow: 2px 2px 5px #888;
+}
+
+@media (max-width: 900px) {
+  .game_selection {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .game_selection {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === BOUTON DE SÉLECTION DE JEU === */
+.select_game_button {
+  width: 250px;
+  height: 120px;
+  margin: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  border: none;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-shadow: 2px 2px 5px #000;
+  font-family: "Rajdhani";
+}
+
+/* === DARK THEME === */
+body[data-theme="dark"] .select_game_button {
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="dark"] .select_game_button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* === LIGHT THEME === */
+body[data-theme="light"] .select_game_button {
+  /* color: #222; */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+body[data-theme="light"] .select_game_button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* === BOUTONS NON DISPONIBLES === */
+.select_game_button.game_unavailable {
+  cursor: not-allowed;
+  filter: grayscale(90%) brightness(0.8);
+  opacity: 0.6;
+  transform: none !important;
+  box-shadow: none !important;
+  text-shadow: none;
+}
+
+/* Désactiver l'effet hover même en mode clair ou sombre */
+.select_game_button.game_unavailable:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* 🎨 Images de fond par jeu */
+.tictactoe_button {
+  background-image: url("/images/tictactoe.png");
+}
+
+.chess_button {
+  background-image: url("/images/chess.png");
+}
+
+.snake_button {
+  background-image: url("/images/snake2.png");
+}
+
+.ultimatetictactoe_button {
+  background-image: url("/images/ultimatetictactoe.png");
+}
+
+.connect4_button {
+  background-image: url("/images/connect4.png");
+}
+
+.hangman_button {
+  background-image: url("/images/hangman.png");
+}
+
+.minesweeper_button {
+  background-image: url("/images/minesweeper.png");
+}
+
+.\32 048_button {
+  background-image: url("/images/2048.png");
+}
+
+.solitaire_button {
+  background-image: url("/images/solitaire.png");
+}
