@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import "./TicTacToe.css";
-import TicTacToeBoard from "./TicTacToeBoard";
+import TicTacToeBoard from "./shared/TicTacToeBoard";
 
 // ➜ Nouveau conteneur online (provider + setup + waiting + board)
 import TicTacToeOnlineRoot from "./online/TicTacToeOnlineRoot";
@@ -22,12 +22,6 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
   if (mode === "online") {
     return (
       <div className="tictactoe">
-        {/* bouton retour (optionnel) */}
-        <div className="commonGameLayoutHeader">
-          <button className="commonButton" onClick={() => setMode(null)}>
-            ← {t("tictactoe.changeGameMode")}
-          </button>
-        </div>
         <TicTacToeOnlineRoot />
       </div>
     );

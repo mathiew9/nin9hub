@@ -8,6 +8,12 @@
   margin-bottom: 1em;
 }
 
+.sudoku-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 /* ========== SUDOKU TABLE ========== */
 .sudoku-table {
   display: table;

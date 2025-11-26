@@ -18,39 +18,31 @@ export default function TicTacToeOnlineSetup() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6">
-      <h2 className="text-xl font-semibold">TicTacToe — En ligne</h2>
+    <div className="commonMenu">
+      <h2 className="commonMenuTitle">TicTacToe — En ligne</h2>
 
-      <div className="flex gap-3">
-        <button
-          className="px-4 py-2 rounded bg-blue-600 text-white"
-          onClick={onCreate}
-        >
-          Héberger une partie
-        </button>
-
-        <div className="flex items-center gap-2">
+      <div className="commonMenuButtons">
+        <div className="gridSizeSelector">
           <input
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            placeholder="Code room (ex: ABC12)"
-            className="border rounded px-3 py-2"
+            placeholder="ROOM CODE"
+            className="multiInput"
             onFocus={clearError}
           />
-          <button
-            className="px-4 py-2 rounded bg-green-600 text-white"
-            onClick={onJoin}
-          >
+          <button className="commonButton commonMenuButton" onClick={onJoin}>
             Rejoindre
           </button>
         </div>
+        <button className="commonButton commonMenuButton" onClick={onCreate}>
+          Héberger une partie
+        </button>
       </div>
 
       {lastError && (
         <div className="text-red-600 text-sm">{lastError.message}</div>
       )}
 
-      {/* Petit hint si tu as déjà un roomId (après create) */}
       {roomId && status === "waiting" && (
         <div className="text-gray-600 text-sm">Room créée : {roomId}</div>
       )}

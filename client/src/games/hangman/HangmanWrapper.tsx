@@ -8,9 +8,13 @@ export type HangmanMode = "infinite" | "daily";
 export default function HangmanWrapper() {
   const [mode, setMode] = useState<HangmanMode | null>(null);
 
-  return mode ? (
-    <HangmanGame mode={mode} onBack={() => setMode(null)} />
-  ) : (
-    <HangmanMenu onSelectMode={setMode} />
+  return (
+    <div className="hangman-Wrapper">
+      {mode ? (
+        <HangmanGame mode={mode} onBack={() => setMode(null)} />
+      ) : (
+        <HangmanMenu onSelectMode={setMode} />
+      )}
+    </div>
   );
 }

@@ -3,6 +3,12 @@
   padding: 20px;
 }
 
+.hangman-Wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .hangmanWord {
   display: flex;
   justify-content: center;

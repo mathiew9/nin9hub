@@ -1,19 +1,10 @@
-import { TicTacToeOnlineProvider, useOnline } from "./TicTacToeOnlineProvider";
-import TicTacToeOnlineSetup from "./TicTacToeOnlineSetup";
-import TicTacToeWaitingRoom from "./TicTacToeWaitingRoom";
-import TicTacToeBoardOnlineAdapter from "./TicTacToeBoardOnlineAdapter";
-
-function Inner() {
-  const { status } = useOnline();
-  if (status === "setup") return <TicTacToeOnlineSetup />;
-  if (status === "waiting") return <TicTacToeWaitingRoom />;
-  return <TicTacToeBoardOnlineAdapter />; // <-- ici
-}
+import { TicTacToeOnlineProvider } from "./TicTacToeOnlineProvider";
+import TicTacToeOnlineContent from "./TicTacToeOnlineContent";
 
 export default function TicTacToeOnlineRoot() {
   return (
     <TicTacToeOnlineProvider>
-      <Inner />
+      <TicTacToeOnlineContent />
     </TicTacToeOnlineProvider>
   );
 }

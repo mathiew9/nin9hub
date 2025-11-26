@@ -10,17 +10,15 @@ export default function TicTacToeWrapper() {
 
   return (
     <div className="tictactoeWrapper">
-      <div>
-        {mode === null ? (
-          <TicTacToeMenu
-            onSelectMode={setMode}
-            onSelectGridSize={setGridSize}
-            gridSize={gridSize}
-          />
-        ) : (
-          <TicTacToe mode={mode} gridSize={gridSize} setMode={setMode} />
-        )}
-      </div>
+      {mode === null ? (
+        <TicTacToeMenu
+          onSelectMode={setMode}
+          onSelectGridSize={setGridSize}
+          gridSize={gridSize}
+        />
+      ) : (
+        <TicTacToe mode={mode} gridSize={gridSize} setMode={setMode} />
+      )}
     </div>
   );
 }

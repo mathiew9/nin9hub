@@ -9,13 +9,11 @@ export default function Connect4Wrapper() {
 
   return (
     <div className="connect4Wrapper">
-      <div>
-        {mode === null ? (
-          <Connect4Menu onSelectMode={setMode} />
-        ) : (
-          <Connect4 mode={mode} setMode={setMode} />
-        )}
-      </div>
+      {mode === null ? (
+        <Connect4Menu onSelectMode={setMode} />
+      ) : (
+        <Connect4 mode={mode} setMode={setMode} />
+      )}
     </div>
   );
 }
