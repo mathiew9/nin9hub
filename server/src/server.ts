@@ -1,0 +1,24 @@
+import express from "express";
+import http from "http";
+import cors from "cors";
+import { Server } from "socket.io";
+import { registerOnlineHandlers } from "./sockets/registerOnline";
+
+const app = express();
+app.use(cors());
+
+app.get("/", (_req, res) => {
+  res.json({ ok: true, service: "server", version: "v1" });
+});
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*", methods: ["GET", "POST"] },
+});
+
+registerOnlineHandlers(io);
+
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+server.listen(PORT, () => {
+  console.log(`[ttt-online] Server running on http://localhost:${PORT}`);
+});
