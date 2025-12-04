@@ -81,18 +81,16 @@ export function useTicTacToeOnline() {
 
     function onState(payload: {
       roomId: string;
-      board: Cell[];
-      turn: Player;
       started: boolean;
-      winner: Winner;
       playersCount: 1 | 2;
       stateVersion: number;
+      state: { board: Cell[]; turn: Player; winner: Winner };
     }) {
-      // anti-retard : ignorer les états obsolètes
       if (payload.stateVersion < latestVersion.current) return;
       latestVersion.current = payload.stateVersion;
 
-      const status: Status = payload.winner
+      const { board, turn, winner } = payload.state;
+      const status: Status = winner
         ? "ended"
         : payload.started
         ? "playing"
@@ -101,10 +99,10 @@ export function useTicTacToeOnline() {
       setS((prev) => ({
         ...prev,
         roomId: payload.roomId ?? prev.roomId,
-        board: payload.board,
-        turn: payload.turn,
+        board,
+        turn,
         started: payload.started,
-        winner: payload.winner,
+        winner,
         playersCount: payload.playersCount,
         opponentLeft:
           payload.playersCount === 2 || payload.started
@@ -112,10 +110,7 @@ export function useTicTacToeOnline() {
             : prev.opponentLeft,
         stateVersion: payload.stateVersion,
         status,
-        rematchVotes:
-          payload.started && !payload.winner ? 0 : prev.rematchVotes,
-        myRematchVoted:
-          payload.started && !payload.winner ? false : prev.myRematchVoted,
+        rematchVotes: (prev.rematchVotes ?? 0) as 0 | 1 | 2,
       }));
     }
 

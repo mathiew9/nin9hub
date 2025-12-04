@@ -1,4 +1,5 @@
 import type { RoomState } from "../protocol/types";
+import type { Cell, Winner } from "../protocol/types";
 
 const rooms = new Map<string, RoomState>();
 const socketToRoom = new Map<string, string>();
@@ -32,7 +33,6 @@ export function getRoomIdBySocket(socketId: string) {
   return socketToRoom.get(socketId);
 }
 
-// ---- helpers joueurs ----
 export function playersCount(room: RoomState): number {
   let count = 0;
   if (room.players.X) count++;
@@ -63,17 +63,11 @@ export function clearPlayer(
   socketId: string
 ) {
   if (room.players[role] === socketId) {
-    room.players[role] = null; // ← null (pas undefined)
+    room.players[role] = "";
   }
 }
 
-/**
- * Retire un joueur de la room par son socket:
- * - libère players.X/O
- * - unmap socket→room
- * - si vide → supprime la room
- * - sinon repasse en waiting (started=false), tour=X, winner=null, ++version
- */
+/** Retire un joueur, met à jour l’état, et supprime la room si vide. */
 export function removePlayerBySocket(
   roomId: string,
   socketId: string
@@ -84,9 +78,8 @@ export function removePlayerBySocket(
   const role = getRoleInRoom(room, socketId);
   if (role) {
     clearPlayer(room, role, socketId);
-    // optionnel: si tu tiens à garder host/guest alignés
-    if (role === "X" && room.hostId === socketId) room.hostId = ""; // ou null si tu changes le type
-    if (role === "O" && room.guestId === socketId) room.guestId = null;
+    if (role === "X" && room.hostId === socketId) room.hostId = "";
+    if (role === "O" && room.guestId === socketId) room.guestId = "";
   }
   unmapSocket(socketId);
 
@@ -97,14 +90,17 @@ export function removePlayerBySocket(
     return { deleted: true, remaining: 0 };
   }
 
-  // room encore vivante → back to waiting
+  // repasse en attente
   room.started = false;
-  room.turn = "X";
-  room.winner = null;
   room.stateVersion = (room.stateVersion ?? 0) + 1;
 
-  // (optionnel) reset du board si tu préfères repartir clean après départ:
-  // room.board = Array(9).fill(null);
+  // ✅ reset uniquement dans room.state (state-only)
+  const size = room.state.board.length;
+  room.state = {
+    board: Array<Cell>(size).fill(null),
+    turn: "X",
+    winner: null as Winner,
+  };
 
   return { deleted: false, remaining };
 }

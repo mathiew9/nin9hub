@@ -1,32 +1,48 @@
-// Avant
-// export type RoomState = {
-//   ...
-//   players: Record<"X"|"O", string>; // empty string if role not occupied
-//   ...
-// }
-
-// Après (Option A propre)
 export type Player = "X" | "O";
 export type Cell = Player | null;
 export type Winner = Player | "draw" | null;
 
 export type RoomPlayers = {
-  X: string | null; // socket.id quand rôle occupé, sinon null
+  X: string | null;
   O: string | null;
+};
+
+export type GameStateTTT = {
+  board: Cell[];
+  turn: Player;
+  winner: Winner;
 };
 
 export type RoomState = {
   id: string;
   hostId: string;
-  guestId?: string | null; // ← optionnel + nullable (cohérent avec players.O)
-  players: RoomPlayers; // ← plus de Record<string> strict
-  board: Cell[];
-  turn: Player;
+  guestId: string;
+  players: Record<"X" | "O", string>;
   started: boolean;
-  winner: Winner;
-  rematchVotes: Set<string>; // ok si c’est seulement côté serveur
+  rematchVotes: Set<string>;
   stateVersion: number;
   createdAt: number;
+
+  state: GameStateTTT;
+};
+
+export type RoomSettings = {
+  gridSize: number;
+  winLength: number;
+  swapRolesOnRematch: boolean;
+
+  turnTimeMs: number; // 0 = sans limite
+  idleKickMs: number; // 0 = off
+  moveRateLimitMs: number; // anti-spam
+
+  roomCodeLength: number;
+
+  reconnectGraceMs: number; //TODO
+  preserveGameOnLeave: boolean;
+  promoteGuestOnHostLeave: boolean;
+
+  autoRematchOnBoth: boolean;
+  resetRolesOnRematch: boolean;
 };
 
 export type Ack<T = any> = (
