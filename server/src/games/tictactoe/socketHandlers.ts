@@ -5,6 +5,7 @@ import { ok, err } from "../../utils/ack";
 import { getRoom, saveRoom, getRoomIdBySocket } from "../../core/storeCore";
 import { emptyBoard, checkWinner, other } from "./domain";
 import { broadcastState } from "../../core/socketsCore";
+import type { RoomSettings } from "../../protocol/types";
 
 export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
   const ns = nsp as Namespace;
@@ -20,7 +21,9 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       if (!room.players.O)
         return err(ack, "NEED_2_PLAYERS", "Il faut deux joueurs.");
 
-      const grid = 3; // ou settings?.gridSize ?? 3
+      const settings = (room.settings ?? {}) as RoomSettings;
+      const grid = settings.gridSize ?? 3;
+
       room.state.board = emptyBoard(grid);
       room.state.turn = "X";
       room.state.winner = null;
@@ -28,7 +31,6 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       room.rematchVotes.clear();
       room.stateVersion++;
       saveRoom(room);
-
       broadcastState(ns, room);
       ok(ack, {});
     });
@@ -63,7 +65,12 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       }
 
       room.state.board[idx] = role;
-      const res = checkWinner(room.state.board);
+      const settings = (room.settings ?? {}) as RoomSettings;
+      const res = checkWinner(
+        room.state.board,
+        settings.gridSize ?? 3,
+        settings.winLength ?? 3
+      );
       if (res.winner) {
         room.state.winner = res.winner;
         room.started = true;
@@ -86,22 +93,45 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       if (!roomId) return err(ack, "NOT_IN_ROOM", "Tu n'es pas dans une room.");
       const room = getRoom(roomId)!;
 
+      // 1) Comptabiliser le vote (idempotent)
       if (!room.rematchVotes.has(socket.id)) room.rematchVotes.add(socket.id);
       const votes = room.rematchVotes.size;
 
+      // 2) Informer tout le monde de l'état des votes + ACK
       ns.to(room.id).emit(Events.RematchStatus, { votes });
       ok(ack, { votes });
 
+      // 3) Si 2/2 votes et les deux slots sont occupés, on relance
       if (votes >= 2 && room.players.X && room.players.O) {
-        // (optionnel) swap si settings.swapRolesOnRematch
-        room.state.board = emptyBoard(3);
-        room.state.turn = "X";
+        // Lire les settings attachés à la room
+        const settings = (room.settings ?? {}) as RoomSettings;
+
+        // a) Échanger les rôles si activé
+        if (settings.swapRolesOnRematch) {
+          const prevX = room.players.X;
+          room.players.X = room.players.O;
+          room.players.O = prevX;
+        }
+
+        // (Optionnel) Si tu supportes resetRolesOnRematch à l'avenir :
+        // if (settings.resetRolesOnRematch) {
+        //   // ex: remettre X = hostId, O = guestId (à définir selon ta logique)
+        //   room.players.X = room.hostId || room.players.X;
+        //   room.players.O = room.guestId || room.players.O;
+        // }
+
+        // b) Réinitialiser la manche selon la taille de grille (par défaut 3)
+        const gridSize = settings.gridSize ?? 3;
+
+        room.state.board = emptyBoard(gridSize);
+        room.state.turn = "X"; // X commence toujours dans ta vision
         room.state.winner = null;
+
         room.started = true;
         room.rematchVotes.clear();
         room.stateVersion++;
-        saveRoom(room);
 
+        saveRoom(room);
         broadcastState(ns, room);
       }
     });

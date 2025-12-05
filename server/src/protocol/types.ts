@@ -24,6 +24,8 @@ export type RoomState = {
   createdAt: number;
 
   state: GameStateTTT;
+
+  settings?: RoomSettings;
 };
 
 export type RoomSettings = {

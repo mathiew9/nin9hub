@@ -5,8 +5,10 @@ import TicTacToeBoardOnlineAdapter from "./TicTacToeBoardOnlineAdapter";
 import "./TicTacToeOnline.css";
 
 export default function TicTacToeOnlineContent() {
-  const { status } = useOnline();
-  if (status === "setup") return <TicTacToeOnlineSetup />;
-  if (status === "waiting") return <TicTacToeWaitingRoom />;
+  const { roomId, role, started } = useOnline();
+
+  if (!roomId || !role) return <TicTacToeOnlineSetup />;
+  if (!started) return <TicTacToeWaitingRoom />;
+
   return <TicTacToeBoardOnlineAdapter />;
 }
