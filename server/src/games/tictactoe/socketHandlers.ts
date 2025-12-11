@@ -6,6 +6,7 @@ import { getRoom, saveRoom, getRoomIdBySocket } from "../../core/storeCore";
 import { emptyBoard, checkWinner, other } from "./domain";
 import { broadcastState } from "../../core/socketsCore";
 import type { RoomSettings } from "../../protocol/types";
+import { sanitizeTTTSettings } from "./settings";
 
 export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
   const ns = nsp as Namespace;
@@ -66,11 +67,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
 
       room.state.board[idx] = role;
       const settings = (room.settings ?? {}) as RoomSettings;
-      const res = checkWinner(
-        room.state.board,
-        settings.gridSize ?? 3,
-        settings.winLength ?? 3
-      );
+      const res = checkWinner(room.state.board, settings.gridSize ?? 3);
       if (res.winner) {
         room.state.winner = res.winner;
         room.started = true;
@@ -86,6 +83,40 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       broadcastState(ns, room);
       ok(ack, {});
     });
+
+    // UPDATE SETTINGS
+    socket.on(
+      Events.UpdateSettings,
+      (
+        partial: Partial<RoomSettings>,
+        ack: Ack<{ settings: RoomSettings }>
+      ) => {
+        const roomId = getRoomIdBySocket(socket.id);
+        if (!roomId)
+          return err(ack, "NOT_IN_ROOM", "Tu n'es pas dans une room.");
+
+        const room = getRoom(roomId)!;
+        if (socket.id !== room.hostId) {
+          return err(
+            ack,
+            "ONLY_HOST",
+            "Seul l'hôte peut modifier les paramètres."
+          );
+        }
+
+        // merge + sanitize (on ne garde que les champs TTT connus)
+        const merged = sanitizeTTTSettings({
+          ...(room.settings ?? {}),
+          ...(partial ?? {}),
+        });
+        room.settings = merged;
+        room.stateVersion++;
+        saveRoom(room);
+
+        broadcastState(nsp as any, room); // inclut settings
+        ok(ack, { settings: merged });
+      }
+    );
 
     // REMATCH
     socket.on(Events.RematchRequest, (ack: Ack<{ votes: number }>) => {

@@ -28,6 +28,7 @@ type State = {
   opponentLeft: boolean;
   myId: string | null;
   hostId: string | null;
+  settings: RoomSettings | null;
 };
 
 const initialState: State = {
@@ -46,6 +47,22 @@ const initialState: State = {
   opponentLeft: false,
   myId: null,
   hostId: null,
+  settings: null,
+};
+
+type RoomSettings = {
+  gridSize: number;
+  roundsToWin: number;
+  swapRolesOnRematch: boolean;
+  turnTimeMs: number;
+  idleKickMs: number;
+  moveRateLimitMs: number;
+  roomCodeLength: number;
+  reconnectGraceMs: number;
+  preserveGameOnLeave: boolean;
+  promoteGuestOnHostLeave: boolean;
+  autoRematchOnBoth: boolean;
+  resetRolesOnRematch: boolean;
 };
 
 export function useTicTacToeOnline() {
@@ -126,6 +143,7 @@ export function useTicTacToeOnline() {
       state: { board: Cell[]; turn: Player; winner: Winner };
       hostId?: string;
       guestId?: string;
+      settings?: RoomSettings;
     }) {
       if (roomIdRef.current && payload.roomId !== roomIdRef.current) return;
 
@@ -168,6 +186,7 @@ export function useTicTacToeOnline() {
           stateVersion: payload.stateVersion,
           status,
           hostId: nextHostId,
+          settings: (payload as any).settings ?? prev.settings,
         };
       });
 
@@ -368,6 +387,31 @@ export function useTicTacToeOnline() {
     });
   }, [socket, refreshMyId]);
 
+  const updateSettings = useCallback(
+    async (partial: Partial<RoomSettings>) => {
+      return new Promise<AckSuccess<{ settings: RoomSettings }> | AckError>(
+        (resolve) => {
+          socket.emit(
+            "online:settings:update",
+            partial,
+            (res: Ack<{ settings: RoomSettings }>) => {
+              if (res.ok) {
+                setS((prev) => ({ ...prev, settings: res.data.settings }));
+              } else {
+                setS((prev) => ({
+                  ...prev,
+                  lastError: { code: res.code, message: res.message },
+                }));
+              }
+              resolve(res);
+            }
+          );
+        }
+      );
+    },
+    [socket]
+  );
+
   /* -------- Lifecycles -------- */
   useEffect(() => {
     if (!s.opponentLeft) return;
@@ -410,6 +454,8 @@ export function useTicTacToeOnline() {
     requestRematch,
     leave,
     leaveNow,
+    settings: s.settings,
+    updateSettings,
     clearError: () => setS((p) => ({ ...p, lastError: null })),
   };
 }

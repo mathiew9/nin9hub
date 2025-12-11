@@ -30,7 +30,7 @@ export type RoomState = {
 
 export type RoomSettings = {
   gridSize: number;
-  winLength: number;
+  roundsToWin: number;
   swapRolesOnRematch: boolean;
 
   turnTimeMs: number; // 0 = sans limite

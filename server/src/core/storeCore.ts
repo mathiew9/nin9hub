@@ -4,10 +4,10 @@ import type { Cell, Winner } from "../protocol/types";
 const rooms = new Map<string, RoomState>();
 const socketToRoom = new Map<string, string>();
 
-export function genRoomId(): string {
+export function genRoomId(len = 5): string {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let id = "";
-  for (let i = 0; i < 5; i++)
+  for (let i = 0; i < len; i++)
     id += alphabet[Math.floor(Math.random() * alphabet.length)];
   if (rooms.has(id)) return genRoomId();
   return id;
@@ -94,7 +94,7 @@ export function removePlayerBySocket(
   room.started = false;
   room.stateVersion = (room.stateVersion ?? 0) + 1;
 
-  // ✅ reset uniquement dans room.state (state-only)
+  // reset uniquement dans room.state (state-only)
   const size = room.state.board.length;
   room.state = {
     board: Array<Cell>(size).fill(null),

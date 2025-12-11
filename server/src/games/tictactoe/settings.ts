@@ -4,7 +4,7 @@ import type { RoomSettings } from "../../protocol/types";
 /** Defaults TicTacToe */
 export const TTT_DEFAULTS: RoomSettings = {
   gridSize: 3,
-  winLength: 3,
+  roundsToWin: 3,
   swapRolesOnRematch: false,
 
   turnTimeMs: 0,
@@ -29,7 +29,7 @@ export function sanitizeTTTSettings(
 
   // bornes simples
   s.gridSize = Math.min(5, Math.max(3, Math.floor(s.gridSize)));
-  s.winLength = Math.min(s.gridSize, Math.max(3, Math.floor(s.winLength)));
+  s.roundsToWin = Math.min(5, Math.max(1, Math.floor(s.roundsToWin)));
 
   s.turnTimeMs = Math.max(0, Math.floor(s.turnTimeMs));
   s.idleKickMs = Math.max(0, Math.floor(s.idleKickMs));

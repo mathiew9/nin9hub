@@ -12,7 +12,7 @@ import {
   playersCount,
 } from "../core/storeCore";
 import { ok, err } from "../utils/ack";
-import { TTT_DEFAULTS } from "../games/tictactoe/settings";
+import { sanitizeTTTSettings, TTT_DEFAULTS } from "../games/tictactoe/settings";
 
 /* ----------------------- Helpers ----------------------- */
 
@@ -30,6 +30,7 @@ export function broadcastState(io: Server | Namespace, room: RoomState) {
     hostId: room.hostId,
     guestId: room.guestId,
     players: room.players,
+    settings: room.settings,
   });
 }
 
@@ -90,8 +91,11 @@ export function registerCoreRoomHandlers(io: Server, nsp: Server | Namespace) {
     socket.on(
       Events.CreateRoom,
       (ack: Ack<{ roomId: string; role: Player }>) => {
-        const roomId = genRoomId();
-        const board = Array<Cell>(9).fill(null);
+        const settings = sanitizeTTTSettings(TTT_DEFAULTS);
+        const roomId = genRoomId(settings.roomCodeLength);
+        const board = Array<Cell>(settings.gridSize * settings.gridSize).fill(
+          null
+        );
         const room: RoomState = {
           id: roomId,
           hostId: socket.id,
@@ -102,7 +106,7 @@ export function registerCoreRoomHandlers(io: Server, nsp: Server | Namespace) {
           stateVersion: 0,
           createdAt: Date.now(),
           state: { board, turn: "X", winner: null },
-          settings: TTT_DEFAULTS,
+          settings,
         };
 
         saveRoom(room);

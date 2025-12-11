@@ -35,22 +35,12 @@ export function applyMove(
   return next;
 }
 
-/**
- * Calcule la victoire/égalité pour un board n×n avec condition k alignés.
- * Renvoie { winner, draw, line } où:
- *  - winner: "X" | "O" | null
- *  - draw: boolean (vrai si plateau plein et pas de winner)
- *  - line: indices de la ligne gagnante (sinon [])
- */
 export function checkWinner(
   board: Cell[],
-  gridSize = 3,
-  winLength = 3
+  gridSize = 3
 ): { winner: Player | null; draw: boolean; line: number[] } {
-  // bornes
-  if (winLength > gridSize) winLength = gridSize;
+  const winLength = gridSize; // 3, 4 ou 5 selon la grille
 
-  // Génère toutes les lignes candidates (horizontales, verticales, diagonales)
   const lines: number[][] = [];
 
   // horizontales
@@ -86,7 +76,6 @@ export function checkWinner(
     }
   }
 
-  // recherche d’une ligne gagnante
   for (const L of lines) {
     const a = board[L[0]];
     if (!a) continue;
@@ -100,7 +89,6 @@ export function checkWinner(
     if (ok) return { winner: a, draw: false, line: L };
   }
 
-  // égalité si plus aucune case libre
   const draw = board.every((c) => c !== null);
   return { winner: null, draw, line: [] };
 }

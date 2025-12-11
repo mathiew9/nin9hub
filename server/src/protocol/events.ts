@@ -11,10 +11,11 @@ export const Events = {
   State: "online:state",
   OpponentLeft: "online:opponent:left",
   RematchStatus: "online:rematch:status",
+  UpdateSettings: "online:settings:update",
   Error: "online:error",
 } as const;
 
-export type EventName = typeof Events[keyof typeof Events];
+export type EventName = (typeof Events)[keyof typeof Events];
 
 // Error codes (stable)
 export const ErrorCodes = {
@@ -30,4 +31,4 @@ export const ErrorCodes = {
   OUT_OF_RANGE: "OUT_OF_RANGE",
 } as const;
 
-export type ErrorCode = typeof ErrorCodes[keyof typeof ErrorCodes];
+export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
