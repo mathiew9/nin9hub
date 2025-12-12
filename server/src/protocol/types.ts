@@ -11,6 +11,7 @@ export type GameStateTTT = {
   board: Cell[];
   turn: Player;
   winner: Winner;
+  line: number[];
 };
 
 export type RoomState = {

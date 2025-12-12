@@ -100,6 +100,7 @@ export function removePlayerBySocket(
     board: Array<Cell>(size).fill(null),
     turn: "X",
     winner: null as Winner,
+    line: [],
   };
 
   return { deleted: false, remaining };

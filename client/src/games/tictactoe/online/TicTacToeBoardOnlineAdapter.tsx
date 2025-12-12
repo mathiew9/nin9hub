@@ -5,30 +5,13 @@ import { useOnline } from "./TicTacToeOnlineProvider";
 type Player = "X" | "O";
 type Cell = Player | null;
 
-function calcWinningLine(s: Cell[]): number[] {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (const L of lines) {
-    const [a, b, c] = L;
-    if (s[a] && s[a] === s[b] && s[a] === s[c]) return L;
-  }
-  return [];
-}
-
 export default function TicTacToeBoardOnlineAdapter() {
   const {
     board,
     role,
     turn,
     winner,
+    winningLine,
     canPlay,
     playersCount,
     opponentLeft,
@@ -37,9 +20,22 @@ export default function TicTacToeBoardOnlineAdapter() {
     requestRematch,
     leave,
     playTurn,
+    settings,
   } = useOnline();
 
-  const winningLine = useMemo(() => calcWinningLine(board as Cell[]), [board]);
+  // dynamic grid size: from settings, else √board.length, else 3
+  const gridSize = useMemo(() => {
+    const fromSettings = (settings as any)?.gridSize;
+    if (
+      Number.isInteger(fromSettings) &&
+      fromSettings >= 3 &&
+      fromSettings <= 5
+    ) {
+      return fromSettings as number;
+    }
+    const n = Math.sqrt((board?.length ?? 9) as number);
+    return Number.isInteger(n) ? (n as number) : 3;
+  }, [settings, board]);
 
   const onCellClick = (i: number) => {
     if (!canPlay || winner) return;
@@ -71,10 +67,11 @@ export default function TicTacToeBoardOnlineAdapter() {
           </span>
         )}
       </div>
+
       <div className="wr-boardBox">
         <TicTacToeBoard
           board={board as Cell[]}
-          gridSize={3}
+          gridSize={gridSize}
           currentPlayer={(turn ?? "X") as Player}
           winningLine={winningLine}
           gameDone={!!winner}

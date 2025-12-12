@@ -101,6 +101,30 @@
   justify-content: initial;
   text-align: initial;
 }
+
+.ttt-wr-playerRow--guest.commonBox {
+  grid-template-columns: 1fr auto 120px;
+}
+
+/* cellule status au milieu */
+.ttt-wr-cell--status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px; /* tweak si besoin */
+}
+
+/* petit badge message */
+.ttt-wr-miniAlert {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(253, 230, 138, 0.45);
+  background: rgba(63, 63, 31, 0.55);
+  color: #fde68a;
+  white-space: nowrap;
+}
+
 /* une ligne joueur (Joueur | Rôle) */
 .ttt-wr-playerRow {
   display: grid;
@@ -382,10 +406,6 @@ button.ttt-wr-swapRolesBtn:disabled {
   background: #3f1f1f;
   color: #fecaca;
   box-shadow: 1px 1px 0 #44403c;
-}
-.wr-alert.warn {
-  background: #3f3f1f;
-  color: #fde68a;
 }
 
 /* ==========================

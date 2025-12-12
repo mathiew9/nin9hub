@@ -70,7 +70,12 @@ export function leaveRoom(io: Server | Namespace, socket: Socket) {
   room.rematchVotes.clear();
   room.stateVersion++;
   const size = room.state.board.length;
-  room.state = { board: Array<Cell>(size).fill(null), turn: "X", winner: null };
+  room.state = {
+    board: Array<Cell>(size).fill(null),
+    turn: "X",
+    winner: null,
+    line: [],
+  };
   saveRoom(room);
 
   broadcastState(io, room);
@@ -106,7 +111,7 @@ export function registerCoreRoomHandlers(io: Server, nsp: Server | Namespace) {
           rematchVotes: new Set(),
           stateVersion: 0,
           createdAt: Date.now(),
-          state: { board, turn: "X", winner: null },
+          state: { board, turn: "X", winner: null, line: [] },
           settings,
         };
 

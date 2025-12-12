@@ -28,6 +28,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       room.state.board = emptyBoard(grid);
       room.state.turn = "X";
       room.state.winner = null;
+      room.state.line = [];
       room.started = true;
       room.rematchVotes.clear();
       room.stateVersion++;
@@ -71,12 +72,15 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       const res = checkWinner(room.state.board, settings.gridSize ?? 3);
       if (res.winner) {
         room.state.winner = res.winner;
+        room.state.line = res.line;
         room.started = true;
       } else if (res.draw) {
         room.state.winner = "draw";
+        room.state.line = [];
         room.started = true;
       } else {
         room.state.turn = other(role);
+        room.state.line = [];
       }
       room.stateVersion++;
       saveRoom(room);
@@ -191,6 +195,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
         room.state.board = Array(grid * grid).fill(null);
         room.state.turn = "X";
         room.state.winner = null;
+        room.state.line = [];
         room.started = true;
 
         // c) RAZ votes + version

@@ -127,7 +127,7 @@ export default function TicTacToeWaitingRoom() {
         </div>
 
         {/* Invité */}
-        <div className="ttt-wr-playerRow commonBox">
+        <div className="ttt-wr-playerRow ttt-wr-playerRow--guest commonBox">
           <div className="ttt-wr-cell ttt-wr-cell--player">
             <span
               className={`ttt-wr-dot ${guestConnected ? "online" : "offline"}`}
@@ -140,6 +140,16 @@ export default function TicTacToeWaitingRoom() {
                 : "En attente…"}
             </span>
           </div>
+
+          {/* Opponent left */}
+          <div className="ttt-wr-cell ttt-wr-cell--status">
+            {opponentLeft && (
+              <span className="ttt-wr-miniAlert">
+                L'adversaire a quitté la partie
+              </span>
+            )}
+          </div>
+
           <div className="ttt-wr-cell ttt-wr-cell--role">
             <span
               className={`ttt-wr-role ${
@@ -273,11 +283,6 @@ export default function TicTacToeWaitingRoom() {
 
       {/* Bloc Infos */}
       <div className="ttt-wr-badgesRow">
-        {opponentLeft && (
-          <span className="wr-alert warn">
-            L’adversaire a quitté la partie.
-          </span>
-        )}
         {lastError && (
           <span className="wr-alert error" onClick={clearError}>
             {lastError.message}

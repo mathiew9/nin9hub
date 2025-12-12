@@ -20,6 +20,7 @@ type State = {
   turn: Player | null;
   started: boolean;
   winner: Winner;
+  winningLine: number[];
   playersCount: 1 | 2;
   stateVersion: number;
   rematchVotes: 0 | 1 | 2;
@@ -39,6 +40,7 @@ const initialState: State = {
   turn: null,
   started: false,
   winner: null,
+  winningLine: [],
   playersCount: 1,
   stateVersion: 0,
   rematchVotes: 0,
@@ -140,7 +142,7 @@ export function useTicTacToeOnline() {
       started: boolean;
       playersCount: 1 | 2;
       stateVersion: number;
-      state: { board: Cell[]; turn: Player; winner: Winner };
+      state: { board: Cell[]; turn: Player; winner: Winner; line: number[] };
       hostId?: string;
       guestId?: string;
       players?: { X: string; O: string };
@@ -148,7 +150,7 @@ export function useTicTacToeOnline() {
     }) {
       if (roomIdRef.current && payload.roomId !== roomIdRef.current) return;
 
-      const { board, turn, winner } = payload.state;
+      const { board, turn, winner, line } = payload.state;
 
       setS((prev) => {
         if (
@@ -194,6 +196,7 @@ export function useTicTacToeOnline() {
           turn,
           started: payload.started,
           winner,
+          winningLine: line ?? [],
           playersCount: payload.playersCount,
           opponentLeft:
             payload.playersCount === 2 || payload.started
@@ -449,7 +452,7 @@ export function useTicTacToeOnline() {
     if (!s.opponentLeft) return;
     const t = setTimeout(
       () => setS((prev) => ({ ...prev, opponentLeft: false })),
-      5000
+      3000
     );
     return () => clearTimeout(t);
   }, [s.opponentLeft]);
