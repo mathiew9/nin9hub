@@ -143,6 +143,7 @@ export function useTicTacToeOnline() {
       state: { board: Cell[]; turn: Player; winner: Winner };
       hostId?: string;
       guestId?: string;
+      players?: { X: string; O: string };
       settings?: RoomSettings;
     }) {
       if (roomIdRef.current && payload.roomId !== roomIdRef.current) return;
@@ -158,6 +159,11 @@ export function useTicTacToeOnline() {
           return prev;
         }
 
+        const newRoundStarted =
+          payload.started &&
+          payload.state.winner === null &&
+          prev.winner !== null;
+
         const status: Status = winner
           ? "ended"
           : payload.started
@@ -170,6 +176,16 @@ export function useTicTacToeOnline() {
             : prev.hostId;
 
         if (!roomIdRef.current) roomIdRef.current = payload.roomId;
+
+        let nextRole = prev.role;
+        if (payload.players) {
+          const me = (socket.id || "").trim();
+          if (me) {
+            if (payload.players.X === me) nextRole = "X";
+            else if (payload.players.O === me) nextRole = "O";
+            else nextRole = null;
+          }
+        }
 
         return {
           ...prev,
@@ -186,6 +202,9 @@ export function useTicTacToeOnline() {
           stateVersion: payload.stateVersion,
           status,
           hostId: nextHostId,
+          role: nextRole,
+          rematchVotes: newRoundStarted ? 0 : prev.rematchVotes,
+          myRematchVoted: newRoundStarted ? false : prev.myRematchVoted,
           settings: (payload as any).settings ?? prev.settings,
         };
       });
@@ -221,8 +240,12 @@ export function useTicTacToeOnline() {
       }));
     }
 
-    function onRematchStatus(payload: { votes: 1 | 2 }) {
-      setS((prev) => ({ ...prev, rematchVotes: payload.votes as 0 | 1 | 2 }));
+    function onRematchStatus(payload: { votes: 0 | 1 | 2 }) {
+      setS((prev) => ({
+        ...prev,
+        rematchVotes: payload.votes,
+        myRematchVoted: payload.votes === 0 ? false : prev.myRematchVoted,
+      }));
     }
 
     function onError(payload: { code: string; message: string }) {
@@ -374,6 +397,15 @@ export function useTicTacToeOnline() {
     });
   }, [socket, s.myRematchVoted, s.rematchVotes]);
 
+  const swapRolesNow = useCallback(async () => {
+    return new Promise<AckSuccess<{}> | AckError>((resolve) => {
+      socket.emit("online:swap:roles", (res: Ack<{}>) => {
+        if (!res.ok) setError(res.code, res.message);
+        resolve(res);
+      });
+    });
+  }, [socket]);
+
   const leave = useCallback(async () => {
     return new Promise<AckSuccess<{}> | AckError>((resolve) => {
       socket.emit("online:leave", (res: Ack<{}>) => {
@@ -456,6 +488,7 @@ export function useTicTacToeOnline() {
     leaveNow,
     settings: s.settings,
     updateSettings,
+    swapRolesNow,
     clearError: () => setS((p) => ({ ...p, lastError: null })),
   };
 }

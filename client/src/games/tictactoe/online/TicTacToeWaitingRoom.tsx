@@ -20,6 +20,7 @@ export default function TicTacToeWaitingRoom() {
     isHost,
     settings,
     updateSettings,
+    swapRolesNow,
   } = useOnline();
 
   const canStart = isHost && playersCount === 2;
@@ -161,12 +162,9 @@ export default function TicTacToeWaitingRoom() {
           {isHost && (
             <button
               className="commonButton ttt-wr-swapRolesBtn"
-              onClick={() => {
-                /*if (guestConnected) {
-                  swapRolesNow();
-                }*/
-              }}
+              onClick={() => swapRolesNow()}
               disabled={!guestConnected}
+              title="Inverser X ↔ O"
             >
               Inverser les rôles
             </button>
@@ -198,29 +196,39 @@ export default function TicTacToeWaitingRoom() {
             <div className="ttt-wr-settingsRow ttt-wr-settingsRow--controls">
               {/* Taille de grille */}
               <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                <select
-                  value={gs}
-                  disabled={disabled}
-                  onChange={(e) => applyGrid(Number(e.target.value))}
-                  className="ttt-wr-field ttt-wr-select"
-                >
-                  <option value={3}>3×3</option>
-                  <option value={4}>4×4</option>
-                  <option value={5}>5×5</option>
-                </select>
+                {isHost ? (
+                  <select
+                    value={gs}
+                    disabled={disabled}
+                    onChange={(e) => applyGrid(Number(e.target.value))}
+                    className="ttt-wr-field ttt-wr-select"
+                  >
+                    <option value={3}>3×3</option>
+                    <option value={4}>4×4</option>
+                    <option value={5}>5×5</option>
+                  </select>
+                ) : (
+                  <div className="ttt-wr-pillValue">
+                    {gs}×{gs}
+                  </div>
+                )}
               </div>
 
-              {/* Manches pour gagner */}
+              {/* Manches */}
               <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                <input
-                  type="number"
-                  min={1}
-                  max={5}
-                  value={rounds}
-                  disabled={disabled}
-                  onChange={(e) => applyRounds(Number(e.target.value))}
-                  className="ttt-wr-field ttt-wr-input"
-                />
+                {isHost ? (
+                  <input
+                    type="number"
+                    min={1}
+                    max={5}
+                    value={rounds}
+                    disabled={disabled}
+                    onChange={(e) => applyRounds(Number(e.target.value))}
+                    className="ttt-wr-field ttt-wr-input"
+                  />
+                ) : (
+                  <div className="ttt-wr-pillValue">{rounds}</div>
+                )}
               </div>
 
               {/* Swap rôles au rematch */}
@@ -238,19 +246,25 @@ export default function TicTacToeWaitingRoom() {
                 </label>
               </div>
 
-              {/* Timer */}
+              {/* Temps par tour */}
               <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                <select
-                  value={tms}
-                  disabled={disabled}
-                  onChange={(e) => applyTurnMs(Number(e.target.value))}
-                  className="ttt-wr-field ttt-wr-select"
-                >
-                  <option value={0}>Illimité</option>
-                  <option value={10_000}>10 s</option>
-                  <option value={20_000}>20 s</option>
-                  <option value={30_000}>30 s</option>
-                </select>
+                {isHost ? (
+                  <select
+                    value={tms}
+                    disabled={disabled}
+                    onChange={(e) => applyTurnMs(Number(e.target.value))}
+                    className="ttt-wr-field ttt-wr-select"
+                  >
+                    <option value={0}>Illimité</option>
+                    <option value={10_000}>10 s</option>
+                    <option value={20_000}>20 s</option>
+                    <option value={30_000}>30 s</option>
+                  </select>
+                ) : (
+                  <div className="ttt-wr-pillValue">
+                    {tms === 0 ? "Illimité" : `${tms / 1000} s`}
+                  </div>
+                )}
               </div>
             </div>
           </div>

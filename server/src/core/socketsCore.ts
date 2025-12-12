@@ -74,6 +74,7 @@ export function leaveRoom(io: Server | Namespace, socket: Socket) {
   saveRoom(room);
 
   broadcastState(io, room);
+  io.to(room.id).emit(Events.RematchStatus, { votes: 0 });
   io.to(room.id).emit(Events.OpponentLeft, {
     roomId: room.id,
     hostId: room.hostId,

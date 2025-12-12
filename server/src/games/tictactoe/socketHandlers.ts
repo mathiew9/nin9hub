@@ -33,6 +33,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       room.stateVersion++;
       saveRoom(room);
       broadcastState(ns, room);
+      ns.to(room.id).emit(Events.RematchStatus, { votes: 0 });
       ok(ack, {});
     });
 
@@ -118,52 +119,88 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       }
     );
 
-    // REMATCH
+    // SWAP ROLES (host-only, waiting room)
+    socket.on("online:swap:roles", (ack: Ack<{}>) => {
+      const roomId = getRoomIdBySocket(socket.id);
+      if (!roomId) return err(ack, "NOT_IN_ROOM", "Pas dans une room.");
+      const room = getRoom(roomId)!;
+
+      if (socket.id !== room.hostId)
+        return err(ack, "ONLY_HOST", "Seul l'hôte peut inverser.");
+      if (room.started)
+        return err(ack, "GAME_STARTED", "Impossible pendant la partie.");
+      if (!room.players.X || !room.players.O)
+        return err(ack, "NEED_2_PLAYERS", "Il faut deux joueurs.");
+
+      // swap X <-> O (l'hôte ne change pas, juste les rôles)
+      const t = room.players.X;
+      room.players.X = room.players.O;
+      room.players.O = t;
+
+      // on laisse turn="X" (X commence toujours) car on est en waiting
+      room.stateVersion++;
+      saveRoom(room);
+      broadcastState(nsp as Namespace, room); // doit inclure { players }
+      ok(ack, {});
+    });
+
+    // REMATCH (vote à 2, uniquement après fin de manche)
     socket.on(Events.RematchRequest, (ack: Ack<{ votes: number }>) => {
       const roomId = getRoomIdBySocket(socket.id);
       if (!roomId) return err(ack, "NOT_IN_ROOM", "Tu n'es pas dans une room.");
       const room = getRoom(roomId)!;
 
-      // 1) Comptabiliser le vote (idempotent)
-      if (!room.rematchVotes.has(socket.id)) room.rematchVotes.add(socket.id);
-      const votes = room.rematchVotes.size;
+      // 1) Rematch seulement si la manche est terminée
+      if (!room.started || !room.state.winner) {
+        return err(
+          ack,
+          "GAME_NOT_ENDED",
+          "Le rematch est possible une fois la manche terminée."
+        );
+      }
 
-      // 2) Informer tout le monde de l'état des votes + ACK
+      // 2) Enregistrer le vote (idempotent)
+      room.rematchVotes.add(socket.id);
+
+      // 3) Purger les votes fantômes (sockets plus présents)
+      const live = new Set([room.players.X, room.players.O].filter(Boolean));
+      const filtered = new Set<string>();
+      for (const id of room.rematchVotes) if (live.has(id)) filtered.add(id);
+      room.rematchVotes = filtered;
+
+      const votes = room.rematchVotes.size;
+      saveRoom(room);
+
+      // 4) Notifier + ACK
       ns.to(room.id).emit(Events.RematchStatus, { votes });
       ok(ack, { votes });
 
-      // 3) Si 2/2 votes et les deux slots sont occupés, on relance
+      // 5) Si 2/2 et les deux slots sont occupés → relancer la manche
       if (votes >= 2 && room.players.X && room.players.O) {
-        // Lire les settings attachés à la room
         const settings = (room.settings ?? {}) as RoomSettings;
 
-        // a) Échanger les rôles si activé
+        // a) swap X/O si activé
         if (settings.swapRolesOnRematch) {
-          const prevX = room.players.X;
+          const tmp = room.players.X;
           room.players.X = room.players.O;
-          room.players.O = prevX;
+          room.players.O = tmp;
         }
 
-        // (Optionnel) Si tu supportes resetRolesOnRematch à l'avenir :
-        // if (settings.resetRolesOnRematch) {
-        //   // ex: remettre X = hostId, O = guestId (à définir selon ta logique)
-        //   room.players.X = room.hostId || room.players.X;
-        //   room.players.O = room.guestId || room.players.O;
-        // }
-
-        // b) Réinitialiser la manche selon la taille de grille (par défaut 3)
-        const gridSize = settings.gridSize ?? 3;
-
-        room.state.board = emptyBoard(gridSize);
-        room.state.turn = "X"; // X commence toujours dans ta vision
+        // b) reset manche selon gridSize
+        const grid = settings.gridSize ?? 3;
+        room.state.board = Array(grid * grid).fill(null);
+        room.state.turn = "X";
         room.state.winner = null;
-
         room.started = true;
+
+        // c) RAZ votes + version
         room.rematchVotes.clear();
         room.stateVersion++;
-
         saveRoom(room);
+
+        // d) pousser le nouvel état + votes=0
         broadcastState(ns, room);
+        ns.to(room.id).emit(Events.RematchStatus, { votes: 0 });
       }
     });
   });
