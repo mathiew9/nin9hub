@@ -25,8 +25,11 @@
     "withfriend": "Avec un ami",
     "gamemode": "Mode de jeu",
     "withai": "Contre l'ordinateur",
-    "toPlayRich": "Joueur <player>{{player}}</player> à jouer",
-    "wonByRich": "Manche gagnée par <player>{{player}}</player>",
+    "player1": "Joueur 1",
+    "player2": "Joueur 2",
+    "computer": "Ordinateur",
+    "toPlayShort": "à jouer",
+    "won": "à gagné",
     "draw": "Match nul",
     "resetScore": "Reinitialiser le score"
   },

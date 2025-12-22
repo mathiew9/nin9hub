@@ -25,8 +25,11 @@
     "gamemode": "Game mode",
     "withfriend": "With a friend",
     "withai": "Against AI",
-    "toPlayRich": "Player <player>{{player}}</player>'s turn",
-    "wonByRich": "<player>{{player}}</player> wins the round",
+    "player1": "Player 1",
+    "player2": "Player 2",
+    "computer": "Computer",
+    "toPlayShort": "'s turn",
+    "won": "won",
     "draw": "Draw",
     "resetScore": "Reset score"
   },

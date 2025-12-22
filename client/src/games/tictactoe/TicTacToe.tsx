@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useTranslation, Trans } from "react-i18next";
+import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import "./TicTacToe.css";
 import TicTacToeBoard from "./shared/TicTacToeBoard";
 
@@ -27,18 +27,35 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
     );
   }
 
-  // --- Cas IA / ami local : logique locale comme avant ---
+  // --- Cas IA / ami local ---
   const [board, setBoard] = useState<SquareValue[]>(() =>
     Array(gridSize * gridSize).fill(null)
   );
+
+  // ✅ Rôles par manche : Player 1 a un symbole (X/O) qui alterne à chaque "Rejouer"
+  const [player1Symbol, setPlayer1Symbol] = useState<Player>("X");
+  const player2Symbol: Player = player1Symbol === "X" ? "O" : "X";
+
+  // currentPlayer reste le symbole (pour être compatible avec Board / logique)
   const [currentPlayer, setCurrentPlayer] = useState<Player>("X");
-  const [scoreX, setScoreX] = useState(0);
-  const [scoreO, setScoreO] = useState(0);
+
+  // ✅ Score par joueur (plus par symbole)
+  const [scoreP1, setScoreP1] = useState(0);
+  const [scoreP2, setScoreP2] = useState(0);
 
   const result = calculateWinner(board, gridSize);
   const winner = result?.player ?? null;
   const winningLine = result?.line ?? [];
   const draw = !winner && !board.includes(null);
+
+  const isPlayer1Turn = currentPlayer === player1Symbol;
+  const currentActorLabel = useMemo(() => {
+    if (isPlayer1Turn) return t("tictactoe.player1");
+    // player 2 ou ordinateur
+    return mode === "ai" ? t("tictactoe.computer") : t("tictactoe.player2");
+  }, [isPlayer1Turn, mode, t]);
+
+  const currentActorSymbol = currentPlayer;
 
   const handleClick = (index: number) => {
     if (board[index] || winner) return;
@@ -48,72 +65,86 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
     setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
   };
 
-  // Score local
+  // ✅ Score local : on mappe winner (X/O) -> Player 1 ou Player 2/IA selon la manche
   useEffect(() => {
-    if (winner === "X") setScoreX((s) => s + 1);
-    else if (winner === "O") setScoreO((s) => s + 1);
-  }, [winner]);
+    if (!winner) return;
 
-  // IA simple (quand O joue)
+    const winnerIsP1 = winner === player1Symbol;
+    if (winnerIsP1) setScoreP1((s) => s + 1);
+    else setScoreP2((s) => s + 1);
+  }, [winner, player1Symbol]);
+
+  // ✅ IA simple : l'IA joue avec le symbole de "Player 2" pour la manche en cours
   useEffect(() => {
+    const aiSymbol = player2Symbol;
+
     if (
       mode === "ai" &&
-      currentPlayer === "O" &&
+      currentPlayer === aiSymbol &&
       !winner &&
       board.includes(null)
     ) {
-      const t = setTimeout(() => {
+      const timeout = setTimeout(() => {
         const empties = board
           .map((v, i) => (v === null ? i : null))
           .filter((v) => v !== null) as number[];
+
         const pick = empties[Math.floor(Math.random() * empties.length)];
         const next = [...board];
-        next[pick] = "O";
+        next[pick] = aiSymbol;
         setBoard(next);
-        setCurrentPlayer("X");
+        setCurrentPlayer(aiSymbol === "X" ? "O" : "X");
       }, 800);
-      return () => clearTimeout(t);
-    }
-  }, [board, currentPlayer, mode, winner]);
 
+      return () => clearTimeout(timeout);
+    }
+  }, [board, currentPlayer, mode, winner, player2Symbol]);
+
+  // ✅ Rejouer : reset board + X commence toujours + swap rôles (P1 X/O)
   const reset = () => {
     setBoard(Array(gridSize * gridSize).fill(null));
     setCurrentPlayer("X");
+    setPlayer1Symbol((s) => (s === "X" ? "O" : "X"));
   };
+
   const resetScore = () => {
-    setScoreX(0);
-    setScoreO(0);
+    setScoreP1(0);
+    setScoreP2(0);
   };
+
+  // Helpers d'affichage score
+  const p1Label = t("tictactoe.player1");
+  const p2Label =
+    mode === "ai" ? t("tictactoe.computer") : t("tictactoe.player2");
 
   return (
     <div className="tictactoe">
       <h2>
         {winner ? (
-          <Trans
-            i18nKey="tictactoe.wonByRich"
-            values={{ player: winner }}
-            components={{
-              player: (
-                <span
-                  className={`symbol-badge symbol-${winner.toLowerCase()}`}
-                />
-              ),
-            }}
-          />
+          (() => {
+            const winnerIsP1 = winner === player1Symbol;
+            const label = winnerIsP1 ? p1Label : p2Label;
+
+            return (
+              <span>
+                {label} {t("tictactoe.won")}{" "}
+                <span className={`symbol-badge symbol-${winner.toLowerCase()}`}>
+                  {winner}
+                </span>
+              </span>
+            );
+          })()
         ) : draw ? (
           t("tictactoe.draw")
         ) : (
-          <Trans
-            i18nKey="tictactoe.toPlayRich"
-            values={{ player: currentPlayer }}
-            components={{
-              player: (
-                <span
-                  className={`symbol-badge symbol-${currentPlayer.toLowerCase()}`}
-                />
-              ),
-            }}
-          />
+          <span>
+            {currentActorLabel} {t("tictactoe.toPlayShort")}{" "}
+            <span
+              className={`symbol-badge symbol-${currentActorSymbol.toLowerCase()}`}
+            >
+              {currentActorSymbol}
+            </span>
+          </span>
         )}
       </h2>
 
@@ -135,10 +166,20 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
 
             <div className="scoreCardBody">
               <p>
-                <span className="symbol-badge symbol-x">X</span> - {scoreX}
+                {p1Label} - {scoreP1}{" "}
+                <span
+                  className={`symbol-badge symbol-${player1Symbol.toLowerCase()}`}
+                >
+                  {player1Symbol}
+                </span>
               </p>
               <p>
-                <span className="symbol-badge symbol-o">O</span> - {scoreO}
+                {p2Label} - {scoreP2}{" "}
+                <span
+                  className={`symbol-badge symbol-${player2Symbol.toLowerCase()}`}
+                >
+                  {player2Symbol}
+                </span>
               </p>
             </div>
 
@@ -168,6 +209,7 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
             winningLine={winningLine}
             onCellClick={handleClick}
             mode={mode}
+            canPlay={mode === "ai" ? currentPlayer === player1Symbol : true}
           />
         </div>
 
