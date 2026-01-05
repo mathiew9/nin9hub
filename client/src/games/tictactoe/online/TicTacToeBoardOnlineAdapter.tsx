@@ -1,11 +1,14 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import TicTacToeBoard from "../shared/TicTacToeBoard";
+import TicTacToeStatusBar from "../shared/TicTacToeStatusBar";
 import { useOnline } from "./TicTacToeOnlineProvider";
 
 type Player = "X" | "O";
 type Cell = Player | null;
 
 export default function TicTacToeBoardOnlineAdapter() {
+  // Online game state & actions
   const {
     board,
     role,
@@ -21,11 +24,31 @@ export default function TicTacToeBoardOnlineAdapter() {
     leave,
     playTurn,
     settings,
+    turnDeadlineAt,
   } = useOnline();
 
-  // dynamic grid size: from settings, else √board.length, else 3
+  // Timer tick used to compute remaining time
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!turnDeadlineAt) return;
+
+    const id = window.setInterval(() => setNow(Date.now()), 300);
+    return () => window.clearInterval(id);
+  }, [turnDeadlineAt]);
+
+  // Remaining time (seconds), or null when timer is disabled
+  const timeLeftSec = useMemo(() => {
+    if (!turnDeadlineAt || (settings?.turnTimeMs ?? 0) <= 0) return null;
+
+    const msLeft = Math.max(0, turnDeadlineAt - now);
+    return Math.ceil(msLeft / 1000);
+  }, [turnDeadlineAt, now, settings?.turnTimeMs]);
+
+  // Dynamic grid size: settings.gridSize (3..5), else √board.length, else 3
   const gridSize = useMemo(() => {
     const fromSettings = (settings as any)?.gridSize;
+
     if (
       Number.isInteger(fromSettings) &&
       fromSettings >= 3 &&
@@ -33,15 +56,12 @@ export default function TicTacToeBoardOnlineAdapter() {
     ) {
       return fromSettings as number;
     }
+
     const n = Math.sqrt((board?.length ?? 9) as number);
     return Number.isInteger(n) ? (n as number) : 3;
   }, [settings, board]);
 
-  const onCellClick = (i: number) => {
-    if (!canPlay || winner) return;
-    playTurn(i);
-  };
-
+  // Derived UI texts (status + center text)
   const statusText = useMemo(() => {
     if (winner) return null;
     if (playersCount < 2) return "En attente de l’autre joueur…";
@@ -49,24 +69,50 @@ export default function TicTacToeBoardOnlineAdapter() {
     return "À toi de jouer.";
   }, [winner, playersCount, canPlay]);
 
+  // Status bar state (used for styling/behavior)
+  const stateForBar: "playing" | "won" | "draw" =
+    winner === "draw" ? "draw" : winner ? "won" : "playing";
+
+  // Board interaction handler
+  const onCellClick = (i: number) => {
+    if (!canPlay || winner) return;
+    playTurn(i);
+  };
+
   return (
-    <div className="wr-onlineGame">
+    <>
       {opponentLeft && (
         <div className="wr-banner warn">
           Ton adversaire a quitté la partie. En attente d’un joueur…
         </div>
       )}
 
-      <div className="wr-statusRow">
-        <span className={`wr-pill ${role === "X" ? "x" : "o"}`}>
-          Ton rôle&nbsp;: <b>{role ?? "-"}</b>
-        </span>
-        {!winner && (
-          <span className="wr-badge turn">
-            Tour de&nbsp;: <b>{turn ?? "-"}</b>
-          </span>
-        )}
-      </div>
+      <TicTacToeStatusBar
+        // Left: only the symbol of the player who is acting (or the winner). Nothing on draw.
+        leftText="Tour :"
+        leftSymbol={
+          winner === "draw"
+            ? null
+            : winner
+            ? (winner as Player) // winner is "X" | "O"
+            : turn ?? null // current turn player
+        }
+        // Center: explicit state message
+        centerText={
+          winner === "draw"
+            ? "Égalité"
+            : winner
+            ? winner === role
+              ? "Victoire !"
+              : "Défaite."
+            : canPlay
+            ? "À vous de jouer"
+            : "En attente"
+        }
+        // Right: timer only while playing
+        timeLeftSec={winner ? null : timeLeftSec}
+        state={stateForBar}
+      />
 
       <div className="wr-boardBox">
         <TicTacToeBoard
@@ -127,6 +173,6 @@ export default function TicTacToeBoardOnlineAdapter() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

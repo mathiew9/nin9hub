@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import "./TicTacToe.css";
 import TicTacToeBoard from "./shared/TicTacToeBoard";
+import TicTacToeStatusBar from "./shared/TicTacToeStatusBar";
 
 // ➜ Nouveau conteneur online (provider + setup + waiting + board)
 import TicTacToeOnlineRoot from "./online/TicTacToeOnlineRoot";
@@ -32,14 +33,14 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
     Array(gridSize * gridSize).fill(null)
   );
 
-  // ✅ Rôles par manche : Player 1 a un symbole (X/O) qui alterne à chaque "Rejouer"
+  // Rôles par manche : Player 1 a un symbole (X/O) qui alterne à chaque "Rejouer"
   const [player1Symbol, setPlayer1Symbol] = useState<Player>("X");
   const player2Symbol: Player = player1Symbol === "X" ? "O" : "X";
 
   // currentPlayer reste le symbole (pour être compatible avec Board / logique)
   const [currentPlayer, setCurrentPlayer] = useState<Player>("X");
 
-  // ✅ Score par joueur (plus par symbole)
+  // Score par joueur (plus par symbole)
   const [scoreP1, setScoreP1] = useState(0);
   const [scoreP2, setScoreP2] = useState(0);
 
@@ -55,7 +56,12 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
     return mode === "ai" ? t("tictactoe.computer") : t("tictactoe.player2");
   }, [isPlayer1Turn, mode, t]);
 
-  const currentActorSymbol = currentPlayer;
+  const TURN_SECONDS = 10;
+  const [timeLeftSec, setTimeLeftSec] = useState<number | null>(TURN_SECONDS);
+  const timerActive =
+    !winner &&
+    !draw &&
+    (mode === "friend" || (mode === "ai" && currentPlayer === player1Symbol));
 
   const handleClick = (index: number) => {
     if (board[index] || winner) return;
@@ -65,7 +71,16 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
     setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
   };
 
-  // ✅ Score local : on mappe winner (X/O) -> Player 1 ou Player 2/IA selon la manche
+  // Timer par tour
+  useEffect(() => {
+    if (!timerActive) {
+      setTimeLeftSec(null);
+      return;
+    }
+    setTimeLeftSec(TURN_SECONDS);
+  }, [timerActive, currentPlayer, gridSize]);
+
+  // Score local : on mappe winner (X/O) -> Player 1 ou Player 2/IA selon la manche
   useEffect(() => {
     if (!winner) return;
 
@@ -74,7 +89,24 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
     else setScoreP2((s) => s + 1);
   }, [winner, player1Symbol]);
 
-  // ✅ IA simple : l'IA joue avec le symbole de "Player 2" pour la manche en cours
+  // Décrémentation du timer
+  useEffect(() => {
+    if (!timerActive) return;
+    if (timeLeftSec === null) return;
+    if (timeLeftSec <= 0) return;
+
+    const id = window.setInterval(() => {
+      setTimeLeftSec((prev) => {
+        if (prev === null) return null;
+        if (prev <= 1) return 0;
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(id);
+  }, [timerActive, timeLeftSec]);
+
+  // IA simple : l'IA joue avec le symbole de "Player 2" pour la manche en cours
   useEffect(() => {
     const aiSymbol = player2Symbol;
 
@@ -100,7 +132,7 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
     }
   }, [board, currentPlayer, mode, winner, player2Symbol]);
 
-  // ✅ Rejouer : reset board + X commence toujours + swap rôles (P1 X/O)
+  // Rejouer : reset board + X commence toujours + swap rôles (P1 X/O)
   const reset = () => {
     setBoard(Array(gridSize * gridSize).fill(null));
     setCurrentPlayer("X");
@@ -119,34 +151,20 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
 
   return (
     <div className="tictactoe">
-      <h2>
-        {winner ? (
-          (() => {
-            const winnerIsP1 = winner === player1Symbol;
-            const label = winnerIsP1 ? p1Label : p2Label;
-
-            return (
-              <span>
-                {label} {t("tictactoe.won")}{" "}
-                <span className={`symbol-badge symbol-${winner.toLowerCase()}`}>
-                  {winner}
-                </span>
-              </span>
-            );
-          })()
-        ) : draw ? (
-          t("tictactoe.draw")
-        ) : (
-          <span>
-            {currentActorLabel} {t("tictactoe.toPlayShort")}{" "}
-            <span
-              className={`symbol-badge symbol-${currentActorSymbol.toLowerCase()}`}
-            >
-              {currentActorSymbol}
-            </span>
-          </span>
-        )}
-      </h2>
+      <TicTacToeStatusBar
+        leftText={winner || draw ? "" : t("tictactoe.toPlayShort")}
+        leftSymbol={winner || draw ? null : currentPlayer}
+        centerText={
+          winner
+            ? `${winner === player1Symbol ? p1Label : p2Label} ${t(
+                "tictactoe.won"
+              )}`
+            : draw
+            ? t("tictactoe.draw")
+            : currentActorLabel
+        }
+        timeLeftSec={winner || draw ? null : timeLeftSec} // ton state timer (à créer)
+      />
 
       <div className="commonGameLayout">
         <div className="side">
@@ -159,7 +177,6 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
                   : t("tictactoe.withfriend")}
               </div>
             </div>
-
             <div className="scoreCardHeader">
               <div className="scoreTitle">{t("common.score")}</div>
             </div>
