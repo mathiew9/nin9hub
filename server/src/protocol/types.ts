@@ -12,20 +12,22 @@ export type GameStateTTT = {
   turn: Player;
   winner: Winner;
   line: number[];
+  turnDeadlineAt?: number | null;
 };
 
 export type RoomState = {
   id: string;
   hostId: string;
   guestId: string;
-  players: Record<"X" | "O", string>;
+
+  players: Record<Player, string>;
   started: boolean;
+
   rematchVotes: Set<string>;
   stateVersion: number;
   createdAt: number;
 
   state: GameStateTTT;
-
   settings?: RoomSettings;
 };
 
@@ -34,13 +36,13 @@ export type RoomSettings = {
   roundsToWin: number;
   swapRolesOnRematch: boolean;
 
-  turnTimeMs: number; // 0 = sans limite
-  idleKickMs: number; // 0 = off
+  turnTimeMs: number; // 0 = no limit
+  idleKickMs: number; // 0 = disabled
   moveRateLimitMs: number; // anti-spam
 
   roomCodeLength: number;
 
-  reconnectGraceMs: number; //TODO
+  reconnectGraceMs: number; // TODO
   preserveGameOnLeave: boolean;
   promoteGuestOnHostLeave: boolean;
 

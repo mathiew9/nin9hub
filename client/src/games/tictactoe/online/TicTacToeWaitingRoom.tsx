@@ -293,6 +293,12 @@ export default function TicTacToeWaitingRoom() {
       {/* Bloc Actions */}
       <div className="ttt-wr-actions">
         <button
+          className="commonButton commonMenuButton ttt-wr-btn"
+          onClick={() => leave()}
+        >
+          Quitter
+        </button>
+        <button
           className={`commonButton commonMenuButton ttt-wr-btn ${
             isHost ? (canStart ? "" : "is-disabled") : "is-disabled"
           }`}
@@ -305,13 +311,6 @@ export default function TicTacToeWaitingRoom() {
           disabled={!isHost || !canStart}
         >
           {isHost ? "Commencer la partie" : "En attente que l’hôte démarre…"}
-        </button>
-
-        <button
-          className="commonButton commonMenuButton ttt-wr-btn"
-          onClick={() => leave()}
-        >
-          Quitter
         </button>
       </div>
     </div>

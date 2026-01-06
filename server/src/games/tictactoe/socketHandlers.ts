@@ -1,21 +1,106 @@
-import type { Server, Namespace, Socket } from "socket.io";
+import type { Namespace, Server, Socket } from "socket.io";
+
 import { Events } from "../../protocol/events";
-import type { Ack, Player } from "../../protocol/types";
-import { ok, err } from "../../utils/ack";
-import { getRoom, saveRoom, getRoomIdBySocket } from "../../core/storeCore";
-import { emptyBoard, checkWinner, other } from "./domain";
+import type { Ack, Player, RoomSettings } from "../../protocol/types";
+
+import { err, ok } from "../../utils/ack";
+import { getRoom, getRoomIdBySocket, saveRoom } from "../../core/storeCore";
 import { broadcastState } from "../../core/socketsCore";
-import type { RoomSettings } from "../../protocol/types";
+
+import { checkWinner, emptyBoard, nextDeadline, other } from "./domain";
 import { sanitizeTTTSettings } from "./settings";
+
+const turnTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+function clearTurnTimer(roomId: string) {
+  const t = turnTimers.get(roomId);
+  if (t) clearTimeout(t);
+  turnTimers.delete(roomId);
+}
+
+function pickRandomEmptyIndex(board: Array<Player | null>): number | null {
+  const empties: number[] = [];
+  for (let i = 0; i < board.length; i++) if (board[i] === null) empties.push(i);
+  if (empties.length === 0) return null;
+  return empties[Math.floor(Math.random() * empties.length)];
+}
+
+function armTurnTimer(
+  ns: Namespace,
+  roomId: string,
+  deadlineAt: number | null
+) {
+  clearTurnTimer(roomId);
+  if (!deadlineAt) return;
+
+  const delayMs = Math.max(0, deadlineAt - Date.now());
+
+  const timer = setTimeout(() => {
+    const room = getRoom(roomId);
+    if (!room) return;
+
+    // ensure this timer is still valid (avoid stale timeouts)
+    if (!room.started) return;
+    if (room.state.winner) return;
+    if (room.state.turnDeadlineAt !== deadlineAt) return;
+
+    const settings = (room.settings ?? {}) as RoomSettings;
+    const grid = settings.gridSize ?? 3;
+
+    const idx = pickRandomEmptyIndex(room.state.board);
+    if (idx === null) {
+      room.state.winner = "draw";
+      room.state.line = [];
+      room.state.turnDeadlineAt = null;
+
+      room.stateVersion++;
+      saveRoom(room);
+      broadcastState(ns, room);
+      clearTurnTimer(roomId);
+      return;
+    }
+
+    const roleToPlay = room.state.turn;
+    room.state.board[idx] = roleToPlay;
+
+    const res = checkWinner(room.state.board, grid);
+
+    if (res.winner) {
+      room.state.winner = res.winner;
+      room.state.line = res.line;
+      room.state.turnDeadlineAt = null;
+      clearTurnTimer(roomId);
+    } else if (res.draw) {
+      room.state.winner = "draw";
+      room.state.line = [];
+      room.state.turnDeadlineAt = null;
+      clearTurnTimer(roomId);
+    } else {
+      room.state.turn = other(roleToPlay);
+      room.state.line = [];
+      room.state.turnDeadlineAt = nextDeadline(settings.turnTimeMs ?? 0);
+
+      // re-arm next turn timer
+      armTurnTimer(ns, roomId, room.state.turnDeadlineAt ?? null);
+    }
+
+    room.stateVersion++;
+    saveRoom(room);
+    broadcastState(ns, room);
+  }, delayMs + 15);
+
+  turnTimers.set(roomId, timer);
+}
 
 export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
   const ns = nsp as Namespace;
 
   (nsp as Server | Namespace).on("connection", (socket: Socket) => {
-    // START
+    // Start game (host-only)
     socket.on(Events.Start, (ack: Ack<{}>) => {
       const roomId = getRoomIdBySocket(socket.id);
       if (!roomId) return err(ack, "NOT_IN_ROOM", "Tu n'es pas dans une room.");
+
       const room = getRoom(roomId)!;
       if (socket.id !== room.hostId)
         return err(ack, "ONLY_HOST", "Seul l'hôte peut démarrer.");
@@ -29,19 +114,26 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       room.state.turn = "X";
       room.state.winner = null;
       room.state.line = [];
+      room.state.turnDeadlineAt = nextDeadline(settings.turnTimeMs ?? 0);
+
       room.started = true;
       room.rematchVotes.clear();
       room.stateVersion++;
+
       saveRoom(room);
       broadcastState(ns, room);
       ns.to(room.id).emit(Events.RematchStatus, { votes: 0 });
+
+      armTurnTimer(ns, room.id, room.state.turnDeadlineAt ?? null);
+
       ok(ack, {});
     });
 
-    // PLAY TURN
+    // Play a move
     socket.on(Events.PlayTurn, (payload: { index: number }, ack: Ack<{}>) => {
       const roomId = getRoomIdBySocket(socket.id);
       if (!roomId) return err(ack, "NOT_IN_ROOM", "Tu n'es pas dans une room.");
+
       const room = getRoom(roomId)!;
       if (!room.started)
         return err(ack, "GAME_NOT_STARTED", "La partie n'a pas commencé.");
@@ -59,7 +151,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
         return err(ack, "NOT_YOUR_TURN", "Ce n'est pas ton tour.");
 
       const idx = payload?.index;
-      const size = room.state.board.length; // 9 pour 3x3
+      const size = room.state.board.length;
       if (!Number.isInteger(idx) || idx < 0 || idx > size - 1) {
         return err(ack, "OUT_OF_RANGE", "Index de case invalide.");
       }
@@ -68,28 +160,37 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       }
 
       room.state.board[idx] = role;
+
       const settings = (room.settings ?? {}) as RoomSettings;
-      const res = checkWinner(room.state.board, settings.gridSize ?? 3);
+      const grid = settings.gridSize ?? 3;
+      const res = checkWinner(room.state.board, grid);
+
       if (res.winner) {
         room.state.winner = res.winner;
         room.state.line = res.line;
-        room.started = true;
+        room.state.turnDeadlineAt = null;
+        clearTurnTimer(room.id);
       } else if (res.draw) {
         room.state.winner = "draw";
         room.state.line = [];
-        room.started = true;
+        room.state.turnDeadlineAt = null;
+        clearTurnTimer(room.id);
       } else {
         room.state.turn = other(role);
         room.state.line = [];
+        room.state.turnDeadlineAt = nextDeadline(settings.turnTimeMs ?? 0);
+
+        armTurnTimer(ns, room.id, room.state.turnDeadlineAt ?? null);
       }
+
       room.stateVersion++;
       saveRoom(room);
-
       broadcastState(ns, room);
+
       ok(ack, {});
     });
 
-    // UPDATE SETTINGS
+    // Update room settings (host-only)
     socket.on(
       Events.UpdateSettings,
       (
@@ -109,26 +210,35 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
           );
         }
 
-        // merge + sanitize (on ne garde que les champs TTT connus)
         const merged = sanitizeTTTSettings({
           ...(room.settings ?? {}),
           ...(partial ?? {}),
         });
+
         room.settings = merged;
         room.stateVersion++;
-        saveRoom(room);
 
-        broadcastState(nsp as any, room); // inclut settings
+        saveRoom(room);
+        broadcastState(ns, room);
+
+        // If timer setting changes mid-game, re-arm from "now"
+        if (room.started && !room.state.winner) {
+          room.state.turnDeadlineAt = nextDeadline(merged.turnTimeMs ?? 0);
+          saveRoom(room);
+          broadcastState(ns, room);
+          armTurnTimer(ns, room.id, room.state.turnDeadlineAt ?? null);
+        }
+
         ok(ack, { settings: merged });
       }
     );
 
-    // SWAP ROLES (host-only, waiting room)
+    // Swap roles in waiting room (host-only)
     socket.on("online:swap:roles", (ack: Ack<{}>) => {
       const roomId = getRoomIdBySocket(socket.id);
       if (!roomId) return err(ack, "NOT_IN_ROOM", "Pas dans une room.");
-      const room = getRoom(roomId)!;
 
+      const room = getRoom(roomId)!;
       if (socket.id !== room.hostId)
         return err(ack, "ONLY_HOST", "Seul l'hôte peut inverser.");
       if (room.started)
@@ -136,25 +246,23 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       if (!room.players.X || !room.players.O)
         return err(ack, "NEED_2_PLAYERS", "Il faut deux joueurs.");
 
-      // swap X <-> O (l'hôte ne change pas, juste les rôles)
-      const t = room.players.X;
+      const tmp = room.players.X;
       room.players.X = room.players.O;
-      room.players.O = t;
+      room.players.O = tmp;
 
-      // on laisse turn="X" (X commence toujours) car on est en waiting
       room.stateVersion++;
       saveRoom(room);
-      broadcastState(nsp as Namespace, room); // doit inclure { players }
+      broadcastState(ns, room);
+
       ok(ack, {});
     });
 
-    // REMATCH (vote à 2, uniquement après fin de manche)
+    // Rematch vote (2/2)
     socket.on(Events.RematchRequest, (ack: Ack<{ votes: number }>) => {
       const roomId = getRoomIdBySocket(socket.id);
       if (!roomId) return err(ack, "NOT_IN_ROOM", "Tu n'es pas dans une room.");
-      const room = getRoom(roomId)!;
 
-      // 1) Rematch seulement si la manche est terminée
+      const room = getRoom(roomId)!;
       if (!room.started || !room.state.winner) {
         return err(
           ack,
@@ -163,10 +271,8 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
         );
       }
 
-      // 2) Enregistrer le vote (idempotent)
       room.rematchVotes.add(socket.id);
 
-      // 3) Purger les votes fantômes (sockets plus présents)
       const live = new Set([room.players.X, room.players.O].filter(Boolean));
       const filtered = new Set<string>();
       for (const id of room.rematchVotes) if (live.has(id)) filtered.add(id);
@@ -175,37 +281,34 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       const votes = room.rematchVotes.size;
       saveRoom(room);
 
-      // 4) Notifier + ACK
       ns.to(room.id).emit(Events.RematchStatus, { votes });
       ok(ack, { votes });
 
-      // 5) Si 2/2 et les deux slots sont occupés → relancer la manche
       if (votes >= 2 && room.players.X && room.players.O) {
         const settings = (room.settings ?? {}) as RoomSettings;
 
-        // a) swap X/O si activé
         if (settings.swapRolesOnRematch) {
           const tmp = room.players.X;
           room.players.X = room.players.O;
           room.players.O = tmp;
         }
 
-        // b) reset manche selon gridSize
         const grid = settings.gridSize ?? 3;
-        room.state.board = Array(grid * grid).fill(null);
+
+        room.state.board = emptyBoard(grid);
         room.state.turn = "X";
         room.state.winner = null;
         room.state.line = [];
-        room.started = true;
+        room.state.turnDeadlineAt = nextDeadline(settings.turnTimeMs ?? 0);
 
-        // c) RAZ votes + version
         room.rematchVotes.clear();
         room.stateVersion++;
-        saveRoom(room);
 
-        // d) pousser le nouvel état + votes=0
+        saveRoom(room);
         broadcastState(ns, room);
         ns.to(room.id).emit(Events.RematchStatus, { votes: 0 });
+
+        armTurnTimer(ns, room.id, room.state.turnDeadlineAt ?? null);
       }
     });
   });

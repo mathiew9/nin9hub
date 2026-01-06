@@ -1,10 +1,14 @@
 import { TicTacToeOnlineProvider } from "./TicTacToeOnlineProvider";
 import TicTacToeOnlineContent from "./TicTacToeOnlineContent";
 
-export default function TicTacToeOnlineRoot() {
+type Props = {
+  onBack: () => void;
+};
+
+export default function TicTacToeOnlineRoot({ onBack }: Props) {
   return (
     <TicTacToeOnlineProvider>
-      <TicTacToeOnlineContent />
+      <TicTacToeOnlineContent onBack={onBack} />
     </TicTacToeOnlineProvider>
   );
 }

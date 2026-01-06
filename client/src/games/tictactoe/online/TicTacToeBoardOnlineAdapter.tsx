@@ -16,8 +16,8 @@ export default function TicTacToeBoardOnlineAdapter() {
     winner,
     winningLine,
     canPlay,
-    playersCount,
-    opponentLeft,
+    //playersCount,
+    //opponentLeft,
     rematchVotes,
     myRematchVoted,
     requestRematch,
@@ -27,7 +27,7 @@ export default function TicTacToeBoardOnlineAdapter() {
     turnDeadlineAt,
   } = useOnline();
 
-  // Timer tick used to compute remaining time
+  // Timer tick (used to compute remaining time)
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -37,15 +37,23 @@ export default function TicTacToeBoardOnlineAdapter() {
     return () => window.clearInterval(id);
   }, [turnDeadlineAt]);
 
-  // Remaining time (seconds), or null when timer is disabled
-  const timeLeftSec = useMemo(() => {
-    if (!turnDeadlineAt || (settings?.turnTimeMs ?? 0) <= 0) return null;
+  // Remaining time in seconds (null if disabled)
+  const timeLeft = useMemo<"infinite" | number | null>(() => {
+    const turnTimeMs = settings?.turnTimeMs ?? 0;
+
+    // Infinite time
+    if (turnTimeMs === 0) return "infinite";
+
+    if (!turnDeadlineAt) return null;
 
     const msLeft = Math.max(0, turnDeadlineAt - now);
-    return Math.ceil(msLeft / 1000);
+    const raw = Math.ceil(msLeft / 1000);
+    const max = Math.ceil(turnTimeMs / 1000);
+
+    return Math.min(max, raw);
   }, [turnDeadlineAt, now, settings?.turnTimeMs]);
 
-  // Dynamic grid size: settings.gridSize (3..5), else √board.length, else 3
+  // Grid size resolution
   const gridSize = useMemo(() => {
     const fromSettings = (settings as any)?.gridSize;
 
@@ -57,23 +65,15 @@ export default function TicTacToeBoardOnlineAdapter() {
       return fromSettings as number;
     }
 
-    const n = Math.sqrt((board?.length ?? 9) as number);
-    return Number.isInteger(n) ? (n as number) : 3;
+    const n = Math.sqrt(board?.length ?? 9);
+    return Number.isInteger(n) ? n : 3;
   }, [settings, board]);
 
-  // Derived UI texts (status + center text)
-  const statusText = useMemo(() => {
-    if (winner) return null;
-    if (playersCount < 2) return "En attente de l’autre joueur…";
-    if (!canPlay) return "En attente de l’adversaire…";
-    return "À toi de jouer.";
-  }, [winner, playersCount, canPlay]);
-
-  // Status bar state (used for styling/behavior)
+  // Status bar visual state
   const stateForBar: "playing" | "won" | "draw" =
     winner === "draw" ? "draw" : winner ? "won" : "playing";
 
-  // Board interaction handler
+  // Board interaction
   const onCellClick = (i: number) => {
     if (!canPlay || winner) return;
     playTurn(i);
@@ -81,23 +81,18 @@ export default function TicTacToeBoardOnlineAdapter() {
 
   return (
     <>
-      {opponentLeft && (
+      {/* uncommented code below when reconnectGraceMs and preserveGameOnLeave are implemented */}
+      {/* {opponentLeft && (
         <div className="wr-banner warn">
           Ton adversaire a quitté la partie. En attente d’un joueur…
         </div>
-      )}
+      )} */}
 
       <TicTacToeStatusBar
-        // Left: only the symbol of the player who is acting (or the winner). Nothing on draw.
-        leftText="Tour :"
+        leftText={winner ? "" : "Tour :"}
         leftSymbol={
-          winner === "draw"
-            ? null
-            : winner
-            ? (winner as Player) // winner is "X" | "O"
-            : turn ?? null // current turn player
+          winner === "draw" ? null : winner ? (winner as Player) : turn ?? null
         }
-        // Center: explicit state message
         centerText={
           winner === "draw"
             ? "Égalité"
@@ -109,12 +104,14 @@ export default function TicTacToeBoardOnlineAdapter() {
             ? "À vous de jouer"
             : "En attente"
         }
-        // Right: timer only while playing
-        timeLeftSec={winner ? null : timeLeftSec}
+        timeLeftSec={
+          winner ? null : typeof timeLeft === "number" ? timeLeft : null
+        }
+        infinite={timeLeft === "infinite"}
         state={stateForBar}
       />
 
-      <div className="wr-boardBox">
+      <div className="ttt-online-boardBox">
         <TicTacToeBoard
           board={board as Cell[]}
           gridSize={gridSize}
@@ -125,52 +122,32 @@ export default function TicTacToeBoardOnlineAdapter() {
           mode="online"
           canPlay={canPlay}
         />
+        <div className="ttt-online-help">{"Vous êtes " + role + "."}</div>
       </div>
 
-      {!winner && <div className="wr-help">{statusText}</div>}
-
       {winner && (
-        <div className="wr-outcomeRow">
-          <div
-            className={`wr-outcome ${
-              winner === "draw" ? "draw" : winner === role ? "ok" : "bad"
+        <div className="ttt-online-actions">
+          <button
+            className={`commonButton ttt-online-actionBtn ${
+              myRematchVoted || rematchVotes === 2 ? "is-disabled" : ""
             }`}
+            onClick={requestRematch}
+            disabled={myRematchVoted || rematchVotes === 2}
+            title={
+              myRematchVoted ? "En attente de l’autre…" : "Proposer un rematch"
+            }
           >
-            {winner === "draw"
-              ? "Égalité."
-              : winner === role
-              ? "Victoire !"
-              : "Défaite."}
-          </div>
+            {rematchVotes === 0 && !myRematchVoted && "Rejouer (0/2)"}
+            {rematchVotes === 1 && !myRematchVoted && "Rejouer (1/2)"}
+            {myRematchVoted &&
+              rematchVotes < 2 &&
+              "En attente de l’autre (1/2)…"}
+            {rematchVotes === 2 && "Rejouer (2/2)"}
+          </button>
 
-          <div className="wr-actions">
-            <button
-              className={`commonButton commonMenuButton wr-btn ${
-                myRematchVoted || rematchVotes === 2 ? "is-disabled" : ""
-              }`}
-              onClick={() => requestRematch()}
-              disabled={myRematchVoted || rematchVotes === 2}
-              title={
-                myRematchVoted
-                  ? "En attente de l’autre…"
-                  : "Proposer un rematch"
-              }
-            >
-              {rematchVotes === 0 && !myRematchVoted && "Rejouer (0/2)"}
-              {rematchVotes === 1 && !myRematchVoted && "Rejouer (1/2)"}
-              {myRematchVoted &&
-                rematchVotes < 2 &&
-                "En attente de l’autre (1/2)…"}
-              {rematchVotes === 2 && "Rejouer (2/2)"}
-            </button>
-
-            <button
-              className="commonButton commonMenuButton wr-btn"
-              onClick={() => leave()}
-            >
-              Quitter
-            </button>
-          </div>
+          <button className="commonButton ttt-online-actionBtn" onClick={leave}>
+            Quitter
+          </button>
         </div>
       )}
     </>
