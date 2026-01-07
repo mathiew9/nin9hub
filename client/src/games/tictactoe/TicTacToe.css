@@ -241,16 +241,13 @@ h2 .symbol-badge {
   }
 }
 
-/* Dark mode: symbole rempli (jaune/or) */
-body[data-theme="dark"] .tictactoe-board .squareFilled .symbol {
-  stroke: #facc15;
+.tictactoe-board .squareFilled .draw-x {
+  stroke: #e53935;
 }
 
-/* Light mode: symbole rempli (bleu) */
-body[data-theme="light"] .tictactoe-board .squareFilled .symbol {
-  stroke: #3b82f6; /* beau bleu clair */
+.tictactoe-board .squareFilled .draw-o {
+  stroke: #1e88e5;
 }
-
 /* === WIN CASE === */
 
 /* Dark mode: animation + border color pour victoire */

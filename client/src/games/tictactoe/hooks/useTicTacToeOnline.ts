@@ -30,6 +30,7 @@ type State = {
   myId: string | null;
   hostId: string | null;
   turnDeadlineAt: number | null;
+  turnStartedAt: number | null;
   settings: RoomSettings | null;
 };
 
@@ -51,6 +52,7 @@ const initialState: State = {
   myId: null,
   hostId: null,
   turnDeadlineAt: null,
+  turnStartedAt: null,
   settings: null,
 };
 
@@ -150,6 +152,7 @@ export function useTicTacToeOnline() {
         winner: Winner;
         line: number[];
         turnDeadlineAt?: number | null;
+        turnStartedAt?: number | null;
       };
       hostId?: string;
       guestId?: string;
@@ -158,7 +161,8 @@ export function useTicTacToeOnline() {
     }) {
       if (roomIdRef.current && payload.roomId !== roomIdRef.current) return;
 
-      const { board, turn, winner, line, turnDeadlineAt } = payload.state;
+      const { board, turn, winner, line, turnDeadlineAt, turnStartedAt } =
+        payload.state;
 
       setS((prev) => {
         if (
@@ -206,6 +210,7 @@ export function useTicTacToeOnline() {
           winner,
           winningLine: line ?? [],
           turnDeadlineAt: turnDeadlineAt ?? null,
+          turnStartedAt: turnStartedAt ?? null,
           playersCount: payload.playersCount,
           opponentLeft:
             payload.playersCount === 2 || payload.started

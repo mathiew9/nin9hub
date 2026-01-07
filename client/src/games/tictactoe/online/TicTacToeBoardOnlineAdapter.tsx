@@ -25,25 +25,23 @@ export default function TicTacToeBoardOnlineAdapter() {
     playTurn,
     settings,
     turnDeadlineAt,
+    turnStartedAt,
   } = useOnline();
 
   // Timer tick (used to compute remaining time)
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    if (!turnDeadlineAt) return;
+    if (!turnDeadlineAt && !turnStartedAt) return;
 
     const id = window.setInterval(() => setNow(Date.now()), 300);
     return () => window.clearInterval(id);
-  }, [turnDeadlineAt]);
+  }, [turnDeadlineAt, turnStartedAt]);
 
-  // Remaining time in seconds (null if disabled)
-  const timeLeft = useMemo<"infinite" | number | null>(() => {
+  const isInfinite = (settings?.turnTimeMs ?? 0) <= 0;
+
+  const timeLeft = useMemo<number | null>(() => {
     const turnTimeMs = settings?.turnTimeMs ?? 0;
-
-    // Infinite time
-    if (turnTimeMs === 0) return "infinite";
-
     if (!turnDeadlineAt) return null;
 
     const msLeft = Math.max(0, turnDeadlineAt - now);
@@ -52,6 +50,12 @@ export default function TicTacToeBoardOnlineAdapter() {
 
     return Math.min(max, raw);
   }, [turnDeadlineAt, now, settings?.turnTimeMs]);
+
+  const elapsedSec = useMemo<number | null>(() => {
+    if (!turnStartedAt) return null;
+    const ms = Math.max(0, now - turnStartedAt);
+    return Math.floor(ms / 1000);
+  }, [turnStartedAt, now]);
 
   // Grid size resolution
   const gridSize = useMemo(() => {
@@ -104,10 +108,8 @@ export default function TicTacToeBoardOnlineAdapter() {
             ? "À vous de jouer"
             : "En attente"
         }
-        timeLeftSec={
-          winner ? null : typeof timeLeft === "number" ? timeLeft : null
-        }
-        infinite={timeLeft === "infinite"}
+        isInfinite={isInfinite}
+        timeSec={winner ? null : isInfinite ? elapsedSec : timeLeft}
         state={stateForBar}
       />
 

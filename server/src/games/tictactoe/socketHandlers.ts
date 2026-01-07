@@ -18,6 +18,18 @@ function clearTurnTimer(roomId: string) {
   turnTimers.delete(roomId);
 }
 
+function setTurnTimer(state: any, turnTimeMs: number) {
+  const ms = Math.max(0, Math.floor(turnTimeMs ?? 0));
+
+  if (ms > 0) {
+    state.turnDeadlineAt = nextDeadline(ms);
+    state.turnStartedAt = null;
+  } else {
+    state.turnDeadlineAt = null;
+    state.turnStartedAt = Date.now();
+  }
+}
+
 function pickRandomEmptyIndex(board: Array<Player | null>): number | null {
   const empties: number[] = [];
   for (let i = 0; i < board.length; i++) if (board[i] === null) empties.push(i);
@@ -69,16 +81,18 @@ function armTurnTimer(
       room.state.winner = res.winner;
       room.state.line = res.line;
       room.state.turnDeadlineAt = null;
+      room.state.turnStartedAt = null;
       clearTurnTimer(roomId);
     } else if (res.draw) {
       room.state.winner = "draw";
       room.state.line = [];
       room.state.turnDeadlineAt = null;
+      room.state.turnStartedAt = null;
       clearTurnTimer(roomId);
     } else {
       room.state.turn = other(roleToPlay);
       room.state.line = [];
-      room.state.turnDeadlineAt = nextDeadline(settings.turnTimeMs ?? 0);
+      setTurnTimer(room.state, settings.turnTimeMs ?? 0);
 
       // re-arm next turn timer
       armTurnTimer(ns, roomId, room.state.turnDeadlineAt ?? null);
@@ -114,7 +128,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       room.state.turn = "X";
       room.state.winner = null;
       room.state.line = [];
-      room.state.turnDeadlineAt = nextDeadline(settings.turnTimeMs ?? 0);
+      setTurnTimer(room.state, settings.turnTimeMs ?? 0);
 
       room.started = true;
       room.rematchVotes.clear();
@@ -129,7 +143,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       ok(ack, {});
     });
 
-    // Play a move
+    // PlayTurn
     socket.on(Events.PlayTurn, (payload: { index: number }, ack: Ack<{}>) => {
       const roomId = getRoomIdBySocket(socket.id);
       if (!roomId) return err(ack, "NOT_IN_ROOM", "Tu n'es pas dans une room.");
@@ -169,16 +183,18 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
         room.state.winner = res.winner;
         room.state.line = res.line;
         room.state.turnDeadlineAt = null;
+        room.state.turnStartedAt = null;
         clearTurnTimer(room.id);
       } else if (res.draw) {
         room.state.winner = "draw";
         room.state.line = [];
         room.state.turnDeadlineAt = null;
+        room.state.turnStartedAt = null;
         clearTurnTimer(room.id);
       } else {
         room.state.turn = other(role);
         room.state.line = [];
-        room.state.turnDeadlineAt = nextDeadline(settings.turnTimeMs ?? 0);
+        setTurnTimer(room.state, settings.turnTimeMs ?? 0);
 
         armTurnTimer(ns, room.id, room.state.turnDeadlineAt ?? null);
       }
@@ -223,7 +239,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
 
         // If timer setting changes mid-game, re-arm from "now"
         if (room.started && !room.state.winner) {
-          room.state.turnDeadlineAt = nextDeadline(merged.turnTimeMs ?? 0);
+          setTurnTimer(room.state, merged.turnTimeMs ?? 0);
           saveRoom(room);
           broadcastState(ns, room);
           armTurnTimer(ns, room.id, room.state.turnDeadlineAt ?? null);
@@ -299,7 +315,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
         room.state.turn = "X";
         room.state.winner = null;
         room.state.line = [];
-        room.state.turnDeadlineAt = nextDeadline(settings.turnTimeMs ?? 0);
+        setTurnTimer(room.state, settings.turnTimeMs ?? 0);
 
         room.rematchVotes.clear();
         room.stateVersion++;

@@ -1,4 +1,4 @@
-import { FaStopwatch, FaInfinity } from "react-icons/fa";
+import { FaStopwatch } from "react-icons/fa";
 
 type PlayerSymbol = "X" | "O";
 
@@ -7,33 +7,38 @@ type Props = {
   leftSymbol?: PlayerSymbol | null;
 
   centerText: string;
-  timeLeftSec?: number | null;
-  infinite?: boolean;
+  timeSec?: number | null;
+  isInfinite?: boolean;
 
   state?: "playing" | "won" | "draw";
   className?: string;
 };
 
-// Timer visual state based on remaining time
 function getTimerLevel(timeLeftSec: number): "ok" | "warn" | "danger" {
   if (timeLeftSec <= 2) return "danger";
   if (timeLeftSec <= 5) return "warn";
   return "ok";
 }
 
+function formatMMSS(totalSec: number) {
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
 export default function TicTacToeStatusBar({
   leftText,
   leftSymbol = null,
   centerText,
-  timeLeftSec = null,
-  infinite = false,
+  timeSec = null,
+  isInfinite = false,
   state = "playing",
   className = "",
 }: Props) {
-  const showTimer =
-    typeof timeLeftSec === "number" && Number.isFinite(timeLeftSec);
+  const hasTime = typeof timeSec === "number" && Number.isFinite(timeSec);
 
-  const timerLevel = showTimer ? getTimerLevel(timeLeftSec) : "ok";
+  const timerLevel =
+    hasTime && !isInfinite ? getTimerLevel(timeSec) : ("ok" as const);
 
   return (
     <div
@@ -43,14 +48,12 @@ export default function TicTacToeStatusBar({
       role="status"
       aria-live={state === "playing" ? "polite" : "off"}
     >
-      {/* Left: label + optional symbol */}
       <div className="tttStatusBar__left">
         {(leftText || leftSymbol) && (
           <div className="tttStatusBar__leftInner">
             {leftText && (
               <span className="tttStatusBar__leftLabel">{leftText}</span>
             )}
-
             {leftSymbol && (
               <span
                 className={`symbol-badge symbol-${leftSymbol.toLowerCase()}`}
@@ -63,30 +66,26 @@ export default function TicTacToeStatusBar({
         )}
       </div>
 
-      {/* Center: main status text */}
       <div className="tttStatusBar__center">
         <span className="tttStatusBar__centerText">{centerText}</span>
       </div>
 
-      {/* Right: turn timer */}
       <div className="tttStatusBar__right">
-        {infinite ? (
-          <span
-            className="tttStatusBar__timer tttStatusBar__timer--infinite"
-            aria-label="Temps infini"
-          >
-            <FaStopwatch className="timerIcon" />
-            <FaInfinity />
-          </span>
-        ) : showTimer ? (
+        {hasTime ? (
           <span
             className={[
               "tttStatusBar__timer",
-              `tttStatusBar__timer--${timerLevel}`,
+              isInfinite
+                ? "tttStatusBar__timer--infinite"
+                : `tttStatusBar__timer--${timerLevel}`,
             ].join(" ")}
-            aria-label={`Temps restant ${timeLeftSec} secondes`}
+            aria-label={
+              isInfinite
+                ? `Temps écoulé ${formatMMSS(timeSec)}`
+                : `Temps restant ${formatMMSS(timeSec)}`
+            }
           >
-            <FaStopwatch /> {timeLeftSec}s
+            <FaStopwatch className="timerIcon" /> {formatMMSS(timeSec)}
           </span>
         ) : null}
       </div>

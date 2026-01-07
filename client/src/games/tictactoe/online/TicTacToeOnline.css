@@ -59,7 +59,7 @@
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
 
-  font-size: 14px;
+  font-size: 16px;
 }
 
 /* Zones */
@@ -89,17 +89,21 @@
   padding: 6px 12px;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 16px;
 
   display: inline-flex;
   align-items: center;
   gap: 8px;
 
+  font-variant-numeric: tabular-nums;
+  min-width: 64px;
+  justify-content: center;
+
   background: rgba(255, 255, 255, 0.1);
 }
 
 .tttStatusBar__timer--infinite svg {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 /* Timer states */

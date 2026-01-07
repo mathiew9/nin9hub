@@ -13,6 +13,7 @@ export type GameStateTTT = {
   winner: Winner;
   line: number[];
   turnDeadlineAt?: number | null;
+  turnStartedAt?: number | null;
 };
 
 export type RoomState = {
