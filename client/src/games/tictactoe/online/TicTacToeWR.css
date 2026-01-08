@@ -296,7 +296,10 @@ button.ttt-wr-swapRolesBtn:disabled {
   border: 1px solid #4b5563;
   padding: 6px 8px;
   color: #e5e7eb;
-  font-size: 0.95rem;
+  font-size: inherit;
+  font-weight: 700;
+  letter-spacing: inherit;
+  font-family: inherit;
   margin: 0 auto; /* centre le champ dans la cellule */
   text-align: center; /* texte centré dans l’input */
 }

@@ -174,7 +174,7 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
             ? t("tictactoe.draw")
             : currentActorLabel
         }
-        timeLeftSec={winner || draw ? null : timeLeftSec}
+        timeSec={winner || draw ? null : timeLeftSec}
       />
 
       <div className="commonGameLayout">

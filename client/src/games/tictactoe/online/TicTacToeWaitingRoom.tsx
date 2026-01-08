@@ -211,7 +211,7 @@ export default function TicTacToeWaitingRoom() {
                     value={gs}
                     disabled={disabled}
                     onChange={(e) => applyGrid(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-select"
+                    className="ttt-wr-field ttt-wr-select "
                   >
                     <option value={3}>3×3</option>
                     <option value={4}>4×4</option>
