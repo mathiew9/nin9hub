@@ -13,7 +13,11 @@
     "ofTheDay": "{{game}} du jour",
     "changeLevel": "Changer de niveau",
     "level": "Niveau",
-    "daily": "Journalier"
+    "daily": "Journalier",
+    "roomCode": "Code de la salle",
+    "join": "Rejoindre",
+    "hostGame": "Héberger une partie",
+    "back": "Retour"
   },
   "header": {
     "menu": "Jeux"
@@ -25,10 +29,14 @@
     "withfriend": "Avec un ami",
     "gamemode": "Mode de jeu",
     "withai": "Contre l'ordinateur",
-    "toPlayRich": "Joueur <player>{{player}}</player> à jouer",
-    "wonByRich": "Manche gagnée par <player>{{player}}</player>",
+    "player1": "Joueur 1",
+    "player2": "Joueur 2",
+    "computer": "Ordinateur",
+    "toPlayShort": "à jouer",
+    "won": "à gagné",
     "draw": "Match nul",
-    "resetScore": "Reinitialiser le score"
+    "resetScore": "Reinitialiser le score",
+    "onlineTitle": "Morpion - En ligne"
   },
   "chess": {
     "name": "Échecs"

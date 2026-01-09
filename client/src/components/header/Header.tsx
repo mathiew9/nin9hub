@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { games } from "../../data/games";
 import { languages } from "../../data/languages";
@@ -13,6 +13,11 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // 🔔 notifier le provider qu’on quitte l’online (navigation interne)
+  const fireExitOnline = useCallback(() => {
+    window.dispatchEvent(new Event("ninehub:exit-online"));
+  }, []);
+
   const getPreferredTheme = () =>
     localStorage.getItem("theme") ||
     (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -26,9 +31,8 @@ export default function Header() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const toggleTheme = () => {
+  const toggleTheme = () =>
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
 
   const changeLanguage = (code: string) => {
     i18n.changeLanguage(code);
@@ -43,11 +47,8 @@ export default function Header() {
         setDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const currentId = location.pathname.slice(1);
@@ -62,9 +63,12 @@ export default function Header() {
             ? "empty-space-header-show"
             : "empty-space-header-hide"
         }
-      ></div>
+      />
+
+      {/* Logo / Titre → onClick déclenche la sortie online */}
       <Link
         to="/"
+        onClick={fireExitOnline}
         className={`header-title ${gameName === null ? "center" : "left"}`}
       >
         {projectName}
@@ -78,13 +82,16 @@ export default function Header() {
 
       <div className="header-controls">
         {gameName && (
-          <Link to="/" className="header-back">
+          // Bouton “Menu/Jeux” → idem, on déclenche la sortie
+          <Link to="/" className="header-back" onClick={fireExitOnline}>
             {t("header.menu")}
           </Link>
         )}
+
         <button className="theme-toggle" onClick={toggleTheme}>
           {theme === "light" ? <FaMoon /> : <FaSun />}
         </button>
+
         <div className="language-selector" ref={dropdownRef}>
           <button
             className="lang-toggle-btn"

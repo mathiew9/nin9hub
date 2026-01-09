@@ -13,7 +13,11 @@
     "ofTheDay": "{{game}} of the day",
     "changeLevel": "Change level",
     "level": "Level",
-    "daily": "Daily"
+    "daily": "Daily",
+    "roomCode": "ROOM CODE",
+    "join": "Join room",
+    "hostGame": "Host game",
+    "back": "Back"
   },
   "header": {
     "menu": "Games"
@@ -25,10 +29,14 @@
     "gamemode": "Game mode",
     "withfriend": "With a friend",
     "withai": "Against AI",
-    "toPlayRich": "Player <player>{{player}}</player>'s turn",
-    "wonByRich": "<player>{{player}}</player> wins the round",
+    "player1": "Player 1",
+    "player2": "Player 2",
+    "computer": "Computer",
+    "toPlayShort": "To play",
+    "won": "won",
     "draw": "Draw",
-    "resetScore": "Reset score"
+    "resetScore": "Reset score",
+    "onlineTitle": "Tic-Tac-Toe - Online"
   },
   "chess": {
     "name": "Chess"
@@ -85,6 +93,6 @@
     "noteMode": "Note mode"
   },
   "pacxman": {
-    "name": "PacXman"
+    "name": "PacXon"
   }
 }

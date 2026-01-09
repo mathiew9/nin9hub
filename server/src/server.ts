@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { Server } from "socket.io";
-import { registerOnlineHandlers } from "./sockets/registerOnline";
+import { registerOnline } from "./sockets/registerOnline";
 
 const app = express();
 app.use(cors());
@@ -16,7 +16,7 @@ const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
-registerOnlineHandlers(io);
+registerOnline(io);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
 server.listen(PORT, () => {

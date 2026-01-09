@@ -4,9 +4,15 @@ import TicTacToeWaitingRoom from "./TicTacToeWaitingRoom";
 import TicTacToeBoardOnlineAdapter from "./TicTacToeBoardOnlineAdapter";
 import "./TicTacToeOnline.css";
 
-export default function TicTacToeOnlineContent() {
-  const { status } = useOnline();
-  if (status === "setup") return <TicTacToeOnlineSetup />;
-  if (status === "waiting") return <TicTacToeWaitingRoom />;
+type Props = {
+  onBack: () => void;
+};
+
+export default function TicTacToeOnlineContent({ onBack }: Props) {
+  const { roomId, role, started } = useOnline();
+
+  if (!roomId || !role) return <TicTacToeOnlineSetup onBack={onBack} />;
+  if (!started) return <TicTacToeWaitingRoom />;
+
   return <TicTacToeBoardOnlineAdapter />;
 }

@@ -32,14 +32,22 @@ export default function TicTacToeBoard({
       }}
     >
       {board.map((value, i) => {
-        const clickable =
-          !value &&
-          !gameDone &&
-          (mode === "online"
+        // ✅ Règles de clic :
+        // - online : basé sur canPlay
+        // - ai :
+        //    - si canPlay est fourni par le parent => on respecte canPlay
+        //    - sinon (fallback) => ancien comportement : humain = X
+        // - friend : toujours clickable si case vide et game pas fini
+        const canClickThisTurn =
+          mode === "online"
             ? !!canPlay
             : mode === "ai"
-            ? currentPlayer === "X"
-            : true);
+            ? typeof canPlay === "boolean"
+              ? canPlay
+              : currentPlayer === "X"
+            : true;
+
+        const clickable = !value && !gameDone && canClickThisTurn;
 
         return (
           <button

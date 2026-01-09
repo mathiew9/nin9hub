@@ -1,0 +1,434 @@
+/* ==========================
+   Container
+   ========================== */
+
+.ttt-wr-container {
+  display: grid;
+  gap: 16px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* ==========================
+   Blocs génériques
+   ========================== */
+
+.ttt-wr-commonBlock {
+  display: grid;
+  gap: 6px;
+  /* margin-bottom: 1em; */
+}
+
+.ttt-wr-commonTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+/* ==========================
+   Code de la room
+   ========================== */
+
+.ttt-wr-roomBox {
+  background: #0f172a; /* bleu nuit */
+  border: 2px dashed #334155;
+  border-radius: 8px;
+}
+
+.ttt-wr-roomBox--grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.ttt-wr-roomBox--readonly {
+  grid-template-columns: 1fr;
+}
+
+.ttt-wr-roomCode {
+  font: 700 1.4rem/1 ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: 0.08em;
+  color: #f8fafc;
+}
+
+.ttt-wr-roomCodeBlock-hint,
+.ttt-wr-playersBlock-hint {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+.ttt-wr-playersBlock-hint {
+  align-self: flex-start;
+}
+
+/* ==========================
+   Joueurs
+   ========================== */
+
+.ttt-wr-playersTitle {
+  padding: 0 2px;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: #cbd5e1;
+}
+
+.ttt-wr-colTitle {
+  text-transform: uppercase;
+}
+
+.ttt-wr-colTitle--player {
+  text-align: left;
+}
+
+.ttt-wr-colTitle--role {
+  text-align: right;
+  margin-left: auto;
+}
+
+.ttt-wr-playerRow.commonBox {
+  /* on override le style de commonBox */
+  display: grid !important;
+  grid-template-columns: 1fr 120px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  justify-content: initial;
+  text-align: initial;
+}
+
+.ttt-wr-playerRow--guest.commonBox {
+  grid-template-columns: 1fr auto 120px;
+}
+
+/* cellule status au milieu */
+.ttt-wr-cell--status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px; /* tweak si besoin */
+}
+
+/* petit badge message */
+.ttt-wr-miniAlert {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(253, 230, 138, 0.45);
+  background: rgba(63, 63, 31, 0.55);
+  color: #fde68a;
+  white-space: nowrap;
+}
+
+/* une ligne joueur (Joueur | Rôle) */
+.ttt-wr-playerRow {
+  display: grid;
+  grid-template-columns: 1fr 120px; /* Joueur à gauche, Rôle à droite */
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.ttt-wr-playerRow--host {
+  margin-bottom: 0.3em;
+}
+
+.ttt-wr-cell--player {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.ttt-wr-cell--role {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Status connexion (pastille) */
+.ttt-wr-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+.ttt-wr-dot.online {
+  background: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.ttt-wr-dot.offline {
+  background: #6b7280;
+}
+
+/* Nom du joueur */
+.ttt-wr-playerName {
+  font-weight: 600;
+}
+
+/* Jetons X / O */
+.ttt-wr-role {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: 2px solid #44403c;
+  box-shadow: 1px 1px 0 #44403c;
+}
+
+.ttt-wr-role--x {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+.ttt-wr-role--o {
+  background: #1e3a8a;
+  color: #dbeafe;
+}
+
+.ttt-wr-role--ghost {
+  background: #0b1220;
+  color: #64748b;
+}
+
+/* Footer du bloc joueurs : texte à gauche, bouton à droite */
+.ttt-wr-playersFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 0 2px;
+}
+
+/* Bouton "Inverser les rôles" : même base que les autres, juste un peu plus compact */
+.ttt-wr-swapRolesBtn {
+  min-width: auto;
+  padding-inline: 14px;
+  font-size: 0.9rem;
+  padding: 4px 16px;
+}
+
+button.ttt-wr-swapRolesBtn:disabled {
+  opacity: 0.5;
+  filter: grayscale(0.3);
+  pointer-events: none;
+}
+
+/* ==========================
+   Paramètres
+   ========================== */
+
+.ttt-wr-settings {
+  padding: 10px 14px; /* espace entre la grille et la box */
+}
+
+/* TABLEAU interne : 2 lignes × 4 colonnes */
+.ttt-wr-settingsTable {
+  display: grid;
+  row-gap: 6px;
+}
+
+/* chaque ligne = 4 colonnes */
+.ttt-wr-settingsRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 12px;
+}
+
+/* cellules génériques */
+.ttt-wr-settingsCell {
+  padding: 6px 8px;
+  display: flex;
+  align-items: center; /* centrage vertical */
+  justify-content: center; /* centrage horizontal */
+  text-align: center;
+}
+
+/* ── Ligne des labels ───────────────── */
+
+.ttt-wr-settingsRow--labels {
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.ttt-wr-settingsRow--labels .ttt-wr-settingsCell {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  opacity: 0.9;
+}
+
+/* traits verticaux entre colonnes (labels + contrôles) */
+.ttt-wr-settingsRow .ttt-wr-settingsCell:not(:last-child) {
+  border-right: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.ttt-wr-settingsRow--controls .ttt-wr-settingsCell {
+  padding-top: 10px;
+}
+
+/* ── Ligne des contrôles ───────────────── */
+
+.ttt-wr-settingsCell--control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* champs */
+.ttt-wr-field,
+.ttt-wr-input,
+.ttt-wr-select {
+  width: 100%;
+  max-width: 120px;
+  background: #020617;
+  border-radius: 6px;
+  border: 1px solid #4b5563;
+  padding: 6px 8px;
+  color: #e5e7eb;
+  font-size: inherit;
+  font-weight: 700;
+  letter-spacing: inherit;
+  font-family: inherit;
+  margin: 0 auto; /* centre le champ dans la cellule */
+  text-align: center; /* texte centré dans l’input */
+}
+
+.ttt-wr-select {
+  max-width: 130px;
+  text-align: center;
+  text-align-last: center; /* centre le texte de l’option affichée */
+}
+
+/* ==========================
+   Toggle custom (swap roles)
+   ========================== */
+
+.ttt-wr-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* on cache le vrai checkbox visuellement */
+.ttt-wr-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* rail */
+.ttt-wr-toggleTrack {
+  width: 42px;
+  height: 22px;
+  border-radius: 999px;
+  background: #111827;
+  border: 1px solid #4b5563;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+/* “bouton” qui glisse */
+.ttt-wr-toggleThumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #9ca3af;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.5);
+  transform: translateX(2px);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+/* état checked */
+.ttt-wr-toggle input:checked + .ttt-wr-toggleTrack {
+  background: #0f766e;
+  border-color: #14b8a6;
+}
+
+.ttt-wr-toggle input:checked + .ttt-wr-toggleTrack .ttt-wr-toggleThumb {
+  transform: translateX(22px);
+  background: #ecfeff;
+}
+
+/* état disabled */
+.ttt-wr-toggle input:disabled + .ttt-wr-toggleTrack {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Affichage “info” côté invité */
+.ttt-wr-pillValue {
+  min-width: 84px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #0b1220;
+  border: 1px solid #4b5563;
+  color: #e5e7eb;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ttt-wr-pillValue.is-on {
+  border-color: #14b8a6;
+  color: #a7f3d0;
+}
+
+.ttt-wr-pillValue.is-off {
+  color: #94a3b8;
+}
+
+/* ==========================
+   Messages (erreurs / info)
+   ========================== */
+
+.ttt-wr-badgesRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wr-alert {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  border: 2px solid #44403c;
+  background: #3f1f1f;
+  color: #fecaca;
+  box-shadow: 1px 1px 0 #44403c;
+}
+
+/* ==========================
+   Actions (boutons bas)
+   ========================== */
+
+.ttt-wr-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.ttt-wr-btn {
+  min-width: 220px;
+}
+
+.is-disabled {
+  opacity: 0.6;
+  filter: grayscale(0.2);
+  cursor: not-allowed;
+}

@@ -11,10 +11,12 @@ export const Events = {
   State: "online:state",
   OpponentLeft: "online:opponent:left",
   RematchStatus: "online:rematch:status",
+  UpdateSettings: "online:settings:update",
+  SwapRoles: "online:swap:roles",
   Error: "online:error",
 } as const;
 
-export type EventName = typeof Events[keyof typeof Events];
+export type EventName = (typeof Events)[keyof typeof Events];
 
 // Error codes (stable)
 export const ErrorCodes = {
@@ -25,9 +27,11 @@ export const ErrorCodes = {
   ONLY_HOST: "ONLY_HOST",
   NEED_2_PLAYERS: "NEED_2_PLAYERS",
   GAME_NOT_STARTED: "GAME_NOT_STARTED",
+  GAME_STARTED: "GAME_STARTED",
+  GAME_NOT_ENDED: "GAME_NOT_ENDED",
   NOT_YOUR_TURN: "NOT_YOUR_TURN",
   CELL_TAKEN: "CELL_TAKEN",
   OUT_OF_RANGE: "OUT_OF_RANGE",
 } as const;
 
-export type ErrorCode = typeof ErrorCodes[keyof typeof ErrorCodes];
+export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

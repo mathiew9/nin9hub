@@ -221,11 +221,14 @@ export default function Connect4({ mode, setMode }: Props) {
               </p>
             </div>
             <div className="scoreCardFooter">
-              <button className="resetScore" onClick={resetScore}>
+              <button
+                className="commonButton commonMediumButton resetScore"
+                onClick={resetScore}
+              >
                 {t("tictactoe.resetScore")}
               </button>
               <button
-                className="changeModeButton"
+                className="commonButton commonMediumButton changeModeButton"
                 onClick={() => setMode(null)}
               >
                 {t("tictactoe.changeGameMode")}
@@ -333,7 +336,10 @@ export default function Connect4({ mode, setMode }: Props) {
 
         <div className="side hidden" />
       </div>
-      <button className="commonButton commonMediumButton" onClick={resetGame}>
+      <button
+        className="commonButton commonMediumButton C4-playAgainButton"
+        onClick={resetGame}
+      >
         {t("common.playAgain")}
       </button>
     </div>

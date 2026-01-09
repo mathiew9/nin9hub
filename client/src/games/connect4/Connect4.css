@@ -3,6 +3,7 @@
   text-align: center;
   font-family: sans-serif;
   padding: 20px;
+  width: 100%;
 }
 
 /* === TITRE === */
@@ -205,4 +206,8 @@ body[data-theme="light"] .connect4-restart-button:hover {
   background-color: #10b981;
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.C4-playAgainButton {
+  margin: 20px auto 0 auto;
 }
