@@ -36,6 +36,42 @@ function pickRandomEmptyIndex(board: Array<Player | null>): number | null {
   if (empties.length === 0) return null;
   return empties[Math.floor(Math.random() * empties.length)];
 }
+type Seat = "p1" | "p2";
+
+function seatFromSocket(room: any, socketId: string): Seat | null {
+  if (!socketId) return null;
+  if (room.hostId === socketId) return "p1";
+  if (room.guestId === socketId) return "p2";
+  return null;
+}
+
+function seatFromWinnerSymbol(room: any, winner: Player): Seat | null {
+  const winnerSocketId = room.players?.[winner] ?? "";
+  return seatFromSocket(room, winnerSocketId);
+}
+function onRoundFinished(room: any, roundWinner: Player | "draw") {
+  // init safe
+  if (!room.state.matchScore) room.state.matchScore = { p1: 0, p2: 0 };
+  if (room.state.matchWinner === undefined) room.state.matchWinner = null;
+
+  // score uniquement si gagnant
+  if (roundWinner === "X" || roundWinner === "O") {
+    const settings = (room.settings ?? {}) as RoomSettings;
+    const roundsToWin = Math.max(1, Math.floor(settings.roundsToWin ?? 1));
+
+    const seat = seatFromWinnerSymbol(room, roundWinner);
+    if (seat) {
+      room.state.matchScore[seat] += 1;
+
+      if (room.state.matchScore[seat] >= roundsToWin) {
+        room.state.matchWinner = seat;
+      }
+    }
+  }
+
+  room.state.turnDeadlineAt = null;
+  room.state.turnStartedAt = null;
+}
 
 function armTurnTimer(
   ns: Namespace,
@@ -55,6 +91,7 @@ function armTurnTimer(
     if (!room.started) return;
     if (room.state.winner) return;
     if (room.state.turnDeadlineAt !== deadlineAt) return;
+    if (room.state.matchWinner) return;
 
     const settings = (room.settings ?? {}) as RoomSettings;
     const grid = settings.gridSize ?? 3;
@@ -80,14 +117,12 @@ function armTurnTimer(
     if (res.winner) {
       room.state.winner = res.winner;
       room.state.line = res.line;
-      room.state.turnDeadlineAt = null;
-      room.state.turnStartedAt = null;
+      onRoundFinished(room, res.winner);
       clearTurnTimer(roomId);
     } else if (res.draw) {
       room.state.winner = "draw";
       room.state.line = [];
-      room.state.turnDeadlineAt = null;
-      room.state.turnStartedAt = null;
+      onRoundFinished(room, "draw");
       clearTurnTimer(roomId);
     } else {
       room.state.turn = other(roleToPlay);
@@ -152,6 +187,14 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       if (!room.started)
         return err(ack, "GAME_NOT_STARTED", "La partie n'a pas commencé.");
 
+      if (room.state.matchWinner) {
+        return err(
+          ack,
+          "MATCH_ENDED",
+          "Le match est terminé. Lance un nouveau match."
+        );
+      }
+
       const role: Player | null =
         room.players.X === socket.id
           ? "X"
@@ -182,14 +225,12 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       if (res.winner) {
         room.state.winner = res.winner;
         room.state.line = res.line;
-        room.state.turnDeadlineAt = null;
-        room.state.turnStartedAt = null;
+        onRoundFinished(room, res.winner);
         clearTurnTimer(room.id);
       } else if (res.draw) {
         room.state.winner = "draw";
         room.state.line = [];
-        room.state.turnDeadlineAt = null;
-        room.state.turnStartedAt = null;
+        onRoundFinished(room, "draw");
         clearTurnTimer(room.id);
       } else {
         room.state.turn = other(role);
@@ -273,6 +314,34 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       ok(ack, {});
     });
 
+    function startNewMatch(room: any) {
+      const settings = (room.settings ?? {}) as RoomSettings;
+      const grid = settings.gridSize ?? 3;
+
+      // Option: reset roles to default mapping host=X, guest=O
+      if (settings.resetRolesOnRematch) {
+        if (room.hostId) room.players.X = room.hostId;
+        if (room.guestId) room.players.O = room.guestId;
+      } else if (settings.swapRolesOnRematch) {
+        // si tu veux swap même entre matchs (à toi de voir)
+        const tmp = room.players.X;
+        room.players.X = room.players.O;
+        room.players.O = tmp;
+      }
+
+      room.state.board = emptyBoard(grid);
+      room.state.turn = "X";
+      room.state.winner = null;
+      room.state.line = [];
+      room.state.matchScore = { p1: 0, p2: 0 };
+      room.state.matchWinner = null;
+
+      setTurnTimer(room.state, settings.turnTimeMs ?? 0);
+
+      room.rematchVotes.clear();
+      room.stateVersion++;
+    }
+
     // Rematch vote (2/2)
     socket.on(Events.RematchRequest, (ack: Ack<{ votes: number }>) => {
       const roomId = getRoomIdBySocket(socket.id);
@@ -303,6 +372,18 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       if (votes >= 2 && room.players.X && room.players.O) {
         const settings = (room.settings ?? {}) as RoomSettings;
 
+        // ✅ Si le match est terminé -> Nouveau match (reset score)
+        if (room.state.matchWinner) {
+          startNewMatch(room);
+          saveRoom(room);
+          broadcastState(ns, room);
+          ns.to(room.id).emit(Events.RematchStatus, { votes: 0 });
+
+          armTurnTimer(ns, room.id, room.state.turnDeadlineAt ?? null);
+          return;
+        }
+
+        // ✅ Sinon -> simple manche suivante (score conservé)
         if (settings.swapRolesOnRematch) {
           const tmp = room.players.X;
           room.players.X = room.players.O;

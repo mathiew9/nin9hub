@@ -1,10 +1,15 @@
+import { useTranslation } from "react-i18next";
+import { FaRegHandPointLeft } from "react-icons/fa";
+import { FaTrophy } from "react-icons/fa";
+
 type PlayerSymbol = "X" | "O";
 
 type ScorePlayer = {
-  label: string; // "Joueur 1", "Vous", "Ordinateur", "Adversaire", etc.
+  label: string;
   score: number;
-  symbol?: PlayerSymbol | null; // optional badge
-  highlight?: boolean; // optional (ex: current leader / winner)
+  symbol?: PlayerSymbol | null;
+  isTurn?: boolean;
+  matchWinner?: boolean;
 };
 
 type ScoreAction = {
@@ -20,7 +25,7 @@ type Props = {
   title?: string; // default: "Score"
   players: [ScorePlayer, ScorePlayer];
 
-  roundsToWin?: number | null; // show "First to X" if provided
+  roundsToWin?: number | null;
 
   actions?: ScoreAction[];
 
@@ -35,16 +40,44 @@ export default function TicTacToeScorePanel({
   actions = [],
   className = "",
 }: Props) {
+  const { t } = useTranslation();
   const [p1, p2] = players;
+
+  const getMode = (modeLabel: string) => {
+    switch (modeLabel) {
+      case "online":
+        return t("tictactoe.online");
+      case "friend":
+        return t("tictactoe.withfriend");
+      case "ai":
+        return t("tictactoe.withai");
+      default:
+        return modeLabel;
+    }
+  };
 
   return (
     <div className={["tttScorePanel", className].filter(Boolean).join(" ")}>
       {/* Header */}
-      <div className="tttScorePanel__header">
-        {modeLabel ? (
-          <div className="tttScorePanel__mode">{modeLabel}</div>
-        ) : null}
-        <div className="tttScorePanel__title">{title}</div>
+      <div
+        className={[
+          "tttScorePanel__header",
+          typeof roundsToWin === "number" && roundsToWin > 0
+            ? "has-rounds"
+            : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <div className="tttScorePanel__titleRow">
+          <div className="tttScorePanel__title">{title}</div>
+
+          {modeLabel ? (
+            <span className="tttScorePanel__modeBadge">
+              {getMode(modeLabel)}
+            </span>
+          ) : null}
+        </div>
 
         {typeof roundsToWin === "number" && roundsToWin > 0 ? (
           <div className="tttScorePanel__subtitle">
@@ -65,7 +98,12 @@ export default function TicTacToeScorePanel({
           {actions.map((a, idx) => (
             <button
               key={`${a.label}-${idx}`}
-              className={["commonButton", "tttScorePanel__btn", a.className]
+              className={[
+                "commonButton",
+                "commonMediumButton",
+                "tttScorePanel__btn",
+                a.className,
+              ]
                 .filter(Boolean)
                 .join(" ")}
               onClick={a.onClick}
@@ -83,24 +121,36 @@ export default function TicTacToeScorePanel({
 }
 
 function ScoreRow({ player }: { player: ScorePlayer }) {
-  const { label, score, symbol = null, highlight = false } = player;
+  const { label, score, symbol = null, isTurn, matchWinner = false } = player;
 
   return (
-    <div
-      className={["tttScorePanel__row", highlight ? "is-highlight" : ""].join(
-        " "
-      )}
-    >
+    <div className={`tttScorePanel__row ${matchWinner ? "is-highlight" : ""}`}>
       <div className="tttScorePanel__rowLeft">
-        <span className="tttScorePanel__playerName">{label}</span>
-        {symbol ? (
-          <span
-            className={`symbol-badge symbol-${symbol.toLowerCase()}`}
-            aria-label={`Symbole ${symbol}`}
-          >
+        {symbol && (
+          <span className={`symbol-badge symbol-${symbol.toLowerCase()}`}>
             {symbol}
           </span>
-        ) : null}
+        )}
+
+        <span className="tttScorePanel__playerName">
+          {label}
+          {isTurn && (
+            <span
+              className="tttScorePanel__turnIcon tttScorePanel__icon"
+              title="C'est son tour"
+            >
+              <FaRegHandPointLeft />
+            </span>
+          )}
+          {matchWinner && (
+            <span
+              className="tttScorePanel__matchWinnerIcon tttScorePanel__icon"
+              title="Vainqueur du match"
+            >
+              <FaTrophy />
+            </span>
+          )}
+        </span>
       </div>
 
       <div className="tttScorePanel__rowRight">

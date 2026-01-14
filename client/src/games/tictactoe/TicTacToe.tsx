@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import TicTacToeScorePanel from "./shared/TicTacToeScorePanel";
 
 import "./TicTacToe.css";
 
@@ -179,54 +180,21 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
 
       <div className="commonGameLayout">
         <div className="side">
-          <div className="scoreCard">
-            <div className="scoreCardMode">
-              <div className="modeText">
-                {t("tictactoe.gamemode")} :{" "}
-                {mode === "ai"
-                  ? t("tictactoe.withai")
-                  : t("tictactoe.withfriend")}
-              </div>
-            </div>
-
-            <div className="scoreCardHeader">
-              <div className="scoreTitle">{t("common.score")}</div>
-            </div>
-
-            <div className="scoreCardBody">
-              <p>
-                {p1Label} - {scoreP1}{" "}
-                <span
-                  className={`symbol-badge symbol-${player1Symbol.toLowerCase()}`}
-                >
-                  {player1Symbol}
-                </span>
-              </p>
-              <p>
-                {p2Label} - {scoreP2}{" "}
-                <span
-                  className={`symbol-badge symbol-${player2Symbol.toLowerCase()}`}
-                >
-                  {player2Symbol}
-                </span>
-              </p>
-            </div>
-
-            <div className="scoreCardFooter">
-              <button
-                className="commonScoreButton commonButton"
-                onClick={resetScore}
-              >
-                {t("tictactoe.resetScore")}
-              </button>
-              <button
-                className="commonScoreButton commonButton"
-                onClick={() => setMode(null)}
-              >
-                {t("tictactoe.changeGameMode")}
-              </button>
-            </div>
-          </div>
+          <TicTacToeScorePanel
+            modeLabel={mode}
+            players={[
+              { label: p1Label, score: scoreP1, symbol: player1Symbol },
+              { label: p2Label, score: scoreP2, symbol: player2Symbol },
+            ]}
+            roundsToWin={null}
+            actions={[
+              { label: t("tictactoe.resetScore"), onClick: resetScore },
+              {
+                label: t("tictactoe.changeGameMode"),
+                onClick: () => setMode(null),
+              },
+            ]}
+          />
         </div>
 
         <div className="center">
@@ -245,7 +213,10 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
         <div className="side hidden" />
       </div>
 
-      <button onClick={reset} className="commonButton commonMediumButton">
+      <button
+        onClick={reset}
+        className="commonButton commonMediumButton ttt-playAgainButton"
+      >
         {t("common.playAgain")}
       </button>
     </div>

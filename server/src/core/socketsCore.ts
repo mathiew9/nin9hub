@@ -10,6 +10,7 @@ import {
   unmapSocket,
   getRoomIdBySocket,
   playersCount,
+  removePlayerBySocket,
 } from "../core/storeCore";
 import { ok, err } from "../utils/ack";
 import { sanitizeTTTSettings, TTT_DEFAULTS } from "../games/tictactoe/settings";
@@ -38,54 +39,24 @@ export function leaveRoom(io: Server | Namespace, socket: Socket) {
   const roomId = getRoomIdBySocket(socket.id);
   if (!roomId) return;
 
-  const room = getRoom(roomId);
-  unmapSocket(socket.id);
   socket.leave(roomId);
+
+  const result = removePlayerBySocket(roomId, socket.id);
+  if (result.deleted) return;
+
+  const room = getRoom(roomId);
   if (!room) return;
-
-  const wasHost = room.hostId === socket.id;
-
-  // libérer les slots + host/guest
-  if (room.players.X === socket.id) room.players.X = "";
-  if (room.players.O === socket.id) room.players.O = "";
-  if (room.guestId === socket.id) room.guestId = "";
-  if (room.hostId === socket.id) room.hostId = "";
-
-  const remaining = playersCount(room);
-  if (remaining === 0) {
-    deleteRoom(room.id);
-    return;
-  }
-
-  // promotion hôte éventuelle
-  const promote = !!(room.settings as any)?.promoteGuestOnHostLeave;
-  if (wasHost && promote && !room.hostId) {
-    const remainingId = room.players.X || room.players.O;
-    room.hostId = remainingId || room.hostId;
-    room.guestId = "";
-  }
-
-  // reset manche → attente
-  room.started = false;
-  room.rematchVotes.clear();
-  room.stateVersion++;
-  const size = room.state.board.length;
-  room.state = {
-    board: Array<Cell>(size).fill(null),
-    turn: "X",
-    winner: null,
-    line: [],
-  };
-  saveRoom(room);
 
   broadcastState(io, room);
   io.to(room.id).emit(Events.RematchStatus, { votes: 0 });
+
   io.to(room.id).emit(Events.OpponentLeft, {
     roomId: room.id,
     hostId: room.hostId,
     players: playersCount(room),
     stateVersion: room.stateVersion,
   });
+
   emitWaiting(io, room);
 }
 
@@ -107,11 +78,21 @@ export function registerCoreRoomHandlers(io: Server, nsp: Server | Namespace) {
           hostId: socket.id,
           guestId: "",
           players: { X: socket.id, O: "" },
+          seats: { p1: socket.id, p2: "" },
           started: false,
           rematchVotes: new Set(),
           stateVersion: 0,
           createdAt: Date.now(),
-          state: { board, turn: "X", winner: null, line: [] },
+          state: {
+            board,
+            turn: "X",
+            winner: null,
+            line: [],
+            matchScore: { p1: 0, p2: 0 },
+            matchWinner: null,
+            turnDeadlineAt: null,
+            turnStartedAt: null,
+          },
           settings,
         };
 
@@ -152,6 +133,7 @@ export function registerCoreRoomHandlers(io: Server, nsp: Server | Namespace) {
 
         if (room.hostId && room.hostId !== socket.id) {
           room.guestId = socket.id;
+          room.seats.p2 = socket.id;
         }
 
         saveRoom(room);

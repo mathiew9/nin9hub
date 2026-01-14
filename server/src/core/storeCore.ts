@@ -68,6 +68,7 @@ export function clearPlayer(
 }
 
 /** Retire un joueur, met à jour l’état, et supprime la room si vide. */
+/** Remove a player from a room by socketId, update room state, and delete room if empty. */
 export function removePlayerBySocket(
   roomId: string,
   socketId: string
@@ -75,32 +76,51 @@ export function removePlayerBySocket(
   const room = rooms.get(roomId);
   if (!room) return { deleted: false, remaining: 0 };
 
-  const role = getRoleInRoom(room, socketId);
-  if (role) {
-    clearPlayer(room, role, socketId);
-    if (role === "X" && room.hostId === socketId) room.hostId = "";
-    if (role === "O" && room.guestId === socketId) room.guestId = "";
-  }
+  const wasHost = room.hostId === socketId;
+
+  // Detach from X/O slots (role can change with swaps, so we check both)
+  if (room.players.X === socketId) room.players.X = "";
+  if (room.players.O === socketId) room.players.O = "";
+
+  // Detach host/guest ids (independent from X/O role)
+  if (room.hostId === socketId) room.hostId = "";
+  if (room.guestId === socketId) room.guestId = "";
+
+  // Remove socket -> room mapping
   unmapSocket(socketId);
 
   const remaining = playersCount(room);
 
+  // If room is now empty, delete it
   if (remaining === 0) {
     rooms.delete(roomId);
     return { deleted: true, remaining: 0 };
   }
 
-  // repasse en attente
+  // Promote remaining player to host if host left and option enabled
+  const promote = !!(room.settings as any)?.promoteGuestOnHostLeave;
+  if (wasHost && promote && !room.hostId) {
+    const remainingId = room.players.X || room.players.O;
+    room.hostId = remainingId || room.hostId;
+    room.guestId = "";
+  }
+
+  // Back to waiting state
   room.started = false;
+  room.rematchVotes.clear();
   room.stateVersion = (room.stateVersion ?? 0) + 1;
 
-  // reset uniquement dans room.state (state-only)
+  // Reset game state (for now: reset match too)
   const size = room.state.board.length;
   room.state = {
     board: Array<Cell>(size).fill(null),
     turn: "X",
     winner: null as Winner,
     line: [],
+    matchScore: { p1: 0, p2: 0 },
+    matchWinner: null,
+    turnDeadlineAt: null,
+    turnStartedAt: null,
   };
 
   return { deleted: false, remaining };
