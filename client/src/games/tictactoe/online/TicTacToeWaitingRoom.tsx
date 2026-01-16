@@ -70,11 +70,11 @@ export default function TicTacToeWaitingRoom() {
 
   return (
     <div className="commonMenu ttt-wr-container">
-      <h3 className="commonMenuTitle">{t("tictactoe.waitingRoom")}</h3>
+      <h3 className="commonMenuTitle">{t("games.tictactoe.waitingRoom")}</h3>
 
       {/* Bloc Code room */}
       <div className="ttt-wr-roomCodeBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle">{t("common.roomCode")}</div>
+        <div className="ttt-wr-commonTitle">{t("common.labels.roomCode")}</div>
 
         <div
           className={`ttt-wr-roomBox ttt-wr-roomBox--grid ${
@@ -88,13 +88,17 @@ export default function TicTacToeWaitingRoom() {
               className="commonButton commonMenuButton ttt-wr-btn"
               onClick={copy}
             >
-              {copied ? t("common.copied") + " ✓" : t("common.copy")}
+              {copied
+                ? t("common.status.copied") + " ✓"
+                : t("common.actions.copy")}
             </button>
           )}
         </div>
 
         <div className="ttt-wr-roomCodeBlock-hint">
-          {isHost ? t("common.shareThisCode") : t("common.roomCode")}
+          {isHost
+            ? t("common.messages.shareThisCode")
+            : t("common.labels.roomCode")}
         </div>
       </div>
 
@@ -102,10 +106,10 @@ export default function TicTacToeWaitingRoom() {
       <div className="ttt-wr-playersBlock ttt-wr-commonBlock">
         <div className="ttt-wr-commonTitle ttt-wr-playersTitle">
           <span className="ttt-wr-colTitle ttt-wr-colTitle--player">
-            {t("common.players")}
+            {t("common.labels.players")}
           </span>
           <span className="ttt-wr-colTitle ttt-wr-colTitle--role">
-            {t("common.role")}
+            {t("common.labels.role")}
           </span>
         </div>
 
@@ -116,8 +120,8 @@ export default function TicTacToeWaitingRoom() {
               className={`ttt-wr-dot ${hostConnected ? "online" : "offline"}`}
             />
             <span className="ttt-wr-playerName">
-              {t("common.labels.host")}{" "}
-              {isHost ? `(${t("common.labels.you")})` : ""}
+              {t("common.players.host")}{" "}
+              {isHost ? `(${t("common.players.you")})` : ""}
             </span>
           </div>
           <div className="ttt-wr-cell ttt-wr-cell--role">
@@ -140,9 +144,9 @@ export default function TicTacToeWaitingRoom() {
             <span className="ttt-wr-playerName">
               {guestConnected
                 ? isHost
-                  ? ` ${t("common.labels.guest")}`
-                  : `${t("common.labels.guest")} (${t("common.labels.you")})`
-                : `${t("common.actions.waiting")}…`}
+                  ? ` ${t("common.players.guest")}`
+                  : `${t("common.players.guest")} (${t("common.players.you")})`
+                : `${t("common.status.waiting")}…`}
             </span>
           </div>
 
@@ -150,7 +154,7 @@ export default function TicTacToeWaitingRoom() {
           <div className="ttt-wr-cell ttt-wr-cell--status">
             {opponentLeft && (
               <span className="ttt-wr-miniAlert">
-                {t("common.yourOpponentHasLeftTheGame")}
+                {t("common.messages.yourOpponentHasLeftTheGame")}
               </span>
             )}
           </div>
@@ -173,7 +177,7 @@ export default function TicTacToeWaitingRoom() {
         {/* Footer Joueurs : hint + bouton swap */}
         <div className="ttt-wr-playersFooter">
           <div className="ttt-wr-playersBlock-hint">
-            {t("tictactoe.hints.XAlwaysGoesFirst")}
+            {t("games.tictactoe.hints.XAlwaysGoesFirst")}
           </div>
 
           {isHost && (
@@ -183,7 +187,7 @@ export default function TicTacToeWaitingRoom() {
               disabled={!guestConnected}
               title="Inverser X ↔ O"
             >
-              {t("tictactoe.actions.swapRoles")}
+              {t("games.tictactoe.actions.swapRoles")}
             </button>
           )}
         </div>
@@ -203,7 +207,7 @@ export default function TicTacToeWaitingRoom() {
                 {t("common.labels.gridSize")}
               </div>
               <div className="ttt-wr-settingsCell">
-                {t("common.labels.roundstoWin")}
+                {t("common.labels.roundsToWin")}
               </div>
               <div className="ttt-wr-settingsCell">
                 {t("common.labels.swapRolesOnRematch")}
@@ -276,7 +280,7 @@ export default function TicTacToeWaitingRoom() {
                     onChange={(e) => applyTurnMs(Number(e.target.value))}
                     className="ttt-wr-field ttt-wr-select"
                   >
-                    <option value={0}>{t("common.labels.unlimited")}</option>
+                    <option value={0}>{t("common.status.unlimited")}</option>
                     <option value={10_000}>10 s</option>
                     <option value={20_000}>20 s</option>
                     <option value={30_000}>30 s</option>
@@ -323,7 +327,7 @@ export default function TicTacToeWaitingRoom() {
         >
           {isHost
             ? `${t("common.actions.startGame")}`
-            : `${t("common.actions.waitingForHostToStart")}`}
+            : `${t("common.status.waitingForHostToStart")}`}
         </button>
       </div>
     </div>

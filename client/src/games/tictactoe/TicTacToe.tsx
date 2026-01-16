@@ -52,13 +52,15 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
   const isPlayer1Turn = currentPlayer === player1Symbol;
 
   const currentActorLabel = useMemo(() => {
-    if (isPlayer1Turn) return t("tictactoe.player1");
-    return mode === "ai" ? t("tictactoe.computer") : t("tictactoe.player2");
+    if (isPlayer1Turn) return t("common.players.player1");
+    return mode === "ai"
+      ? t("common.players.computer")
+      : t("common.players.player2");
   }, [isPlayer1Turn, mode, t]);
 
-  const p1Label = t("tictactoe.player1");
+  const p1Label = t("common.players.player1");
   const p2Label =
-    mode === "ai" ? t("tictactoe.computer") : t("tictactoe.player2");
+    mode === "ai" ? t("common.players.computer") : t("common.players.player2");
 
   // TURN TIMER
   const TURN_SECONDS = 10;
@@ -164,15 +166,15 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
   return (
     <div className="tictactoe">
       <TicTacToeStatusBar
-        leftText={winner || draw ? "" : t("tictactoe.toPlayShort")}
+        leftText={winner || draw ? "" : t("games.tictactoe.inGame.toPlayShort")}
         leftSymbol={winner || draw ? null : currentPlayer}
         centerText={
           winner
             ? `${winner === player1Symbol ? p1Label : p2Label} ${t(
-                "tictactoe.won"
+                "games.tictactoe.results.won"
               )}`
             : draw
-            ? t("tictactoe.draw")
+            ? t("common.results.draw")
             : currentActorLabel
         }
         timeSec={winner || draw ? null : timeLeftSec}
@@ -188,9 +190,9 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
             ]}
             roundsToWin={null}
             actions={[
-              { label: t("tictactoe.resetScore"), onClick: resetScore },
+              { label: t("common.actions.resetScore"), onClick: resetScore },
               {
-                label: t("tictactoe.changeGameMode"),
+                label: t("common.modes.changeGameMode"),
                 onClick: () => setMode(null),
               },
             ]}
@@ -217,7 +219,7 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
         onClick={reset}
         className="commonButton commonMediumButton ttt-playAgainButton"
       >
-        {t("common.playAgain")}
+        {t("common.actions.playAgain")}
       </button>
     </div>
   );

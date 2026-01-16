@@ -33,8 +33,8 @@ export default function TicTacToeBoardOnlineAdapter() {
   const { t } = useTranslation();
   const isMatchEnded = !!matchWinner;
   const actionLabelBase = isMatchEnded
-    ? t("tictactoe.rematch")
-    : t("common.playAgain");
+    ? t("games.tictactoe.rematch")
+    : t("common.actions.playAgain");
 
   // Timer tick (used to compute remaining time)
   const [now, setNow] = useState(() => Date.now());
@@ -116,20 +116,20 @@ export default function TicTacToeBoardOnlineAdapter() {
   return (
     <>
       <TicTacToeStatusBar
-        leftText={winner ? "" : `${t("common.turn")} :`}
+        leftText={winner ? "" : `${t("common.labels.turn")} :`}
         leftSymbol={
           winner === "draw" ? null : winner ? (winner as Player) : turn ?? null
         }
         centerText={
           winner === "draw"
-            ? t("tictactoe.draw")
+            ? t("common.results.draw")
             : winner
             ? winner === role
-              ? `${t("common.victory")} !`
-              : `${t("common.defeat")}.`
+              ? `${t("common.results.victory")} !`
+              : `${t("common.results.defeat")}.`
             : canPlay
-            ? `${t("common.yourTurn")}`
-            : `${t("common.actions.waiting")}...`
+            ? `${t("common.turn.yourTurn")}`
+            : `${t("common.status.waiting")}...`
         }
         isInfinite={isInfinite}
         timeSec={winner ? null : isInfinite ? elapsedSec : timeLeft}
@@ -143,14 +143,14 @@ export default function TicTacToeBoardOnlineAdapter() {
             roundsToWin={roundsToWin}
             players={[
               {
-                label: t("common.labels.you"),
+                label: t("common.players.you"),
                 score: myScore,
                 symbol: mySymbol,
                 isTurn: turn === mySymbol && !winner,
                 matchWinner: matchWinner === mySeat,
               },
               {
-                label: t("common.labels.opponent"),
+                label: t("common.players.opponent"),
                 score: oppScore,
                 symbol: oppSymbol,
                 isTurn: turn === oppSymbol && !winner,
@@ -173,7 +173,7 @@ export default function TicTacToeBoardOnlineAdapter() {
               canPlay={canPlay}
             />
             <div className="ttt-online-help">
-              {t("tictactoe.hints.youAre") + " " + role + "."}
+              {t("games.tictactoe.hints.youAre") + " " + role + "."}
             </div>
           </div>
 
@@ -188,7 +188,7 @@ export default function TicTacToeBoardOnlineAdapter() {
                 disabled={myRematchVoted || rematchVotes === 2}
                 title={
                   myRematchVoted
-                    ? `${t("common.actions.waitingForOpponent")}…`
+                    ? `${t("common.status.waitingForOpponent")}…`
                     : t("common.actions.requestRematch")
                 }
               >
@@ -200,7 +200,7 @@ export default function TicTacToeBoardOnlineAdapter() {
                   `${actionLabelBase} (1/2)`}
                 {myRematchVoted &&
                   rematchVotes < 2 &&
-                  `${t("common.actions.waitingForOpponent")} (1/2)…`}
+                  `${t("common.status.waitingForOpponent")} (1/2)…`}
                 {rematchVotes === 2 && `${actionLabelBase} (2/2)`}
               </button>
 

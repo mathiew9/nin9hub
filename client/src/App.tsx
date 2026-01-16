@@ -51,9 +51,9 @@ function GameSelection() {
           <button
             className={classes}
             disabled={!isAvailable}
-            title={!isAvailable ? t("common.availableSoon") : undefined}
+            title={!isAvailable ? t("common.meta.availableSoon") : undefined}
           >
-            {t(`${game.id}.name`)}
+            {t(`games.${game.id}.name`)}
           </button>
         );
 

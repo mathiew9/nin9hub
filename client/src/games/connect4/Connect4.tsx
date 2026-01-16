@@ -171,9 +171,9 @@ export default function Connect4({ mode, setMode }: Props) {
                 winner === "red" ? "connect4RedBadge" : "connect4YellowBadge"
               }`}
             >
-              {t(`connect4.${winner}`)}
+              {t(`games.connect4.colors.${winner}`)}
             </span>{" "}
-            {t("connect4.wins")}!
+            {t("games.connect4.inGame.wins")}!
           </>
         ) : !isDraw ? (
           <>
@@ -184,38 +184,38 @@ export default function Connect4({ mode, setMode }: Props) {
                   : "connect4YellowBadge"
               }`}
             >
-              {t(`connect4.${currentPlayer}`)}
+              {t(`games.connect4.colors.${currentPlayer}`)}
             </span>{" "}
-            {t("connect4.turn")}
+            {t("games.connect4.inGame.turn")}
           </>
         ) : null}
       </h2>
 
-      {isDraw && !winner && <h2>{t("tictactoe.draw")}</h2>}
+      {isDraw && !winner && <h2>{t("common.results.draw")}</h2>}
       <div className="commonGameLayout">
         <div className="side">
           <div className="scoreCard">
             <div className="scoreCardMode">
               <div className="modeText">
-                {t("tictactoe.gamemode")} :{" "}
+                {t("common.modes.gameMode")} :{" "}
                 {mode === "ai"
-                  ? t("tictactoe.withai")
-                  : t("tictactoe.withfriend")}
+                  ? t("common.modes.withai")
+                  : t("common.modes.withfriend")}
               </div>
             </div>
             <div className="scoreCardHeader">
-              <div className="scoreTitle">{t("common.score")}</div>
+              <div className="scoreTitle">{t("common.labels.score")}</div>
             </div>
             <div className="scoreCardBody">
               <p>
                 <span className="connect4RedBadge connect4Badge">
-                  {t("connect4.red")}
+                  {t("games.connect4.colors.red")}
                 </span>{" "}
                 - {score.red}
               </p>
               <p>
                 <span className="connect4YellowBadge connect4Badge">
-                  {t("connect4.yellow")}
+                  {t("games.connect4.colors.yellow")}
                 </span>{" "}
                 - {score.yellow}
               </p>
@@ -225,13 +225,13 @@ export default function Connect4({ mode, setMode }: Props) {
                 className="commonButton commonMediumButton resetScore"
                 onClick={resetScore}
               >
-                {t("tictactoe.resetScore")}
+                {t("common.actions.resetScore")}
               </button>
               <button
                 className="commonButton commonMediumButton changeModeButton"
                 onClick={() => setMode(null)}
               >
-                {t("tictactoe.changeGameMode")}
+                {t("common.modes.changeGameMode")}
               </button>
             </div>
           </div>
@@ -340,7 +340,7 @@ export default function Connect4({ mode, setMode }: Props) {
         className="commonButton commonMediumButton C4-playAgainButton"
         onClick={resetGame}
       >
-        {t("common.playAgain")}
+        {t("common.actions.playAgain")}
       </button>
     </div>
   );

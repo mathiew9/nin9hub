@@ -9,20 +9,20 @@ export default function Connect4Menu({ onSelectMode }: Props) {
 
   return (
     <div className="commonMenu">
-      <h2 className="commonMenuTitle">{t("common.selectgamemode")}</h2>
+      <h2 className="commonMenuTitle">{t("common.modes.selectGameMode")}</h2>
 
       <div className="commonMenuButtons">
         <button
           className="commonButton commonMenuButton"
           onClick={() => onSelectMode("friend")}
         >
-          {t("common.playwithfriend")}
+          {t("common.modes.playWithFriend")}
         </button>
         <button
           className="commonButton commonMenuButton"
           onClick={() => onSelectMode("ai")}
         >
-          {t("common.playwithai")}
+          {t("common.modes.playWithAi")}
         </button>
       </div>
     </div>

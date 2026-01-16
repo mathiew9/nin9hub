@@ -31,29 +31,29 @@ export default function TicTacToeOnlineSetup({ onBack }: Props) {
 
   return (
     <div className="commonMenu">
-      <h2 className="commonMenuTitle">{t("tictactoe.onlineTitle")}</h2>
+      <h2 className="commonMenuTitle">{t("games.tictactoe.onlineTitle")}</h2>
 
       <div className="commonMenuButtons">
         <div className="ttt-online-joinRoom">
           <input
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            placeholder={t("common.roomCode")}
+            placeholder={t("common.labels.roomCode")}
             className="multiInput"
             onFocus={clearError}
           />
           <button className="commonButton commonMenuButton" onClick={onJoin}>
-            {t("common.join")}
+            {t("common.actions.join")}
           </button>
         </div>
         <button className="commonButton commonMenuButton" onClick={onCreate}>
-          {t("common.hostGame")}
+          {t("common.actions.hostGame")}
         </button>
         <button
           className="commonButton commonMenuButton ttt-online-backBtn"
           onClick={handleBack}
         >
-          {t("common.back")}
+          {t("common.actions.back")}
         </button>
       </div>
 

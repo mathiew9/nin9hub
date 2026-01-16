@@ -76,7 +76,7 @@ export default function Header() {
 
       {gameName && (
         <div className="header-game">
-          <div>{currentGame && t(`${currentGame.id}.name`)}</div>
+          <div>{currentGame && t(`games.${currentGame.id}.name`)}</div>
         </div>
       )}
 

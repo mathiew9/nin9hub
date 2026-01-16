@@ -42,16 +42,16 @@ export default function TicTacToeScorePanel({
 }: Props) {
   const { t } = useTranslation();
   const [p1, p2] = players;
-  const resolvedTitle = title ?? t("common.score");
+  const resolvedTitle = title ?? t("common.labels.score");
 
   const getMode = (modeLabel: string) => {
     switch (modeLabel) {
       case "online":
-        return t("tictactoe.online");
+        return t("common.modes.online");
       case "friend":
-        return t("tictactoe.withfriend");
+        return t("common.modes.withfriend");
       case "ai":
-        return t("tictactoe.withai");
+        return t("common.modes.withai");
       default:
         return modeLabel;
     }
@@ -82,7 +82,9 @@ export default function TicTacToeScorePanel({
 
         {typeof roundsToWin === "number" && roundsToWin > 0 ? (
           <div className="tttScorePanel__subtitle">
-            {t("tictactoe.firstToRounds", { count: Number(roundsToWin) })}
+            {t("games.tictactoe.plural.firstToRounds", {
+              count: Number(roundsToWin),
+            })}
           </div>
         ) : null}
       </div>

@@ -19,7 +19,7 @@ export default function MinesweeperWrapper() {
           className="commonButton commonMediumButton"
           onClick={() => setHasStarted(false)}
         >
-          {t("minesweeper.changeSize")}
+          {t("games.minesweeper.actions.changeSize")}
         </button>
       ) : null}
 

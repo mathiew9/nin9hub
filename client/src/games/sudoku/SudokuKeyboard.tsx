@@ -23,14 +23,14 @@ export default function SudokuKeyboard({
         <button
           className="keyboard-button control"
           onClick={onDelete}
-          title={t("sudoku.erase")}
+          title={t("games.sudoku.actions.erase")}
         >
           <FaEraser />
         </button>
         <button
           className={`keyboard-button control ${noteMode ? "active" : ""}`}
           onClick={onToggleNoteMode}
-          title={t("sudoku.noteMode")}
+          title={t("games.sudoku.labels.noteMode")}
         >
           <FaRegPenToSquare />
         </button>
