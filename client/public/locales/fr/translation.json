@@ -15,9 +15,39 @@
     "level": "Niveau",
     "daily": "Journalier",
     "roomCode": "Code de la salle",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "shareThisCode": "Partage ce code à un ami",
     "join": "Rejoindre",
     "hostGame": "Héberger une partie",
-    "back": "Retour"
+    "back": "Retour",
+    "players": "Joueurs",
+    "role": "Rôle",
+    "yourOpponentHasLeftTheGame": "Votre adversaire a quitté la partie",
+    "victory": "Victoire",
+    "defeat": "Défaite",
+    "yourTurn": "À vous de jouer",
+    "turn": "Tour",
+    "labels": {
+      "host": "Hôte",
+      "guest": "Invité",
+      "you": "Vous",
+      "settings": "Paramètres",
+      "gridSize": "Taille de la grille",
+      "roundstoWin": "Manches pour gagner",
+      "swapRolesOnRematch": "Inverser les rôles au rematch",
+      "turnTime": "Temps par tour",
+      "unlimited": "Illimité",
+      "opponent": "Adversaire"
+    },
+    "actions": {
+      "waiting": "En attente",
+      "leave": "Quitter",
+      "startGame": "Démarrer la partie",
+      "waitingForHostToStart": "En attente que l'hôte démarre",
+      "waitingForOpponent": "En attente de l'adversaire",
+      "requestRematch": "Proposer une revanche"
+    }
   },
   "header": {
     "menu": "Jeux"
@@ -37,7 +67,18 @@
     "won": "à gagné",
     "draw": "Match nul",
     "resetScore": "Reinitialiser le score",
-    "onlineTitle": "Morpion - En ligne"
+    "onlineTitle": "Morpion - En ligne",
+    "waitingRoom": "Salle d’attente",
+    "firstToRounds_one": "Premier à {{count}} manche",
+    "firstToRounds_other": "Premier à {{count}} manches",
+    "rematch": "Nouveau match",
+    "hints": {
+      "XAlwaysGoesFirst": "X commence toujours",
+      "youAre": "Vous êtes"
+    },
+    "actions": {
+      "swapRoles": "Inverser les rôles"
+    }
   },
   "chess": {
     "name": "Échecs"

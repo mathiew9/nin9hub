@@ -34,7 +34,7 @@ type Props = {
 
 export default function TicTacToeScorePanel({
   modeLabel,
-  title = "Score",
+  title,
   players,
   roundsToWin = null,
   actions = [],
@@ -42,6 +42,7 @@ export default function TicTacToeScorePanel({
 }: Props) {
   const { t } = useTranslation();
   const [p1, p2] = players;
+  const resolvedTitle = title ?? t("common.score");
 
   const getMode = (modeLabel: string) => {
     switch (modeLabel) {
@@ -70,7 +71,7 @@ export default function TicTacToeScorePanel({
           .join(" ")}
       >
         <div className="tttScorePanel__titleRow">
-          <div className="tttScorePanel__title">{title}</div>
+          <div className="tttScorePanel__title">{resolvedTitle}</div>
 
           {modeLabel ? (
             <span className="tttScorePanel__modeBadge">
@@ -81,7 +82,7 @@ export default function TicTacToeScorePanel({
 
         {typeof roundsToWin === "number" && roundsToWin > 0 ? (
           <div className="tttScorePanel__subtitle">
-            Premier à <b>{roundsToWin}</b> manche{roundsToWin > 1 ? "s" : ""}
+            {t("tictactoe.firstToRounds", { count: Number(roundsToWin) })}
           </div>
         ) : null}
       </div>

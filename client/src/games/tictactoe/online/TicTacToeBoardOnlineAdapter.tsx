@@ -4,6 +4,7 @@ import TicTacToeBoard from "../shared/TicTacToeBoard";
 import TicTacToeStatusBar from "../shared/TicTacToeStatusBar";
 import TicTacToeScorePanel from "../shared/TicTacToeScorePanel";
 import { useOnline } from "./TicTacToeOnlineProvider";
+import { useTranslation } from "react-i18next";
 
 type Player = "X" | "O";
 type Cell = Player | null;
@@ -29,8 +30,11 @@ export default function TicTacToeBoardOnlineAdapter() {
     matchWinner,
   } = useOnline();
 
+  const { t } = useTranslation();
   const isMatchEnded = !!matchWinner;
-  const actionLabelBase = isMatchEnded ? "Nouveau match" : "Rejouer";
+  const actionLabelBase = isMatchEnded
+    ? t("tictactoe.rematch")
+    : t("common.playAgain");
 
   // Timer tick (used to compute remaining time)
   const [now, setNow] = useState(() => Date.now());
@@ -112,20 +116,20 @@ export default function TicTacToeBoardOnlineAdapter() {
   return (
     <>
       <TicTacToeStatusBar
-        leftText={winner ? "" : "Tour :"}
+        leftText={winner ? "" : `${t("common.turn")} :`}
         leftSymbol={
           winner === "draw" ? null : winner ? (winner as Player) : turn ?? null
         }
         centerText={
           winner === "draw"
-            ? "Égalité"
+            ? t("tictactoe.draw")
             : winner
             ? winner === role
-              ? "Victoire !"
-              : "Défaite."
+              ? `${t("common.victory")} !`
+              : `${t("common.defeat")}.`
             : canPlay
-            ? "À vous de jouer"
-            : "En attente"
+            ? `${t("common.yourTurn")}`
+            : `${t("common.actions.waiting")}...`
         }
         isInfinite={isInfinite}
         timeSec={winner ? null : isInfinite ? elapsedSec : timeLeft}
@@ -139,14 +143,14 @@ export default function TicTacToeBoardOnlineAdapter() {
             roundsToWin={roundsToWin}
             players={[
               {
-                label: "Vous",
+                label: t("common.labels.you"),
                 score: myScore,
                 symbol: mySymbol,
                 isTurn: turn === mySymbol && !winner,
                 matchWinner: matchWinner === mySeat,
               },
               {
-                label: "Adversaire",
+                label: t("common.labels.opponent"),
                 score: oppScore,
                 symbol: oppSymbol,
                 isTurn: turn === oppSymbol && !winner,
@@ -168,7 +172,9 @@ export default function TicTacToeBoardOnlineAdapter() {
               mode="online"
               canPlay={canPlay}
             />
-            <div className="ttt-online-help">{"Vous êtes " + role + "."}</div>
+            <div className="ttt-online-help">
+              {t("tictactoe.hints.youAre") + " " + role + "."}
+            </div>
           </div>
 
           {/* Si tu veux : quand matchWinner existe, tu peux choisir de ne plus proposer "rejouer" mais plutôt "nouveau match" */}
@@ -182,8 +188,8 @@ export default function TicTacToeBoardOnlineAdapter() {
                 disabled={myRematchVoted || rematchVotes === 2}
                 title={
                   myRematchVoted
-                    ? "En attente de l’autre…"
-                    : "Proposer un rematch"
+                    ? `${t("common.actions.waitingForOpponent")}…`
+                    : t("common.actions.requestRematch")
                 }
               >
                 {rematchVotes === 0 &&
@@ -194,7 +200,7 @@ export default function TicTacToeBoardOnlineAdapter() {
                   `${actionLabelBase} (1/2)`}
                 {myRematchVoted &&
                   rematchVotes < 2 &&
-                  `En attente de l’autre (1/2)…`}
+                  `${t("common.actions.waitingForOpponent")} (1/2)…`}
                 {rematchVotes === 2 && `${actionLabelBase} (2/2)`}
               </button>
 
@@ -202,7 +208,7 @@ export default function TicTacToeBoardOnlineAdapter() {
                 className="commonButton ttt-online-actionBtn"
                 onClick={leave}
               >
-                Quitter
+                {t("common.actions.leave")}
               </button>
             </div>
           )}

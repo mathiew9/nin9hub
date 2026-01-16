@@ -15,12 +15,39 @@
     "level": "Level",
     "daily": "Daily",
     "roomCode": "ROOM CODE",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "shareThisCode": "Share this code with a friend",
     "join": "Join room",
     "hostGame": "Host game",
-    "back": "Back"
-  },
-  "header": {
-    "menu": "Games"
+    "back": "Back",
+    "players": "Players",
+    "role": "Role",
+    "yourOpponentHasLeftTheGame": "Your opponent has left the game",
+    "victory": "Victory",
+    "defeat": "Defeat",
+    "yourTurn": "Your turn",
+    "turn": "Turn",
+    "labels": {
+      "host": "Host",
+      "guest": "Guest",
+      "you": "You",
+      "settings": "Settings",
+      "gridSize": "Grid Size",
+      "roundstoWin": "Rounds to Win",
+      "swapRolesOnRematch": "Swap roles on rematch",
+      "turnTime": "Turn Time",
+      "unlimited": "Unlimited",
+      "opponent": "Opponent"
+    },
+    "actions": {
+      "waiting": "Waiting",
+      "leave": "Leave",
+      "startGame": "Start Game",
+      "waitingForHostToStart": "Waiting for host to start",
+      "waitingForOpponent": "Waiting for opponent",
+      "requestRematch": "Request a rematch"
+    }
   },
   "tictactoe": {
     "name": "Tic-Tac-Toe",
@@ -37,7 +64,21 @@
     "won": "won",
     "draw": "Draw",
     "resetScore": "Reset score",
-    "onlineTitle": "Tic-Tac-Toe - Online"
+    "onlineTitle": "Tic-Tac-Toe - Online",
+    "waitingRoom": "Waiting Room",
+    "firstToRounds_one": "First to {{count}} round",
+    "firstToRounds_other": "First to {{count}} rounds",
+    "rematch": "Rematch",
+    "hints": {
+      "XAlwaysGoesFirst": "X always goes first",
+      "youAre": "You are"
+    },
+    "actions": {
+      "swapRoles": "Swap roles"
+    }
+  },
+  "header": {
+    "menu": "Games"
   },
   "chess": {
     "name": "Chess"
