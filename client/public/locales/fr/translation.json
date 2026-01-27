@@ -13,7 +13,8 @@
       "startGame": "Démarrer la partie",
       "playAgain": "Rejouer",
       "requestRematch": "Proposer un rematch",
-      "resetScore": "Réinitialiser le score"
+      "resetScore": "Réinitialiser le score",
+      "changeSettings": "Changer les paramètres"
     },
     "labels": {
       "score": "Score",

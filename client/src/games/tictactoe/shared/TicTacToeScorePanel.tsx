@@ -17,18 +17,15 @@ type ScoreAction = {
   onClick: () => void;
   disabled?: boolean;
   title?: string;
-  className?: string; // lets you add mode-specific styling
+  className?: string;
 };
 
 type Props = {
-  modeLabel?: string; // e.g. "En ligne", "Avec ami", "Avec IA"
-  title?: string; // default: "Score"
+  modeLabel?: string;
+  title?: string;
   players: [ScorePlayer, ScorePlayer];
-
   roundsToWin?: number | null;
-
   actions?: ScoreAction[];
-
   className?: string;
 };
 

@@ -206,8 +206,8 @@ export function useTicTacToeOnline() {
         const status: Status = winner
           ? "ended"
           : payload.started
-          ? "playing"
-          : "waiting";
+            ? "playing"
+            : "waiting";
 
         const nextHostId =
           payload.hostId && payload.hostId.length > 0
@@ -359,9 +359,9 @@ export function useTicTacToeOnline() {
               setError(res.code, res.message);
             }
             resolve(res);
-          }
+          },
         );
-      }
+      },
     );
   }, [socket, safeLeaveIfNeeded, refreshMyId]);
 
@@ -394,11 +394,11 @@ export function useTicTacToeOnline() {
               setError(res.code, res.message);
             }
             resolve(res);
-          }
+          },
         );
       });
     },
-    [socket, safeLeaveIfNeeded, refreshMyId]
+    [socket, safeLeaveIfNeeded, refreshMyId],
   );
 
   const startGame = useCallback(async () => {
@@ -427,7 +427,7 @@ export function useTicTacToeOnline() {
         });
       });
     },
-    [socket, canPlay]
+    [socket, canPlay],
   );
 
   const requestRematch = useCallback(async () => {
@@ -475,28 +475,42 @@ export function useTicTacToeOnline() {
             partial,
             (res: Ack<{ settings: RoomSettings }>) => {
               if (res.ok) {
-                setS((prev) => ({ ...prev, settings: res.data.settings }));
-              } else {
                 setS((prev) => ({
                   ...prev,
-                  lastError: { code: res.code, message: res.message },
+                  settings: res.data.settings,
+                  lastError: null,
                 }));
+              } else {
+                setError(res.code, res.message);
               }
               resolve(res);
-            }
+            },
           );
-        }
+        },
       );
     },
-    [socket]
+    [socket, setError],
   );
+
+  const backToSettings = useCallback(async () => {
+    return new Promise<AckSuccess<{}> | AckError>((resolve) => {
+      socket.emit("online:backToSettings", (res: Ack<{}>) => {
+        if (res.ok) {
+          setS((prev) => ({ ...prev, lastError: null }));
+        } else {
+          setError(res.code, res.message);
+        }
+        resolve(res);
+      });
+    });
+  }, [socket, setError]);
 
   /* -------- Lifecycles -------- */
   useEffect(() => {
     if (!s.opponentLeft) return;
     const t = setTimeout(
       () => setS((prev) => ({ ...prev, opponentLeft: false })),
-      3000
+      3000,
     );
     return () => clearTimeout(t);
   }, [s.opponentLeft]);
@@ -533,6 +547,7 @@ export function useTicTacToeOnline() {
     leaveNow,
     updateSettings,
     swapRolesNow,
+    backToSettings,
     clearError: () => setS((p) => ({ ...p, lastError: null })),
   };
 }

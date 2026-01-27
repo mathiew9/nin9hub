@@ -48,10 +48,6 @@ export default function Connect4({ mode, setMode }: Props) {
         if (fallTimeoutRef.current) {
           clearTimeout(fallTimeoutRef.current);
         }
-        fallTimeoutRef.current = window.setTimeout(() => {
-          setLastMove(null);
-          fallTimeoutRef.current = null;
-        }, 1000);
         setBoard(newBoard);
         const result = checkWinner(newBoard, row, col, currentPlayer);
         if (result) {
@@ -281,54 +277,50 @@ export default function Connect4({ mode, setMode }: Props) {
             </div>
             {board.map((row, rowIndex) => (
               <div key={rowIndex} className="row">
-                {row.map((cell, colIndex) => (
-                  <div
-                    key={`${colIndex}-${
-                      lastMove?.row === rowIndex && lastMove?.col === colIndex
-                        ? Date.now()
-                        : ""
-                    }`}
-                    className={`cell ${cell || ""}
-                    ${
-                      !winner &&
-                      !isDraw &&
-                      (mode === "friend" || currentPlayer === "red") &&
-                      isHoveredPlayable(rowIndex, colIndex)
-                        ? `hoverable hoverable-${currentPlayer}`
-                        : ""
-                    }
-                    ${
-                      lastMove?.row === rowIndex && lastMove?.col === colIndex
-                        ? "falling"
-                        : ""
-                    }
-                    ${
-                      lastMove === null &&
-                      winningCells.some(
-                        (c) => c.row === rowIndex && c.col === colIndex
-                      )
-                        ? "cell--win"
-                        : ""
-                    }
-                  `}
-                    style={
-                      lastMove?.row === rowIndex && lastMove?.col === colIndex
-                        ? ({
-                            ["--fall-distance" as any]: `${
-                              -(rowIndex + 1) * 68
-                            }px`,
-                          } as React.CSSProperties)
-                        : undefined
-                    }
-                    onMouseEnter={() => setHoverCol(colIndex)}
-                    onMouseLeave={() => setHoverCol(null)}
-                    onClick={() => {
-                      if (mode === "friend" || currentPlayer === "red") {
-                        dropDisc(colIndex);
+                {row.map((cell, colIndex) => {
+                  const isFalling =
+                    lastMove?.row === rowIndex && lastMove?.col === colIndex;
+
+                  return (
+                    <div
+                      key={`${rowIndex}-${colIndex}`} // 🔥 clé stable
+                      className={[
+                        "cell",
+                        cell ? `filled ${cell}` : "",
+                        !winner &&
+                        !isDraw &&
+                        (mode === "friend" || currentPlayer === "red") &&
+                        isHoveredPlayable(rowIndex, colIndex)
+                          ? `hoverable hoverable-${currentPlayer}`
+                          : "",
+                        isFalling ? "is-falling" : "",
+                        lastMove === null &&
+                        winningCells.some(
+                          (c) => c.row === rowIndex && c.col === colIndex
+                        )
+                          ? "cell--win"
+                          : "",
+                      ].join(" ")}
+                      style={
+                        isFalling
+                          ? ({
+                              ["--fromY" as any]: `${-(rowIndex + 1) * 68}px`,
+                            } as React.CSSProperties)
+                          : undefined
                       }
-                    }}
-                  />
-                ))}
+                      onAnimationEnd={() => {
+                        if (isFalling) setLastMove(null);
+                      }}
+                      onMouseEnter={() => setHoverCol(colIndex)}
+                      onMouseLeave={() => setHoverCol(null)}
+                      onClick={() => {
+                        if (mode === "friend" || currentPlayer === "red") {
+                          dropDisc(colIndex);
+                        }
+                      }}
+                    />
+                  );
+                })}
               </div>
             ))}
           </div>

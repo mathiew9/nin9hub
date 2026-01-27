@@ -23,11 +23,13 @@ export default function TicTacToeBoardOnlineAdapter() {
     requestRematch,
     leave,
     playTurn,
+    backToSettings,
     settings,
     turnDeadlineAt,
     turnStartedAt,
     matchScore,
     matchWinner,
+    isHost,
   } = useOnline();
 
   const { t } = useTranslation();
@@ -101,35 +103,44 @@ export default function TicTacToeBoardOnlineAdapter() {
 
   const oppSeat: Seat | null = mySeat ? (mySeat === "p1" ? "p2" : "p1") : null;
 
-  const myScore = mySeat ? matchScore?.[mySeat] ?? 0 : 0;
-  const oppScore = oppSeat ? matchScore?.[oppSeat] ?? 0 : 0;
+  const myScore = mySeat ? (matchScore?.[mySeat] ?? 0) : 0;
+  const oppScore = oppSeat ? (matchScore?.[oppSeat] ?? 0) : 0;
 
   const mySymbol = (role ?? "X") as Player;
   const oppSymbol: Player = mySymbol === "X" ? "O" : "X";
 
-  // Optionnel: libellé gagnant de match
-  // const matchWinnerLabel =
-  //   matchWinner ? (matchWinner === mySymbol ? "Vous" : "Adversaire") : null;
-
   const roundsToWin = settings?.roundsToWin ?? null;
+
+  const scoreActions = isHost
+    ? [
+        {
+          label: t("common.actions.changeSettings"),
+          onClick: backToSettings,
+        },
+      ]
+    : [];
 
   return (
     <>
       <TicTacToeStatusBar
         leftText={winner ? "" : `${t("common.labels.turn")} :`}
         leftSymbol={
-          winner === "draw" ? null : winner ? (winner as Player) : turn ?? null
+          winner === "draw"
+            ? null
+            : winner
+              ? (winner as Player)
+              : (turn ?? null)
         }
         centerText={
           winner === "draw"
             ? t("common.results.draw")
             : winner
-            ? winner === role
-              ? `${t("common.results.victory")} !`
-              : `${t("common.results.defeat")}.`
-            : canPlay
-            ? `${t("common.turn.yourTurn")}`
-            : `${t("common.status.waiting")}...`
+              ? winner === role
+                ? `${t("common.results.victory")} !`
+                : `${t("common.results.defeat")}.`
+              : canPlay
+                ? `${t("common.turn.yourTurn")}`
+                : `${t("common.status.waiting")}...`
         }
         isInfinite={isInfinite}
         timeSec={winner ? null : isInfinite ? elapsedSec : timeLeft}
@@ -157,6 +168,7 @@ export default function TicTacToeBoardOnlineAdapter() {
                 matchWinner: matchWinner === oppSeat,
               },
             ]}
+            actions={scoreActions}
           />
         </div>
 

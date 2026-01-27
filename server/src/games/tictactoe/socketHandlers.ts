@@ -76,7 +76,7 @@ function onRoundFinished(room: any, roundWinner: Player | "draw") {
 function armTurnTimer(
   ns: Namespace,
   roomId: string,
-  deadlineAt: number | null
+  deadlineAt: number | null,
 ) {
   clearTurnTimer(roomId);
   if (!deadlineAt) return;
@@ -191,7 +191,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
         return err(
           ack,
           "MATCH_ENDED",
-          "Le match est terminé. Lance un nouveau match."
+          "Le match est terminé. Lance un nouveau match.",
         );
       }
 
@@ -199,8 +199,8 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
         room.players.X === socket.id
           ? "X"
           : room.players.O === socket.id
-          ? "O"
-          : null;
+            ? "O"
+            : null;
 
       if (!role)
         return err(ack, "NOT_IN_ROOM", "Tu n'es pas un joueur de cette room.");
@@ -252,7 +252,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
       Events.UpdateSettings,
       (
         partial: Partial<RoomSettings>,
-        ack: Ack<{ settings: RoomSettings }>
+        ack: Ack<{ settings: RoomSettings }>,
       ) => {
         const roomId = getRoomIdBySocket(socket.id);
         if (!roomId)
@@ -263,7 +263,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
           return err(
             ack,
             "ONLY_HOST",
-            "Seul l'hôte peut modifier les paramètres."
+            "Seul l'hôte peut modifier les paramètres.",
           );
         }
 
@@ -287,7 +287,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
         }
 
         ok(ack, { settings: merged });
-      }
+      },
     );
 
     // Swap roles in waiting room (host-only)
@@ -352,7 +352,7 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
         return err(
           ack,
           "GAME_NOT_ENDED",
-          "Le rematch est possible une fois la manche terminée."
+          "Le rematch est possible une fois la manche terminée.",
         );
       }
 
@@ -407,6 +407,55 @@ export function registerTicTacToeHandlers(io: Server, nsp: Namespace | Server) {
 
         armTurnTimer(ns, room.id, room.state.turnDeadlineAt ?? null);
       }
+    });
+
+    socket.on(Events.BackToSettings, (ack: Ack<{}>) => {
+      const roomId = getRoomIdBySocket(socket.id);
+      if (!roomId) return err(ack, "NOT_IN_ROOM", "Tu n'es pas dans une room.");
+
+      const room = getRoom(roomId);
+      if (!room) return err(ack, "ROOM_NOT_FOUND", "La room est introuvable.");
+
+      if (socket.id !== room.hostId) {
+        return err(
+          ack,
+          "ONLY_HOST",
+          "Seul l'hôte peut revenir aux paramètres.",
+        );
+      }
+
+      // Idempotent: si déjà en settings, on renvoie ok
+      if (!room.started) {
+        ok(ack, {});
+        return;
+      }
+
+      clearTurnTimer(room.id);
+
+      const settings = (room.settings ?? {}) as RoomSettings;
+      const grid = settings.gridSize ?? 3;
+
+      room.state.board = emptyBoard(grid);
+      room.state.turn = "X";
+      room.state.winner = null;
+      room.state.line = [];
+
+      room.state.turnDeadlineAt = null;
+      room.state.turnStartedAt = null;
+
+      room.state.matchScore = { p1: 0, p2: 0 };
+      room.state.matchWinner = null;
+
+      room.started = false;
+      room.rematchVotes.clear();
+
+      room.stateVersion = (room.stateVersion ?? 0) + 1;
+
+      saveRoom(room);
+      broadcastState(ns, room);
+      ns.to(room.id).emit(Events.RematchStatus, { votes: 0 });
+
+      ok(ack, {});
     });
   });
 }
