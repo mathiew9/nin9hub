@@ -13,12 +13,15 @@ export default function Connect4Menu({ onSelectMode }: Props) {
 
       <div className="commonMenuButtons">
         <button
+          type="button"
           className="commonButton commonMenuButton"
           onClick={() => onSelectMode("friend")}
         >
           {t("common.modes.playWithFriend")}
         </button>
+
         <button
+          type="button"
           className="commonButton commonMenuButton"
           onClick={() => onSelectMode("ai")}
         >

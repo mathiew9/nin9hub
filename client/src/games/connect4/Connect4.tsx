@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "./Connect4.css";
 
@@ -12,50 +12,40 @@ interface Props {
 
 export default function Connect4({ mode, setMode }: Props) {
   const { t } = useTranslation();
+
   const [board, setBoard] = useState(
     Array(ROWS)
       .fill(null)
-      .map(() => Array(COLS).fill(null))
+      .map(() => Array(COLS).fill(null)),
   );
-  const [currentPlayer, setCurrentPlayer] = useState("red");
-  const [winner, setWinner] = useState<string | null>(null);
+
+  const [currentPlayer, setCurrentPlayer] = useState<"red" | "yellow">("red");
+  const [winner, setWinner] = useState<"red" | "yellow" | null>(null);
   const [isDraw, setIsDraw] = useState(false);
   const [score, setScore] = useState({ red: 0, yellow: 0 });
   const [hoverCol, setHoverCol] = useState<number | null>(null);
-  const [lastMove, setLastMove] = useState<{ row: number; col: number } | null>(
-    null
-  );
+
   const [winningCells, setWinningCells] = useState<
     { row: number; col: number }[]
   >([]);
-  const fallTimeoutRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (fallTimeoutRef.current !== null) {
-        clearTimeout(fallTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const dropDisc = (col: number) => {
     if (winner || isDraw) return;
+
     const newBoard = board.map((row) => [...row]);
+
     for (let row = ROWS - 1; row >= 0; row--) {
       if (!newBoard[row][col]) {
         newBoard[row][col] = currentPlayer;
-        setLastMove({ row, col });
-        if (fallTimeoutRef.current) {
-          clearTimeout(fallTimeoutRef.current);
-        }
         setBoard(newBoard);
+
         const result = checkWinner(newBoard, row, col, currentPlayer);
         if (result) {
           setWinner(currentPlayer);
           setWinningCells(result);
           setScore((prev) => ({
             ...prev,
-            [currentPlayer]: prev[currentPlayer as keyof typeof prev] + 1,
+            [currentPlayer]: prev[currentPlayer] + 1,
           }));
         } else if (checkDraw(newBoard)) {
           setIsDraw(true);
@@ -68,16 +58,16 @@ export default function Connect4({ mode, setMode }: Props) {
   };
 
   const checkWinner = (
-    board: string[][],
+    b: (string | null)[][],
     row: number,
     col: number,
-    player: string
+    player: string,
   ): { row: number; col: number }[] | null => {
     const directions = [
-      [0, 1], // horizontal
-      [1, 0], // vertical
-      [1, 1], // diagonale ↘
-      [1, -1], // diagonale ↙
+      [0, 1],
+      [1, 0],
+      [1, 1],
+      [1, -1],
     ];
 
     for (const [dx, dy] of directions) {
@@ -86,7 +76,7 @@ export default function Connect4({ mode, setMode }: Props) {
       for (let step = 1; step < 4; step++) {
         const r = row + step * dx;
         const c = col + step * dy;
-        if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c] !== player)
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS || b[r][c] !== player)
           break;
         cells.push({ row: r, col: c });
       }
@@ -94,28 +84,26 @@ export default function Connect4({ mode, setMode }: Props) {
       for (let step = 1; step < 4; step++) {
         const r = row - step * dx;
         const c = col - step * dy;
-        if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c] !== player)
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS || b[r][c] !== player)
           break;
         cells.push({ row: r, col: c });
       }
 
-      if (cells.length >= 4) {
-        return cells;
-      }
+      if (cells.length >= 4) return cells;
     }
 
     return null;
   };
 
-  const checkDraw = (board: string[][]) => {
-    return board.every((row) => row.every((cell) => cell !== null));
+  const checkDraw = (b: (string | null)[][]) => {
+    return b.every((row) => row.every((cell) => cell !== null));
   };
 
   const resetGame = () => {
     setBoard(
       Array(ROWS)
         .fill(null)
-        .map(() => Array(COLS).fill(null))
+        .map(() => Array(COLS).fill(null)),
     );
     setCurrentPlayer("red");
     setWinner(null);
@@ -143,6 +131,7 @@ export default function Connect4({ mode, setMode }: Props) {
           dropDisc(randomCol);
         }
       }, 800);
+
       return () => clearTimeout(timeout);
     }
   }, [board, currentPlayer, mode, winner, isDraw]);
@@ -188,6 +177,7 @@ export default function Connect4({ mode, setMode }: Props) {
       </h2>
 
       {isDraw && !winner && <h2>{t("common.results.draw")}</h2>}
+
       <div className="commonGameLayout">
         <div className="side">
           <div className="scoreCard">
@@ -199,9 +189,11 @@ export default function Connect4({ mode, setMode }: Props) {
                   : t("common.modes.withfriend")}
               </div>
             </div>
+
             <div className="scoreCardHeader">
               <div className="scoreTitle">{t("common.labels.score")}</div>
             </div>
+
             <div className="scoreCardBody">
               <p>
                 <span className="connect4RedBadge connect4Badge">
@@ -216,6 +208,7 @@ export default function Connect4({ mode, setMode }: Props) {
                 - {score.yellow}
               </p>
             </div>
+
             <div className="scoreCardFooter">
               <button
                 className="commonButton commonMediumButton resetScore"
@@ -275,52 +268,36 @@ export default function Connect4({ mode, setMode }: Props) {
                   />
                 ))}
             </div>
+
             {board.map((row, rowIndex) => (
               <div key={rowIndex} className="row">
-                {row.map((cell, colIndex) => {
-                  const isFalling =
-                    lastMove?.row === rowIndex && lastMove?.col === colIndex;
-
-                  return (
-                    <div
-                      key={`${rowIndex}-${colIndex}`} // 🔥 clé stable
-                      className={[
-                        "cell",
-                        cell ? `filled ${cell}` : "",
-                        !winner &&
-                        !isDraw &&
-                        (mode === "friend" || currentPlayer === "red") &&
-                        isHoveredPlayable(rowIndex, colIndex)
-                          ? `hoverable hoverable-${currentPlayer}`
-                          : "",
-                        isFalling ? "is-falling" : "",
-                        lastMove === null &&
-                        winningCells.some(
-                          (c) => c.row === rowIndex && c.col === colIndex
-                        )
-                          ? "cell--win"
-                          : "",
-                      ].join(" ")}
-                      style={
-                        isFalling
-                          ? ({
-                              ["--fromY" as any]: `${-(rowIndex + 1) * 68}px`,
-                            } as React.CSSProperties)
-                          : undefined
+                {row.map((cell, colIndex) => (
+                  <div
+                    key={`${rowIndex}-${colIndex}`}
+                    className={[
+                      "cell",
+                      cell ? cell : "", // "red" | "yellow"
+                      !winner &&
+                      !isDraw &&
+                      (mode === "friend" || currentPlayer === "red") &&
+                      isHoveredPlayable(rowIndex, colIndex)
+                        ? `hoverable hoverable-${currentPlayer}`
+                        : "",
+                      winningCells.some(
+                        (c) => c.row === rowIndex && c.col === colIndex,
+                      )
+                        ? "cell--win"
+                        : "",
+                    ].join(" ")}
+                    onMouseEnter={() => setHoverCol(colIndex)}
+                    onMouseLeave={() => setHoverCol(null)}
+                    onClick={() => {
+                      if (mode === "friend" || currentPlayer === "red") {
+                        dropDisc(colIndex);
                       }
-                      onAnimationEnd={() => {
-                        if (isFalling) setLastMove(null);
-                      }}
-                      onMouseEnter={() => setHoverCol(colIndex)}
-                      onMouseLeave={() => setHoverCol(null)}
-                      onClick={() => {
-                        if (mode === "friend" || currentPlayer === "red") {
-                          dropDisc(colIndex);
-                        }
-                      }}
-                    />
-                  );
-                })}
+                    }}
+                  />
+                ))}
               </div>
             ))}
           </div>
@@ -328,8 +305,9 @@ export default function Connect4({ mode, setMode }: Props) {
 
         <div className="side hidden" />
       </div>
+
       <button
-        className="commonButton commonMediumButton C4-playAgainButton"
+        className="commonButton commonMediumButton connect4PlayAgainButton"
         onClick={resetGame}
       >
         {t("common.actions.playAgain")}
