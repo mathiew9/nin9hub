@@ -6,8 +6,8 @@ const ROWS = 6;
 const COLS = 7;
 
 interface Props {
-  mode: "ai" | "friend";
-  setMode: (mode: "ai" | "friend" | null) => void;
+  mode: "ai" | "friend" | "online";
+  setMode: (mode: "ai" | "friend" | "online" | null) => void;
 }
 
 export default function Connect4({ mode, setMode }: Props) {

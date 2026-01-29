@@ -1,25 +1,30 @@
-// Event names centralization
-export const Events = {
-  CreateRoom: "online:createRoom",
-  JoinRoom: "online:joinRoom",
-  Start: "online:start",
-  PlayTurn: "online:playTurn",
-  RematchRequest: "online:rematch:request",
-  Leave: "online:leave",
+export type GameKey = "ttt" | "c4";
 
-  Waiting: "online:waiting",
-  State: "online:state",
-  OpponentLeft: "online:opponent:left",
-  RematchStatus: "online:rematch:status",
-  UpdateSettings: "online:settings:update",
-  BackToSettings: "online:backToSettings",
-  SwapRoles: "online:swap:roles",
-  Error: "online:error",
-} as const;
+export const makeEvents = (gameKey: GameKey) =>
+  ({
+    CreateRoom: `${gameKey}:online:createRoom`,
+    JoinRoom: `${gameKey}:online:joinRoom`,
+    Start: `${gameKey}:online:start`,
+    PlayTurn: `${gameKey}:online:playTurn`,
+    RematchRequest: `${gameKey}:online:rematch:request`,
+    Leave: `${gameKey}:online:leave`,
 
-export type EventName = (typeof Events)[keyof typeof Events];
+    Waiting: `${gameKey}:online:waiting`,
+    State: `${gameKey}:online:state`,
+    OpponentLeft: `${gameKey}:online:opponent:left`,
+    RematchStatus: `${gameKey}:online:rematch:status`,
+    UpdateSettings: `${gameKey}:online:settings:update`,
+    BackToSettings: `${gameKey}:online:backToSettings`,
+    SwapRoles: `${gameKey}:online:swap:roles`,
+    Error: `${gameKey}:online:error`,
+  }) as const;
 
-// Error codes (stable)
+export const TTTEvents = makeEvents("ttt");
+export const C4Events = makeEvents("c4");
+
+export type TTTEventName = (typeof TTTEvents)[keyof typeof TTTEvents];
+export type C4EventName = (typeof C4Events)[keyof typeof C4Events];
+
 export const ErrorCodes = {
   ROOM_NOT_FOUND: "ROOM_NOT_FOUND",
   ROOM_FULL: "ROOM_FULL",

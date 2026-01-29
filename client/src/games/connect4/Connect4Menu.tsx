@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 interface Props {
-  onSelectMode: (mode: "ai" | "friend") => void;
+  onSelectMode: (mode: "ai" | "friend" | "online") => void;
 }
 
 export default function Connect4Menu({ onSelectMode }: Props) {
@@ -26,6 +26,14 @@ export default function Connect4Menu({ onSelectMode }: Props) {
           onClick={() => onSelectMode("ai")}
         >
           {t("common.modes.playWithAi")}
+        </button>
+
+        <button
+          type="button"
+          className="commonButton commonMenuButton"
+          onClick={() => onSelectMode("online")}
+        >
+          {t("common.modes.playOnline")}
         </button>
       </div>
     </div>

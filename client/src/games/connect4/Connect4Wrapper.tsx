@@ -6,7 +6,7 @@ import Connect4Menu from "./Connect4Menu";
 import "./Connect4Wrapper.css";
 
 export default function Connect4Wrapper() {
-  const [mode, setMode] = useState<"ai" | "friend" | null>(null);
+  const [mode, setMode] = useState<"ai" | "friend" | "online" | null>(null);
 
   return (
     <div className="connect4Wrapper">

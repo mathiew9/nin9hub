@@ -10,7 +10,12 @@ type Player = "X" | "O";
 type Cell = Player | null;
 type Seat = "p1" | "p2";
 
+function otherSeat(seat: Seat): Seat {
+  return seat === "p1" ? "p2" : "p1";
+}
+
 export default function TicTacToeBoardOnlineAdapter() {
+  const online = useOnline();
   const {
     board,
     role,
@@ -30,7 +35,11 @@ export default function TicTacToeBoardOnlineAdapter() {
     matchScore,
     matchWinner,
     isHost,
-  } = useOnline();
+
+    // ✅ on les lit ici maintenant (doivent être exposés dans le hook)
+    myId,
+    seats,
+  } = online as any;
 
   const { t } = useTranslation();
   const isMatchEnded = !!matchWinner;
@@ -93,19 +102,28 @@ export default function TicTacToeBoardOnlineAdapter() {
     playTurn(i);
   };
 
-  // --- SCORE mapping (X/O -> Vous/Adversaire) ---
+  /**
+   * ✅ SCORE / TURN / WINNER doivent être "par joueur" => basé sur seat
+   * - mySeat: déduit via seats.p1/p2
+   * - scores: matchScore[p1/p2]
+   * - isTurn: on compare le seat du tour (turnSeat) avec mySeat
+   */
+  const mySeat: Seat | null = useMemo(() => {
+    if (!myId || !seats) return null;
+    if (seats.p1 === myId) return "p1";
+    if (seats.p2 === myId) return "p2";
+    return null;
+  }, [myId, seats]);
 
-  const myId = (useOnline() as any).myId as string | null; // si tu l’exposes déjà
-  const hostId = (useOnline() as any).hostId as string | null;
-
-  const mySeat: Seat | null =
-    myId && hostId ? (myId === hostId ? "p1" : "p2") : null;
-
-  const oppSeat: Seat | null = mySeat ? (mySeat === "p1" ? "p2" : "p1") : null;
+  const oppSeat: Seat | null = useMemo(() => {
+    return mySeat ? otherSeat(mySeat) : null;
+  }, [mySeat]);
 
   const myScore = mySeat ? (matchScore?.[mySeat] ?? 0) : 0;
   const oppScore = oppSeat ? (matchScore?.[oppSeat] ?? 0) : 0;
 
+  // Symboles UI : restent basés sur role (X/O) pour l’affichage
+  // (si vous swappez les seats côté serveur, role va se mettre à jour via seats => nickel)
   const mySymbol = (role ?? "X") as Player;
   const oppSymbol: Player = mySymbol === "X" ? "O" : "X";
 
@@ -119,6 +137,10 @@ export default function TicTacToeBoardOnlineAdapter() {
         },
       ]
     : [];
+
+  // ✅ Turn UI : turn est déjà X/O dans ton hook
+  const isMyTurn = turn === mySymbol && !winner;
+  const isOppTurn = turn === oppSymbol && !winner;
 
   return (
     <>
@@ -157,15 +179,19 @@ export default function TicTacToeBoardOnlineAdapter() {
                 label: t("common.players.you"),
                 score: myScore,
                 symbol: mySymbol,
-                isTurn: turn === mySymbol && !winner,
-                matchWinner: matchWinner === mySeat,
+
+                // ✅ basé sur turn (X/O) pour l’indicateur visuel
+                isTurn: isMyTurn,
+
+                // ✅ basé sur seat pour le match winner
+                matchWinner: !!(mySeat && matchWinner === mySeat),
               },
               {
                 label: t("common.players.opponent"),
                 score: oppScore,
                 symbol: oppSymbol,
-                isTurn: turn === oppSymbol && !winner,
-                matchWinner: matchWinner === oppSeat,
+                isTurn: isOppTurn,
+                matchWinner: !!(oppSeat && matchWinner === oppSeat),
               },
             ]}
             actions={scoreActions}
@@ -189,7 +215,6 @@ export default function TicTacToeBoardOnlineAdapter() {
             </div>
           </div>
 
-          {/* Si tu veux : quand matchWinner existe, tu peux choisir de ne plus proposer "rejouer" mais plutôt "nouveau match" */}
           {winner && (
             <div className="ttt-online-actions">
               <button
