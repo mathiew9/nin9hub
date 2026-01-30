@@ -41,13 +41,12 @@ export function removePlayerBySocket(room: Room<any, any>, socketId: string) {
   if (room.seats.p1 === socketId) {
     room.seats.p1 = "";
     room.players.p1 = "";
-    if (room.hostId === socketId) room.hostId = "";
     changed = true;
   }
+
   if (room.seats.p2 === socketId) {
     room.seats.p2 = "";
     room.players.p2 = "";
-    if (room.guestId === socketId) room.guestId = "";
     changed = true;
   }
 

@@ -16,7 +16,7 @@ export type TTTGameSettings = {
 
 export type TTTState = {
   board: TTTCell[];
-  turn: Seat; // p1 / p2
+  turn: Seat;
   winner: Seat | "draw" | null;
   line: number[];
 

@@ -4,9 +4,9 @@ import { tttAdapter } from "./games/tictactoe/adapter";
 // import { c4Adapter } from "./games/connect4/adapter";
 
 export function registerSockets(io: Server) {
-  // On branche TTT d’abord (le plus safe).
+  // On branche TTT
   registerGameSocketRouter({ io, adapter: tttAdapter });
 
-  // Tu brancheras C4 quand l’adapter existera.
+  // On branche C4 plus tard.
   // registerGameSocketRouter({ io, adapter: c4Adapter });
 }

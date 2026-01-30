@@ -1,6 +1,6 @@
 import type { RoomSettingsBase, Seat } from "../../core/typesCore";
 import type { GameAdapter } from "../../core/roomService";
-import { C4Events } from "../../protocol/events";
+import { C4Events } from "../../events/events";
 
 export type C4State = {
   // placeholder

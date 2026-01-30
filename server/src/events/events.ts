@@ -1,4 +1,4 @@
-export type GameKey = "ttt" | "c4";
+import { GameKey } from "../core/typesCore";
 
 export const makeEvents = (gameKey: GameKey) =>
   ({

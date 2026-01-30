@@ -18,7 +18,8 @@ import {
   saveRoom,
   unmapSocket,
 } from "./storeCore";
-import { err, genRoomCode, ok } from "./utils";
+import { genRoomCode } from "./utils";
+import { ok, err } from "./ack";
 
 /**
  * Adapter : chaque jeu implémente ces fonctions.
@@ -415,6 +416,9 @@ export class RoomService<TState, TGameSettings, TMove> {
     room.started = false;
     room.rematchVotes.clear();
 
+    (room as any).matchScore = {};
+    (room as any).matchWinner = null;
+
     // Reset state propre (board/turn/winner/...)
     room.state = this.adapter.createInitialState({
       baseSettings: room.settingsBase,
@@ -462,7 +466,7 @@ export class RoomService<TState, TGameSettings, TMove> {
     });
 
     const roomId = genRoomCode(
-      Math.max(3, Math.floor(baseSettings.roomCodeLength ?? 4)),
+      Math.max(3, Math.floor(baseSettings.roomCodeLength ?? 5)),
     );
 
     const room: Room<TState, TGameSettings> = {
@@ -529,17 +533,24 @@ export class RoomService<TState, TGameSettings, TMove> {
     if (room.seats.p1 && room.seats.p2)
       return err(ack, "ROOM_FULL", "La room est déjà pleine.");
 
+    const hostAlreadyExists = !!room.hostId;
+
     let seat: Seat;
     if (!room.seats.p1) {
       room.seats.p1 = socket.id;
       room.players.p1 = payload?.playerLabel ?? socket.id;
-      room.hostId = socket.id;
       seat = "p1";
     } else {
       room.seats.p2 = socket.id;
       room.players.p2 = payload?.playerLabel ?? socket.id;
-      room.guestId = socket.id;
       seat = "p2";
+    }
+
+    if (!hostAlreadyExists) {
+      room.hostId = socket.id;
+      room.guestId = "";
+    } else {
+      room.guestId = socket.id;
     }
 
     room.matchScore[socket.id] = room.matchScore[socket.id] ?? 0;
@@ -579,10 +590,15 @@ export class RoomService<TState, TGameSettings, TMove> {
     const channel = this.roomChannel(room.id);
     socket.leave(channel);
 
-    // Hook jeu (optionnel)
-    this.adapter.onLeave?.({ room, leavingSocketId: socket.id });
+    // ✅ on capture AVANT removal
+    const leavingId = socket.id;
+    const leavingWasHost = leavingId === room.hostId;
+    const leavingWasGuest = leavingId === room.guestId;
 
-    const { changed } = removePlayerBySocket(room, socket.id);
+    // Hook jeu (optionnel)
+    this.adapter.onLeave?.({ room, leavingSocketId: leavingId });
+
+    const { changed } = removePlayerBySocket(room, leavingId);
     if (!changed) {
       ok(ack, {});
       return;
@@ -596,10 +612,26 @@ export class RoomService<TState, TGameSettings, TMove> {
       return;
     }
 
-    // Si host parti et option promote
-    if (!room.hostId && room.settingsBase.promoteGuestOnHostLeave) {
-      if (room.seats.p1) room.hostId = room.seats.p1;
-      else if (room.seats.p2) room.hostId = room.seats.p2;
+    // ✅ Nettoyage guest si besoin
+    if (leavingWasGuest) room.guestId = "";
+
+    // ✅ PROMOTION HOST robuste
+    if (leavingWasHost) {
+      if (room.settingsBase.promoteGuestOnHostLeave) {
+        const remaining = room.seats.p1 || room.seats.p2 || "";
+        room.hostId = remaining;
+
+        // guestId = l'autre seat restant (ou "")
+        const other =
+          remaining && remaining === room.seats.p1
+            ? room.seats.p2
+            : room.seats.p1;
+        room.guestId = other || "";
+      } else {
+        // pas de promotion => plus de host
+        room.hostId = "";
+        room.guestId = room.seats.p1 || room.seats.p2 || "";
+      }
     }
 
     // ✅ IMPORTANT: reset “match” quand quelqu’un quitte (si la room survit)

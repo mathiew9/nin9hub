@@ -1,6 +1,6 @@
 // server/games/connect4/types.ts
 
-import type { RoomSettingsBase } from "../../protocol/types";
+import type { RoomSettingsBase } from "../../core/typesCore";
 
 export type C4Player = "R" | "Y"; // ou "P1" | "P2" si tu préfères
 export type C4Cell = C4Player | null;

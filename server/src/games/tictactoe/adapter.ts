@@ -1,7 +1,7 @@
 import type { RoomSettingsBase, Seat } from "../../core/typesCore";
 import type { TTTState, TTTGameSettings, TTTCell, TTTPlayer } from "./types";
 import type { GameAdapter } from "../../core/roomService";
-import { TTTEvents } from "../../protocol/events";
+import { TTTEvents } from "../../events/events";
 
 export type TTTMove = { index: number };
 
@@ -86,8 +86,8 @@ function isDraw(board: TTTCell[]): boolean {
 // --- Settings base (communs) ---
 function defaultBaseSettings(): RoomSettingsBase {
   return {
-    roundsToWin: 1,
-    turnTimeMs: 0,
+    roundsToWin: 3,
+    turnTimeMs: 10000,
     idleKickMs: 0,
     moveRateLimitMs: 150,
     roomCodeLength: 4,

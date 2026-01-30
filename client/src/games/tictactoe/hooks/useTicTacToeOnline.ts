@@ -231,7 +231,12 @@ export function useTicTacToeOnline() {
         turnDeadlineAt,
         turnStartedAt,
       } = payload.state;
-      const { matchScore, matchWinner } = payload;
+
+      const matchScore =
+        payload.matchScore ?? (payload.state as any).matchScore ?? undefined;
+
+      const matchWinner =
+        payload.matchWinner ?? (payload.state as any).matchWinner ?? null;
 
       setS((prev) => {
         if (

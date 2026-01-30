@@ -8,11 +8,6 @@ import { useTranslation } from "react-i18next";
 
 type Player = "X" | "O";
 type Cell = Player | null;
-type Seat = "p1" | "p2";
-
-function otherSeat(seat: Seat): Seat {
-  return seat === "p1" ? "p2" : "p1";
-}
 
 export default function TicTacToeBoardOnlineAdapter() {
   const online = useOnline();
@@ -36,7 +31,6 @@ export default function TicTacToeBoardOnlineAdapter() {
     matchWinner,
     isHost,
 
-    // ✅ on les lit ici maintenant (doivent être exposés dans le hook)
     myId,
     seats,
   } = online as any;
@@ -102,26 +96,18 @@ export default function TicTacToeBoardOnlineAdapter() {
     playTurn(i);
   };
 
-  /**
-   * ✅ SCORE / TURN / WINNER doivent être "par joueur" => basé sur seat
-   * - mySeat: déduit via seats.p1/p2
-   * - scores: matchScore[p1/p2]
-   * - isTurn: on compare le seat du tour (turnSeat) avec mySeat
-   */
-  const mySeat: Seat | null = useMemo(() => {
+  const oppId: string | null = useMemo(() => {
     if (!myId || !seats) return null;
-    if (seats.p1 === myId) return "p1";
-    if (seats.p2 === myId) return "p2";
+    if (seats.p1 === myId) return seats.p2 || null;
+    if (seats.p2 === myId) return seats.p1 || null;
     return null;
   }, [myId, seats]);
 
-  const oppSeat: Seat | null = useMemo(() => {
-    return mySeat ? otherSeat(mySeat) : null;
-  }, [mySeat]);
+  const myScore = (myId ? matchScore?.[myId] : null) ?? 0;
+  const oppScore = (oppId ? matchScore?.[oppId] : null) ?? 0;
 
-  const myScore = mySeat ? (matchScore?.[mySeat] ?? 0) : 0;
-  const oppScore = oppSeat ? (matchScore?.[oppSeat] ?? 0) : 0;
-
+  const iWonMatch = !!(myId && matchWinner === myId);
+  const oppWonMatch = !!(oppId && matchWinner === oppId);
   // Symboles UI : restent basés sur role (X/O) pour l’affichage
   // (si vous swappez les seats côté serveur, role va se mettre à jour via seats => nickel)
   const mySymbol = (role ?? "X") as Player;
@@ -184,14 +170,14 @@ export default function TicTacToeBoardOnlineAdapter() {
                 isTurn: isMyTurn,
 
                 // ✅ basé sur seat pour le match winner
-                matchWinner: !!(mySeat && matchWinner === mySeat),
+                matchWinner: iWonMatch,
               },
               {
                 label: t("common.players.opponent"),
                 score: oppScore,
                 symbol: oppSymbol,
                 isTurn: isOppTurn,
-                matchWinner: !!(oppSeat && matchWinner === oppSeat),
+                matchWinner: oppWonMatch,
               },
             ]}
             actions={scoreActions}
