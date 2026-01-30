@@ -117,11 +117,13 @@ function playerFromMySocketId(
   if (seats.p2 === me) return "O";
   return null;
 }
+
 function mapSeatWinnerToWinner(w: Seat | "draw" | null | undefined): Winner {
   if (!w) return null;
   if (w === "draw") return "draw";
   return seatToPlayer(w);
 }
+
 function mapSeatTurnToTurn(t: Seat | null | undefined): Player | null {
   if (!t) return null;
   return seatToPlayer(t);
@@ -132,7 +134,6 @@ export function useTicTacToeOnline() {
   const [s, setS] = useState<State>(initialState);
 
   const lastLeaveSentForRoomIdRef = useRef<string | null>(null);
-  const latestVersion = useRef(0);
   const roomIdRef = useRef<string | null>(null);
 
   const canPlay =
@@ -140,13 +141,17 @@ export function useTicTacToeOnline() {
 
   const isHost = !!(socket.id && s.hostId && socket.id === s.hostId);
 
-  const setError = (code: string, message: string) =>
-    setS((prev) => ({ ...prev, lastError: { code, message } }));
+  const setError = useCallback(
+    (code: string, message: string) =>
+      setS((prev) => ({ ...prev, lastError: { code, message } })),
+    [],
+  );
 
   const refreshMyId = useCallback(() => {
     setS((prev) => ({ ...prev, myId: socket.id || prev.myId }));
   }, [socket]);
 
+  // Fire-and-forget leave (anti-double), used for unload/exit
   const leaveNow = useCallback(() => {
     const rid = roomIdRef.current;
     if (!rid) return;
@@ -180,17 +185,66 @@ export function useTicTacToeOnline() {
     };
   }, [socket]);
 
+  /* -------- Centralized leave + reset (await ack or timeout) -------- */
+  const leaveAndReset = useCallback(
+    async (opts?: { silent?: boolean }) => {
+      const currentRoomId = roomIdRef.current;
+      if (!currentRoomId) {
+        // still reset local state to be safe
+        setS(initialState);
+        roomIdRef.current = null;
+        lastLeaveSentForRoomIdRef.current = null;
+        refreshMyId();
+        return;
+      }
+
+      await new Promise<void>((resolve) => {
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          resolve();
+        };
+
+        try {
+          socket.emit("ttt:online:leave", () => finish());
+          setTimeout(() => finish(), 200);
+        } catch {
+          finish();
+        }
+      });
+
+      setS(initialState);
+      roomIdRef.current = null;
+      lastLeaveSentForRoomIdRef.current = null;
+
+      if (!opts?.silent) refreshMyId();
+    },
+    [socket, refreshMyId],
+  );
+
   /* -------- Events -------- */
   useEffect(() => {
     function onWaiting(payload: { players: 1 | 2 }) {
-      setS((prev) => ({
-        ...prev,
-        playersCount: payload.players,
-        status: "waiting",
-        started: false,
-        turn: payload.players === 2 ? prev.turn : null,
-        opponentLeft: payload.players === 2 ? false : prev.opponentLeft,
-      }));
+      setS((prev) => {
+        // don't let waiting override an active game (events can arrive out-of-order)
+        if (prev.started || prev.status === "playing") {
+          // We still accept playersCount update, but avoid downgrading status.
+          return {
+            ...prev,
+            playersCount: payload.players,
+          };
+        }
+
+        return {
+          ...prev,
+          playersCount: payload.players,
+          status: "waiting",
+          started: false,
+          turn: payload.players === 2 ? prev.turn : null,
+          opponentLeft: payload.players === 2 ? false : prev.opponentLeft,
+        };
+      });
     }
 
     function onState(payload: {
@@ -217,11 +271,13 @@ export function useTicTacToeOnline() {
 
       seats?: { p1: string; p2: string };
 
-      players?: { X: string; O: string };
+      // Note: server sends players as {p1,p2} labels in your core
+      players?: any;
 
       settings?: RoomSettings;
     }) {
       if (roomIdRef.current && payload.roomId !== roomIdRef.current) return;
+
       const {
         board,
         turn: turnSeat,
@@ -266,17 +322,22 @@ export function useTicTacToeOnline() {
         const me = (socket.id || "").trim();
         let nextRole = prev.role;
 
+        // Role deduction: only from seats (p1/p2). No X/O mapping from server labels.
         if (me) {
           const bySeats = playerFromMySocketId(me, payload.seats);
           if (bySeats) nextRole = bySeats;
-          else if (payload.players) {
-            if (payload.players.X === me) nextRole = "X";
-            else if (payload.players.O === me) nextRole = "O";
-            else nextRole = null;
-          } else {
-            // si on ne peut pas déduire, on garde prev.role
-          }
         }
+
+        // preserve timer fields if server omitted them (undefined)
+        const nextTurnDeadlineAt =
+          typeof turnDeadlineAt === "undefined"
+            ? prev.turnDeadlineAt
+            : (turnDeadlineAt ?? null);
+
+        const nextTurnStartedAt =
+          typeof turnStartedAt === "undefined"
+            ? prev.turnStartedAt
+            : (turnStartedAt ?? null);
 
         return {
           ...prev,
@@ -293,8 +354,8 @@ export function useTicTacToeOnline() {
           matchScore: matchScore ?? prev.matchScore,
           matchWinner: matchWinner ?? null,
 
-          turnDeadlineAt: turnDeadlineAt ?? null,
-          turnStartedAt: turnStartedAt ?? null,
+          turnDeadlineAt: nextTurnDeadlineAt,
+          turnStartedAt: nextTurnStartedAt,
 
           playersCount: payload.playersCount,
           opponentLeft:
@@ -310,10 +371,6 @@ export function useTicTacToeOnline() {
           settings: payload.settings ?? prev.settings,
         };
       });
-
-      if (payload.stateVersion > latestVersion.current) {
-        latestVersion.current = payload.stateVersion;
-      }
     }
 
     function onOpponentLeft(payload?: {
@@ -328,18 +385,34 @@ export function useTicTacToeOnline() {
       ) {
         return;
       }
-      setS((prev) => ({
-        ...prev,
-        status: "waiting",
-        started: false,
-        turn: null,
-        opponentLeft: true,
-        playersCount: payload?.players ?? 1,
-        hostId:
-          payload?.hostId && payload.hostId.length > 0
-            ? payload.hostId
-            : prev.hostId,
-      }));
+
+      setS((prev) => {
+        // don't let opponent-left override an active game
+        if (prev.started || prev.status === "playing") {
+          return {
+            ...prev,
+            // keep hostId possibly updated
+            hostId:
+              payload?.hostId && payload.hostId.length > 0
+                ? payload.hostId
+                : prev.hostId,
+            playersCount: payload?.players ?? prev.playersCount,
+          };
+        }
+
+        return {
+          ...prev,
+          status: "waiting",
+          started: false,
+          turn: null,
+          opponentLeft: true,
+          playersCount: payload?.players ?? 1,
+          hostId:
+            payload?.hostId && payload.hostId.length > 0
+              ? payload.hostId
+              : prev.hostId,
+        };
+      });
     }
 
     function onRematchStatus(payload: { votes: 0 | 1 | 2 }) {
@@ -367,36 +440,20 @@ export function useTicTacToeOnline() {
       socket.off("ttt:online:rematch:status", onRematchStatus);
       socket.off("ttt:online:error", onError);
     };
-  }, [socket]);
+  }, [socket, setError]);
 
   /* -------- Actions -------- */
-  const safeLeaveIfNeeded = useCallback(async () => {
-    if (!s.roomId) return;
-    await new Promise<void>((resolve) => {
-      try {
-        socket.emit("ttt:online:leave", () => resolve());
-        setTimeout(() => resolve(), 200);
-      } catch {
-        resolve();
-      }
-    });
 
-    setS(initialState);
-    latestVersion.current = 0;
-    roomIdRef.current = null;
-    refreshMyId();
-  }, [socket, s.roomId, refreshMyId]);
-
-  // ✅ serveur renvoie seat (p1/p2), pas role
+  // server returns seat (p1/p2), not role
   const createRoom = useCallback(async () => {
-    await safeLeaveIfNeeded();
+    await leaveAndReset({ silent: true });
+
     return new Promise<AckSuccess<{ roomId: string; seat: Seat }> | AckError>(
       (resolve) => {
         socket.emit(
           "ttt:online:createRoom",
           (res: Ack<{ roomId: string; seat: Seat }>) => {
             if (res.ok) {
-              latestVersion.current = 0;
               roomIdRef.current = res.data.roomId;
 
               setS((prev) => ({
@@ -421,12 +478,13 @@ export function useTicTacToeOnline() {
         );
       },
     );
-  }, [socket, safeLeaveIfNeeded, refreshMyId]);
+  }, [socket, leaveAndReset, refreshMyId, setError]);
 
-  // ✅ serveur renvoie seat (p1/p2), pas role
+  // server returns seat (p1/p2), not role
   const joinRoom = useCallback(
     async (roomId: string) => {
-      await safeLeaveIfNeeded();
+      await leaveAndReset({ silent: true });
+
       return new Promise<
         AckSuccess<{ seat: Seat; players: number }> | AckError
       >((resolve) => {
@@ -435,7 +493,6 @@ export function useTicTacToeOnline() {
           { roomId },
           (res: Ack<{ seat: Seat; players: number }>) => {
             if (res.ok) {
-              latestVersion.current = 0;
               roomIdRef.current = roomId;
 
               setS((prev) => ({
@@ -459,18 +516,17 @@ export function useTicTacToeOnline() {
         );
       });
     },
-    [socket, safeLeaveIfNeeded, refreshMyId],
+    [socket, leaveAndReset, refreshMyId, setError],
   );
 
   const startGame = useCallback(async () => {
     return new Promise<AckSuccess<{}> | AckError>((resolve) => {
       socket.emit("ttt:online:start", (res: Ack<{}>) => {
-        if (res.ok) latestVersion.current = 0;
-        else setError(res.code, res.message);
+        if (!res.ok) setError(res.code, res.message);
         resolve(res);
       });
     });
-  }, [socket]);
+  }, [socket, setError]);
 
   const playTurn = useCallback(
     async (index: number) => {
@@ -488,7 +544,7 @@ export function useTicTacToeOnline() {
         });
       });
     },
-    [socket, canPlay],
+    [socket, canPlay, setError],
   );
 
   const requestRematch = useCallback(async () => {
@@ -507,7 +563,7 @@ export function useTicTacToeOnline() {
         },
       );
     });
-  }, [socket, s.myRematchVoted, s.rematchVotes]);
+  }, [socket, s.myRematchVoted, s.rematchVotes, setError]);
 
   const swapRolesNow = useCallback(async () => {
     return new Promise<AckSuccess<{}> | AckError>((resolve) => {
@@ -516,19 +572,12 @@ export function useTicTacToeOnline() {
         resolve(res);
       });
     });
-  }, [socket]);
+  }, [socket, setError]);
 
   const leave = useCallback(async () => {
-    return new Promise<AckSuccess<{}> | AckError>((resolve) => {
-      socket.emit("ttt:online:leave", (res: Ack<{}>) => {
-        setS(initialState);
-        latestVersion.current = 0;
-        roomIdRef.current = null;
-        refreshMyId();
-        resolve(res);
-      });
-    });
-  }, [socket, refreshMyId]);
+    await leaveAndReset();
+    return { ok: true, data: {} } as AckSuccess<{}>;
+  }, [leaveAndReset]);
 
   const updateSettings = useCallback(
     async (partial: Partial<RoomSettings>) => {
