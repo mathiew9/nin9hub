@@ -7,27 +7,40 @@ export type MatchWinner = string | null;
 export type RoomSettingsBase = {
   roundsToWin: number;
 
-  turnTimeMs: number; // 0 = illimité
-  idleKickMs: number; // 0 = disabled
-  moveRateLimitMs: number;
+  turnTimeMs: number; // 0 = illimité TODO
+  idleKickMs: number; // 0 = disabled TODO
+  moveRateLimitMs: number; // TODO
 
-  roomCodeLength: number; // si tu veux un code type "ABCD"
+  roomCodeLength: number;
 
-  reconnectGraceMs: number;
-  preserveGameOnLeave: boolean;
+  reconnectGraceMs: number; //TODO
+  preserveGameOnLeave: boolean; // TODO
   promoteGuestOnHostLeave: boolean;
 
-  autoRematchOnBoth: boolean;
-  resetRolesOnRematch: boolean;
+  autoRematchOnBoth: boolean; // TODO
 };
 
+export const ROOM_SETTINGS_BASE_KEYS = [
+  "roundsToWin",
+  "turnTimeMs",
+  "idleKickMs",
+  "moveRateLimitMs",
+  "roomCodeLength",
+  "reconnectGraceMs",
+  "preserveGameOnLeave",
+  "promoteGuestOnHostLeave",
+  "autoRematchOnBoth",
+] as const satisfies ReadonlyArray<keyof RoomSettingsBase>;
+
+export type RoomSettingsBaseKey = (typeof ROOM_SETTINGS_BASE_KEYS)[number];
+
 export type RoomPlayers = {
-  p1: string; // label/pseudo (ou socketId si tu veux minimal)
+  p1: string;
   p2: string;
 };
 
 export type Seats = {
-  p1: string; // socketId (ou playerId plus tard)
+  p1: string;
   p2: string;
 };
 
@@ -38,15 +51,15 @@ export type RoomBase<TGameSettings = unknown> = {
   createdAt: number;
   stateVersion: number;
 
-  hostId: string; // socketId
-  guestId: string; // socketId | ""
+  hostId: string;
+  guestId: string;
 
   seats: Seats;
   players: RoomPlayers;
 
   started: boolean;
 
-  rematchVotes: Set<string>; // socketIds
+  rematchVotes: Set<string>;
   settingsBase: RoomSettingsBase;
   gameSettings: TGameSettings;
 
@@ -57,7 +70,6 @@ export type RoomBase<TGameSettings = unknown> = {
 export type Room<TState, TGameSettings = unknown> = RoomBase<TGameSettings> & {
   state: TState;
 
-  // metadata runtime (optionnel)
   lastMoveAtBySocket?: Record<string, number>;
 };
 
@@ -88,7 +100,6 @@ export type ClientToServerEvents = {
   RematchRequest: string;
   Leave: string;
 
-  // optionnels selon ton jeu / features
   UpdateSettings?: string;
   BackToSettings?: string;
   SwapRoles?: string;

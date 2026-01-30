@@ -1,6 +1,6 @@
 import type { Server, Namespace, Socket } from "socket.io";
-import type { GameAdapter } from "./roomService";
-import { RoomService } from "./roomService";
+import type { GameAdapter } from "./room/roomService";
+import { RoomService } from "./room/roomService";
 import type { Ack } from "./typesCore";
 
 /**

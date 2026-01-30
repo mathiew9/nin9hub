@@ -27,7 +27,6 @@ type RoomSettings = {
   preserveGameOnLeave: boolean;
   promoteGuestOnHostLeave: boolean;
   autoRematchOnBoth: boolean;
-  resetRolesOnRematch: boolean;
 };
 
 type State = {

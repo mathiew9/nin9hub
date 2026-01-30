@@ -1,6 +1,6 @@
 import type { RoomSettingsBase, Seat } from "../../core/typesCore";
 import type { TTTState, TTTGameSettings, TTTCell, TTTPlayer } from "./types";
-import type { GameAdapter } from "../../core/roomService";
+import type { GameAdapter } from "../../core/room/roomService";
 import { TTTEvents } from "../../events/events";
 
 export type TTTMove = { index: number };
@@ -90,12 +90,11 @@ function defaultBaseSettings(): RoomSettingsBase {
     turnTimeMs: 10000,
     idleKickMs: 0,
     moveRateLimitMs: 150,
-    roomCodeLength: 4,
+    roomCodeLength: 5,
     reconnectGraceMs: 8000,
     preserveGameOnLeave: false,
     promoteGuestOnHostLeave: true,
     autoRematchOnBoth: false,
-    resetRolesOnRematch: false,
   };
 }
 
@@ -274,7 +273,8 @@ export const tttAdapter: GameAdapter<TTTState, TTTGameSettings, TTTMove> = {
   onRematchAccepted({ room }) {
     const matchWasEnded = !!room.matchWinner;
     if (matchWasEnded) {
-      room.matchScore = { p1: 0, p2: 0 };
+      if (room.seats.p1) room.matchScore[room.seats.p1] = 0;
+      if (room.seats.p2) room.matchScore[room.seats.p2] = 0;
       room.matchWinner = null;
     }
 

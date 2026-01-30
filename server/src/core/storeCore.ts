@@ -1,5 +1,3 @@
-// server/online-core/store.ts
-
 import type { Room } from "./typesCore";
 
 const rooms = new Map<string, Room<any, any>>();

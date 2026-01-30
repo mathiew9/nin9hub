@@ -1,5 +1,5 @@
 import type { RoomSettingsBase, Seat } from "../../core/typesCore";
-import type { GameAdapter } from "../../core/roomService";
+import type { GameAdapter } from "../../core/room/roomService";
 import { C4Events } from "../../events/events";
 
 export type C4State = {
@@ -16,12 +16,11 @@ function defaultBaseSettings(): RoomSettingsBase {
     turnTimeMs: 0,
     idleKickMs: 0,
     moveRateLimitMs: 150,
-    roomCodeLength: 4,
+    roomCodeLength: 5,
     reconnectGraceMs: 8000,
     preserveGameOnLeave: false,
     promoteGuestOnHostLeave: true,
     autoRematchOnBoth: false,
-    resetRolesOnRematch: false,
   };
 }
 
