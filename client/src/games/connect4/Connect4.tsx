@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+
 import "./Connect4.css";
+import Connect4Board, { Disc, WinningCell } from "./shared/Connect4Board";
 
 const ROWS = 6;
 const COLS = 7;
@@ -13,7 +15,7 @@ interface Props {
 export default function Connect4({ mode, setMode }: Props) {
   const { t } = useTranslation();
 
-  const [board, setBoard] = useState(
+  const [board, setBoard] = useState<Disc[][]>(
     Array(ROWS)
       .fill(null)
       .map(() => Array(COLS).fill(null)),
@@ -25,44 +27,14 @@ export default function Connect4({ mode, setMode }: Props) {
   const [score, setScore] = useState({ red: 0, yellow: 0 });
   const [hoverCol, setHoverCol] = useState<number | null>(null);
 
-  const [winningCells, setWinningCells] = useState<
-    { row: number; col: number }[]
-  >([]);
-
-  const dropDisc = (col: number) => {
-    if (winner || isDraw) return;
-
-    const newBoard = board.map((row) => [...row]);
-
-    for (let row = ROWS - 1; row >= 0; row--) {
-      if (!newBoard[row][col]) {
-        newBoard[row][col] = currentPlayer;
-        setBoard(newBoard);
-
-        const result = checkWinner(newBoard, row, col, currentPlayer);
-        if (result) {
-          setWinner(currentPlayer);
-          setWinningCells(result);
-          setScore((prev) => ({
-            ...prev,
-            [currentPlayer]: prev[currentPlayer] + 1,
-          }));
-        } else if (checkDraw(newBoard)) {
-          setIsDraw(true);
-        } else {
-          setCurrentPlayer(currentPlayer === "red" ? "yellow" : "red");
-        }
-        break;
-      }
-    }
-  };
+  const [winningCells, setWinningCells] = useState<WinningCell[]>([]);
 
   const checkWinner = (
     b: (string | null)[][],
     row: number,
     col: number,
     player: string,
-  ): { row: number; col: number }[] | null => {
+  ): WinningCell[] | null => {
     const directions = [
       [0, 1],
       [1, 0],
@@ -71,7 +43,7 @@ export default function Connect4({ mode, setMode }: Props) {
     ];
 
     for (const [dx, dy] of directions) {
-      const cells = [{ row, col }];
+      const cells: WinningCell[] = [{ row, col }];
 
       for (let step = 1; step < 4; step++) {
         const r = row + step * dx;
@@ -97,6 +69,37 @@ export default function Connect4({ mode, setMode }: Props) {
 
   const checkDraw = (b: (string | null)[][]) => {
     return b.every((row) => row.every((cell) => cell !== null));
+  };
+
+  const isColumnFull = (col: number) => board[0][col] !== null;
+
+  const dropDisc = (col: number) => {
+    if (winner || isDraw) return;
+    if (isColumnFull(col)) return;
+
+    const newBoard = board.map((row) => [...row]);
+
+    for (let row = ROWS - 1; row >= 0; row--) {
+      if (!newBoard[row][col]) {
+        newBoard[row][col] = currentPlayer;
+        setBoard(newBoard);
+
+        const result = checkWinner(newBoard, row, col, currentPlayer);
+        if (result) {
+          setWinner(currentPlayer);
+          setWinningCells(result);
+          setScore((prev) => ({
+            ...prev,
+            [currentPlayer]: prev[currentPlayer] + 1,
+          }));
+        } else if (checkDraw(newBoard)) {
+          setIsDraw(true);
+        } else {
+          setCurrentPlayer(currentPlayer === "red" ? "yellow" : "red");
+        }
+        break;
+      }
+    }
   };
 
   const resetGame = () => {
@@ -144,7 +147,9 @@ export default function Connect4({ mode, setMode }: Props) {
     return false;
   };
 
-  const isColumnFull = (col: number) => board[0][col] !== null;
+  // ✅ règle d’interaction (offline) : friend = toujours, ai = seulement quand red joue
+  const canInteract =
+    mode === "friend" || (mode === "ai" && currentPlayer === "red");
 
   return (
     <div className="connect4">
@@ -227,80 +232,19 @@ export default function Connect4({ mode, setMode }: Props) {
         </div>
 
         <div className="center">
-          <div className="connect4-board">
-            {/* Jeton fantôme au-dessus de la colonne survolée */}
-            {hoverCol !== null &&
-              !winner &&
-              !isDraw &&
-              !isColumnFull(hoverCol) &&
-              (mode === "friend" || currentPlayer === "red") && (
-                <div
-                  key={`${currentPlayer}-${hoverCol}`}
-                  className={`ghost-token ${currentPlayer}`}
-                  style={{
-                    left: `${hoverCol * 68 + 13}px`,
-                    top: "-70px",
-                  }}
-                />
-              )}
-
-            <div className="column-overlays">
-              {Array(COLS)
-                .fill(null)
-                .map((_, colIndex) => (
-                  <div
-                    key={colIndex}
-                    className={`column-overlay ${
-                      isColumnFull(colIndex) ? "col-full" : "col-playable"
-                    }`}
-                    onMouseEnter={() => setHoverCol(colIndex)}
-                    onMouseLeave={() => setHoverCol(null)}
-                    onClick={() => {
-                      if (
-                        (mode === "friend" || currentPlayer === "red") &&
-                        !winner &&
-                        !isDraw &&
-                        !isColumnFull(colIndex)
-                      ) {
-                        dropDisc(colIndex);
-                      }
-                    }}
-                  />
-                ))}
-            </div>
-
-            {board.map((row, rowIndex) => (
-              <div key={rowIndex} className="row">
-                {row.map((cell, colIndex) => (
-                  <div
-                    key={`${rowIndex}-${colIndex}`}
-                    className={[
-                      "cell",
-                      cell ? cell : "", // "red" | "yellow"
-                      !winner &&
-                      !isDraw &&
-                      (mode === "friend" || currentPlayer === "red") &&
-                      isHoveredPlayable(rowIndex, colIndex)
-                        ? `hoverable hoverable-${currentPlayer}`
-                        : "",
-                      winningCells.some(
-                        (c) => c.row === rowIndex && c.col === colIndex,
-                      )
-                        ? "cell--win"
-                        : "",
-                    ].join(" ")}
-                    onMouseEnter={() => setHoverCol(colIndex)}
-                    onMouseLeave={() => setHoverCol(null)}
-                    onClick={() => {
-                      if (mode === "friend" || currentPlayer === "red") {
-                        dropDisc(colIndex);
-                      }
-                    }}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
+          <Connect4Board
+            board={board}
+            currentPlayer={currentPlayer}
+            winner={winner}
+            isDraw={isDraw}
+            hoverCol={hoverCol}
+            setHoverCol={setHoverCol}
+            winningCells={winningCells}
+            canInteract={canInteract}
+            dropDisc={dropDisc}
+            isHoveredPlayable={isHoveredPlayable}
+            isColumnFull={isColumnFull}
+          />
         </div>
 
         <div className="side hidden" />
