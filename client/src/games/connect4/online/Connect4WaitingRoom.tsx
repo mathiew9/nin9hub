@@ -1,27 +1,79 @@
+import { useState, useMemo } from "react";
 import { useOnline } from "./Connect4OnlineProvider";
 import { useTranslation } from "react-i18next";
 
+// Tu peux créer un fichier CSS dédié plus tard.
+// Pour l’instant je garde la même base de classes que le WR TTT
+import "../../tictactoe/online/TicTacToeWR.css";
+
+type Player = "red" | "yellow";
+function otherRole(r: Player): Player {
+  return r === "red" ? "yellow" : "red";
+}
+
 export default function Connect4WaitingRoom() {
+  const {
+    roomId,
+    role,
+    playersCount,
+    opponentLeft,
+    lastError,
+    clearError,
+    startGame,
+    leave,
+    isHost,
+    settings,
+    updateSettings,
+    swapRolesNow,
+  } = useOnline();
+
   const { t } = useTranslation();
-  const isHost = true; // TODO
-  const roomId = "ABCD"; // TODO
-  const hostConnected = true; // TODO
-  const guestConnected = false; // TODO
-  const hostRole = "X"; // TODO
-  const guestRole = "O";
-  const opponentLeft = false; // TODO
-  const gs = 3; // TODO
-  const rounds = 1; // TODO
-  const swap = false; // TODO
-  const tms = 0; // TODO
-  const disabled = false; // TODO
-  const lastError = null; // TODO
-  const copied = false; // TODO
-  const canStart = false; // TODO
+  const canStart = isHost && playersCount === 2;
+
+  // Qui est "host color" vs "guest color"
+  const hostRole: Player = useMemo(() => {
+    if (role) return isHost ? (role as Player) : otherRole(role as Player);
+    return "red";
+  }, [role, isHost]);
+
+  const guestRole: Player = hostRole === "red" ? "yellow" : "red";
+  const hostConnected = true;
+  const guestConnected = playersCount === 2;
+
+  // Copy room code
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    if (!roomId) return;
+    await navigator.clipboard.writeText(roomId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // ✅ Seulement les 2 settings que tu veux exposer
+  const rounds = settings?.roundsToWin ?? 1;
+  const tms = settings?.turnTimeMs ?? 0;
+
+  const disabled = !isHost;
+
+  const applyRounds = async (v: number) => {
+    const roundsToWin = Math.max(1, Math.min(10, Math.floor(v)));
+    await updateSettings({ roundsToWin });
+  };
+
+  const applyTurnMs = async (v: number) => {
+    const ms = Math.max(0, Math.floor(v));
+    await updateSettings({ turnTimeMs: ms });
+  };
+
+  // Petit helper UI pour afficher les couleurs dans la colonne "role"
+  const roleLabel = (p: Player) =>
+    p === "red"
+      ? t("games.connect4.colors.red")
+      : t("games.connect4.colors.yellow");
 
   return (
     <div className="commonMenu ttt-wr-container">
-      <h3 className="commonMenuTitle">{t("games.tictactoe.waitingRoom")}</h3>
+      <h3 className="commonMenuTitle">{t("common.labels.waitingRoom")}</h3>
 
       {/* Bloc Code room */}
       <div className="ttt-wr-roomCodeBlock ttt-wr-commonBlock">
@@ -75,13 +127,14 @@ export default function Connect4WaitingRoom() {
               {isHost ? `(${t("common.players.you")})` : ""}
             </span>
           </div>
+
           <div className="ttt-wr-cell ttt-wr-cell--role">
             <span
               className={`ttt-wr-role ${
-                hostRole === "X" ? "ttt-wr-role--x" : "ttt-wr-role--o"
+                hostRole === "red" ? "connect4RedBadge" : "connect4YellowBadge"
               }`}
             >
-              {hostRole}
+              {roleLabel(hostRole)}
             </span>
           </div>
         </div>
@@ -114,13 +167,13 @@ export default function Connect4WaitingRoom() {
             <span
               className={`ttt-wr-role ${
                 guestConnected
-                  ? guestRole === "X"
-                    ? "ttt-wr-role--x"
-                    : "ttt-wr-role--o"
+                  ? guestRole === "red"
+                    ? "connect4RedBadge"
+                    : "connect4YellowBadge"
                   : "ttt-wr-role--ghost"
               }`}
             >
-              {guestRole}
+              {roleLabel(guestRole)}
             </span>
           </div>
         </div>
@@ -128,7 +181,7 @@ export default function Connect4WaitingRoom() {
         {/* Footer Joueurs : hint + bouton swap */}
         <div className="ttt-wr-playersFooter">
           <div className="ttt-wr-playersBlock-hint">
-            {t("games.tictactoe.hints.XAlwaysGoesFirst")}
+            {t("games.connect4.hints.redAlwaysGoesFirst")}
           </div>
 
           {isHost && (
@@ -136,9 +189,9 @@ export default function Connect4WaitingRoom() {
               className="commonButton ttt-wr-swapRolesBtn"
               onClick={() => swapRolesNow()}
               disabled={!guestConnected}
-              title="Inverser X ↔ O"
+              title="Inverser Red ↔ Yellow"
             >
-              {t("games.tictactoe.actions.swapRoles")}
+              {t("games.connect4.actions.swapColors")}
             </button>
           )}
         </div>
@@ -155,13 +208,7 @@ export default function Connect4WaitingRoom() {
             {/* Ligne labels */}
             <div className="ttt-wr-settingsRow ttt-wr-settingsRow--labels">
               <div className="ttt-wr-settingsCell">
-                {t("common.labels.gridSize")}
-              </div>
-              <div className="ttt-wr-settingsCell">
                 {t("common.labels.roundsToWin")}
-              </div>
-              <div className="ttt-wr-settingsCell">
-                {t("common.labels.swapRolesOnRematch")}
               </div>
               <div className="ttt-wr-settingsCell">
                 {t("common.labels.turnTime")}
@@ -170,33 +217,13 @@ export default function Connect4WaitingRoom() {
 
             {/* Ligne contrôles */}
             <div className="ttt-wr-settingsRow ttt-wr-settingsRow--controls">
-              {/* Taille de grille */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                {isHost ? (
-                  <select
-                    value={gs}
-                    disabled={disabled}
-                    onChange={(e) => applyGrid(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-select "
-                  >
-                    <option value={3}>3×3</option>
-                    <option value={4}>4×4</option>
-                    <option value={5}>5×5</option>
-                  </select>
-                ) : (
-                  <div className="ttt-wr-pillValue">
-                    {gs}×{gs}
-                  </div>
-                )}
-              </div>
-
               {/* Manches */}
               <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
                 {isHost ? (
                   <input
                     type="number"
                     min={1}
-                    max={5}
+                    max={10}
                     value={rounds}
                     disabled={disabled}
                     onChange={(e) => applyRounds(Number(e.target.value))}
@@ -205,21 +232,6 @@ export default function Connect4WaitingRoom() {
                 ) : (
                   <div className="ttt-wr-pillValue">{rounds}</div>
                 )}
-              </div>
-
-              {/* Swap rôles au rematch */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                <label className="ttt-wr-toggle">
-                  <input
-                    type="checkbox"
-                    checked={swap}
-                    disabled={disabled}
-                    onChange={(e) => applySwap(e.target.checked)}
-                  />
-                  <span className="ttt-wr-toggleTrack">
-                    <span className="ttt-wr-toggleThumb" />
-                  </span>
-                </label>
               </div>
 
               {/* Temps par tour */}
@@ -235,10 +247,14 @@ export default function Connect4WaitingRoom() {
                     <option value={10_000}>10 s</option>
                     <option value={20_000}>20 s</option>
                     <option value={30_000}>30 s</option>
+                    <option value={45_000}>45 s</option>
+                    <option value={60_000}>60 s</option>
                   </select>
                 ) : (
                   <div className="ttt-wr-pillValue">
-                    {tms === 0 ? "Illimité" : `${tms / 1000} s`}
+                    {tms === 0
+                      ? t("common.status.unlimited")
+                      : `${tms / 1000} s`}
                   </div>
                 )}
               </div>
@@ -264,6 +280,7 @@ export default function Connect4WaitingRoom() {
         >
           {t("common.actions.leave")}
         </button>
+
         <button
           className={`commonButton commonMenuButton ttt-wr-btn ${
             isHost ? (canStart ? "" : "is-disabled") : "is-disabled"

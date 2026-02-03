@@ -30,7 +30,7 @@ export default function Connect4OnlineSetup({ onBack }: Props) {
 
   return (
     <div className="commonMenu">
-      <h2 className="commonMenuTitle">{t("games.tictactoe.onlineTitle")}</h2>
+      <h2 className="commonMenuTitle">Connect 4 - Online</h2>
 
       <div className="commonMenuButtons">
         <div className="ttt-online-joinRoom">

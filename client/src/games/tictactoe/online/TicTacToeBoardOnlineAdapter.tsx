@@ -108,8 +108,6 @@ export default function TicTacToeBoardOnlineAdapter() {
 
   const iWonMatch = !!(myId && matchWinner === myId);
   const oppWonMatch = !!(oppId && matchWinner === oppId);
-  // Symboles UI : restent basés sur role (X/O) pour l’affichage
-  // (si vous swappez les seats côté serveur, role va se mettre à jour via seats => nickel)
   const mySymbol = (role ?? "X") as Player;
   const oppSymbol: Player = mySymbol === "X" ? "O" : "X";
 
@@ -124,7 +122,6 @@ export default function TicTacToeBoardOnlineAdapter() {
       ]
     : [];
 
-  // ✅ Turn UI : turn est déjà X/O dans ton hook
   const isMyTurn = turn === mySymbol && !winner;
   const isOppTurn = turn === oppSymbol && !winner;
 
@@ -166,10 +163,8 @@ export default function TicTacToeBoardOnlineAdapter() {
                 score: myScore,
                 symbol: mySymbol,
 
-                // ✅ basé sur turn (X/O) pour l’indicateur visuel
                 isTurn: isMyTurn,
 
-                // ✅ basé sur seat pour le match winner
                 matchWinner: iWonMatch,
               },
               {
@@ -197,7 +192,7 @@ export default function TicTacToeBoardOnlineAdapter() {
               canPlay={canPlay}
             />
             <div className="ttt-online-help">
-              {t("games.tictactoe.hints.youAre") + " " + role + "."}
+              {t("common.messages.youAre") + " " + role + "."}
             </div>
           </div>
 

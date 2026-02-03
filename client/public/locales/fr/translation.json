@@ -26,7 +26,8 @@
       "gridSize": "Taille de la grille",
       "roundsToWin": "Manches pour gagner",
       "swapRolesOnRematch": "Inverser les rôles au rematch",
-      "turnTime": "Temps par tour"
+      "turnTime": "Temps par tour",
+      "waitingRoom": "Salle d’attente"
     },
     "modes": {
       "selectGameMode": "Choisir le mode de jeu",
@@ -62,7 +63,8 @@
     },
     "messages": {
       "shareThisCode": "Partage ce code avec un ami",
-      "yourOpponentHasLeftTheGame": "L’adversaire a quitté la partie"
+      "yourOpponentHasLeftTheGame": "L’adversaire a quitté la partie",
+      "youAre": "Vous êtes"
     },
     "players": {
       "host": "Hôte",
@@ -87,7 +89,6 @@
     "tictactoe": {
       "name": "Morpion",
       "onlineTitle": "Morpion - En ligne",
-      "waitingRoom": "Salle d’attente",
       "rematch": "Nouveau match",
       "settings": {
         "gridSize": "Taille de la grille"
@@ -103,8 +104,7 @@
         "firstToRounds_other": "Premier à {{count}} manches"
       },
       "hints": {
-        "XAlwaysGoesFirst": "X commence toujours",
-        "youAre": "Vous êtes"
+        "XAlwaysGoesFirst": "X commence toujours"
       },
       "actions": {
         "swapRoles": "Inverser les rôles"
@@ -119,6 +119,12 @@
       "inGame": {
         "turn": "à jouer",
         "wins": "a gagné"
+      },
+      "hints": {
+        "redAlwaysGoesFirst": "Rouge commence toujours"
+      },
+      "actions": {
+        "swapColors": "Inverser les couleurs"
       }
     },
     "snake": {

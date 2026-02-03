@@ -70,7 +70,7 @@ export default function TicTacToeWaitingRoom() {
 
   return (
     <div className="commonMenu ttt-wr-container">
-      <h3 className="commonMenuTitle">{t("games.tictactoe.waitingRoom")}</h3>
+      <h3 className="commonMenuTitle">{t("common.labels.waitingRoom")}</h3>
 
       {/* Bloc Code room */}
       <div className="ttt-wr-roomCodeBlock ttt-wr-commonBlock">

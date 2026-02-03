@@ -26,7 +26,8 @@
       "gridSize": "Grid Size",
       "roundsToWin": "Rounds to Win",
       "swapRolesOnRematch": "Swap roles on rematch",
-      "turnTime": "Turn Time"
+      "turnTime": "Turn Time",
+      "waitingRoom": "Waiting Room"
     },
     "modes": {
       "selectGameMode": "Select game mode",
@@ -62,7 +63,8 @@
     },
     "messages": {
       "shareThisCode": "Share this code with a friend",
-      "yourOpponentHasLeftTheGame": "Your opponent has left the game"
+      "yourOpponentHasLeftTheGame": "Your opponent has left the game",
+      "youAre": "You are"
     },
     "players": {
       "host": "Host",
@@ -87,7 +89,6 @@
     "tictactoe": {
       "name": "Tic-Tac-Toe",
       "onlineTitle": "Tic-Tac-Toe - Online",
-      "waitingRoom": "Waiting Room",
       "rematch": "Rematch",
       "settings": {
         "gridSize": "Gridsize"
@@ -103,8 +104,7 @@
         "firstToRounds_other": "First to {{count}} rounds"
       },
       "hints": {
-        "XAlwaysGoesFirst": "X always goes first",
-        "youAre": "You are"
+        "XAlwaysGoesFirst": "X always goes first"
       },
       "actions": {
         "swapRoles": "Swap roles"
@@ -119,6 +119,12 @@
       "inGame": {
         "turn": "'s turn",
         "wins": "wins"
+      },
+      "hints": {
+        "redAlwaysGoesFirst": "Red always goes first"
+      },
+      "actions": {
+        "swapColors": "Swap colors"
       }
     },
     "snake": {

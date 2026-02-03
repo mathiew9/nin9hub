@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import "./Connect4.css";
+
 import Connect4Board, { Disc, WinningCell } from "./shared/Connect4Board";
+import Connect4OnlineRoot from "./online/Connect4OnlineRoot";
 
 const ROWS = 6;
 const COLS = 7;
@@ -14,6 +16,15 @@ interface Props {
 
 export default function Connect4({ mode, setMode }: Props) {
   const { t } = useTranslation();
+
+  // ONLINE MODE
+  if (mode === "online") {
+    return (
+      <div className="tictactoe">
+        <Connect4OnlineRoot onBack={() => setMode(null)} />
+      </div>
+    );
+  }
 
   const [board, setBoard] = useState<Disc[][]>(
     Array(ROWS)

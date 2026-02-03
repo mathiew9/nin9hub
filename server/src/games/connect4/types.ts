@@ -1,27 +1,26 @@
-// server/games/connect4/types.ts
+import type { Seat, RoomSettingsBase } from "../../core/typesCore";
 
-import type { RoomSettingsBase } from "../../core/typesCore";
+export type C4Cell = Seat | null;
+export type C4Winner = Seat | "draw" | null;
 
-export type C4Player = "R" | "Y"; // ou "P1" | "P2" si tu préfères
-export type C4Cell = C4Player | null;
-export type C4Winner = C4Player | "draw" | null;
+export type C4WinningCell = { row: number; col: number };
 
-export type C4GameState = {
-  // tu adapteras à ton modèle local (grid 6x7 etc.)
-  grid: C4Cell[]; // ou C4Cell[][]
-  turn: C4Player;
-  winner: C4Winner;
+export type C4State = {
+  board: C4Cell[][]; // 6x7
+  turn: Seat; // "p1" / "p2"
+  winner: C4Winner; // "p1" / "p2" / "draw" / null
+  winningCells: C4WinningCell[];
 
   turnDeadlineAt: number | null;
   turnStartedAt: number | null;
-
-  matchScore: { p1: number; p2: number };
-  matchWinner: "p1" | "p2" | null;
 };
 
-// Settings C4 (souvent pas nécessaire car règles fixes)
-export type C4Settings = {
-  // si tu veux des variantes un jour (connectN, rows/cols, etc.)
+// Pour l’instant, règles fixes => pas besoin de settings de jeu.
+export type C4GameSettings = {
+  // plus tard: connectN, rows, cols, swapRolesOnRematch, etc.
+  swapRolesOnRematch?: boolean;
 };
 
-export type C4SettingsFull = RoomSettingsBase & C4Settings;
+export type C4Move = { column: number };
+
+export type C4SettingsFull = RoomSettingsBase & C4GameSettings;
