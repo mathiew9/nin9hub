@@ -13,6 +13,7 @@ export interface GameInfo {
   name: string;
   component: JSX.Element;
   available: boolean;
+  online: boolean;
 }
 
 export const games: GameInfo[] = [
@@ -21,65 +22,76 @@ export const games: GameInfo[] = [
     name: "Tic-Tac-Toe",
     component: <TicTacToeWrapper />,
     available: true,
+    online: true,
   },
   {
     id: "snake",
     name: "Snake",
     component: <Snake />,
     available: true,
+    online: false,
   },
   {
     id: "connect4",
     name: "Connect 4",
     component: <Connect4Wrapper />,
     available: true,
+    online: true,
   },
   {
     id: "minesweeper",
     name: "Minesweeper",
     component: <MinesweeperWrapper />,
     available: true,
+    online: false,
   },
   {
     id: "2048",
     name: "2048",
     component: <_2048 />,
     available: true,
+    online: false,
   },
   {
     id: "hangman",
     name: "Hangman",
     component: <Hangman />,
     available: true,
+    online: false,
   },
   {
     id: "sudoku",
     name: "Sudoku",
     component: <SudokuWrapper />,
     available: true,
+    online: false,
   },
   {
     id: "chess",
     name: "Chess",
     component: <Chess />,
     available: false,
+    online: false,
   },
   {
     id: "ultimatetictactoe",
     name: "Ultimate Tic-Tac-Toe",
     component: <div>Ultimate Tic-Tac-Toe</div>,
     available: false,
+    online: false,
   },
   {
     id: "solitaire",
     name: "Solitaire",
     component: <div>Solitaire</div>,
     available: false,
+    online: false,
   },
   {
     id: "pacxon",
     name: "Pac Xon",
     component: <div>Pac Xon</div>,
     available: false,
+    online: false,
   },
 ];

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import TicTacToeBoard from "../shared/TicTacToeBoard";
-import TicTacToeStatusBar from "../shared/TicTacToeStatusBar";
+import GameStatusBar from "../../_shared/hud/GameStatusBar";
 import TicTacToeScorePanel from "../shared/TicTacToeScorePanel";
 import { useOnline } from "./TicTacToeOnlineProvider";
 import { useTranslation } from "react-i18next";
@@ -127,9 +127,9 @@ export default function TicTacToeBoardOnlineAdapter() {
 
   return (
     <>
-      <TicTacToeStatusBar
+      <GameStatusBar
         leftText={winner ? "" : `${t("common.labels.turn")} :`}
-        leftSymbol={
+        leftBadge={
           winner === "draw"
             ? null
             : winner

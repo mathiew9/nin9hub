@@ -1,0 +1,182 @@
+/* === STATUS BAR === */
+/* ===== TicTacToe Status Bar ===== */
+
+.statusBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 34px;
+  width: 100%;
+  max-width: 400px;
+  margin: 2em auto 32px auto;
+
+  padding: 8px 12px;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  font-size: 16px;
+}
+
+/* Zones */
+.statusBar__left,
+.statusBar__center,
+.statusBar__right {
+  flex: 1;
+}
+
+.statusBar__left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statusBar__center {
+  text-align: center;
+  font-weight: 600;
+}
+
+.statusBar__right {
+  text-align: right;
+}
+
+/* Role Badge */
+/* .statusBar__roleBadge {
+    } */
+
+.statusBar__roleBadge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-weight: bold;
+  line-height: 1;
+  margin: 0 4px;
+  text-transform: uppercase;
+}
+
+.statusBar__roleBadge-red,
+.statusBar__roleBadge-yellow {
+  min-width: 60px;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 0.9rem;
+}
+
+.statusBar__roleBadge-red {
+  background-color: #e74c3c;
+  color: #fcefee;
+}
+
+.statusBar__roleBadge-yellow {
+  background-color: #f1c40f;
+  color: #4a3d00;
+}
+
+.statusBar__roleBadge-x,
+.statusBar__roleBadge-o {
+  width: 28px;
+  border-radius: 50%;
+  height: 28px;
+  font-size: 1rem;
+}
+
+.statusBar__roleBadge-x {
+  background-color: #e53935;
+  color: white;
+}
+
+.statusBar__roleBadge-o {
+  background-color: #1e88e5;
+  color: white;
+}
+
+/* Timer */
+.statusBar__timer {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  font-variant-numeric: tabular-nums;
+  min-width: 64px;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.statusBar__timer--infinite svg {
+  font-size: 20px;
+}
+
+/* Timer states */
+.statusBar__timer--ok {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.statusBar__timer--warn {
+  background: rgba(255, 165, 0, 0.2);
+  color: #ffb347;
+  animation: ttt-pulse--warn 0.8s infinite alternate;
+}
+
+@keyframes ttt-pulse--warn {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.2);
+  }
+}
+
+.statusBar__timer--danger {
+  background: rgba(255, 0, 0, 0.25);
+  color: #ff6b6b;
+  animation: ttt-pulse--danger 0.8s infinite alternate;
+}
+
+@keyframes ttt-pulse--danger {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.4);
+  }
+}
+
+/* ===== Light mode overrides ===== */
+
+body[data-theme="light"] .statusBar {
+  background: rgba(59, 130, 246, 0.08); /* light blue tint */
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  color: #0f172a;
+}
+
+body[data-theme="light"] .statusBar__center {
+  color: #0f172a;
+}
+
+body[data-theme="light"] .statusBar__timer {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1e40af;
+}
+
+body[data-theme="light"] .statusBar__timer--ok {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+body[data-theme="light"] .statusBar__timer--warn {
+  background: rgba(245, 158, 11, 0.25);
+  color: #b45309;
+}
+
+body[data-theme="light"] .statusBar__timer--danger {
+  background: rgba(239, 68, 68, 0.25);
+  color: #b91c1c;
+}

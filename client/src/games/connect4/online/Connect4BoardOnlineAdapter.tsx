@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import Connect4Board from "../shared/Connect4Board";
 
-import TicTacToeStatusBar from "../../tictactoe/shared/TicTacToeStatusBar";
+import GameStatusBar from "../../_shared/hud/GameStatusBar";
 import TicTacToeScorePanel from "../../tictactoe/shared/TicTacToeScorePanel";
 
 import { useOnline } from "./Connect4OnlineProvider";
@@ -161,8 +161,11 @@ export default function Connect4BoardOnlineAdapter() {
 
   return (
     <>
-      <TicTacToeStatusBar
+      <GameStatusBar
         leftText={winner ? "" : `${t("common.labels.turn")} :`}
+        leftBadge={
+          winner === "draw" ? null : winner ? (winner as Disc) : (turn ?? null)
+        }
         centerText={centerText}
         isInfinite={isInfinite}
         timeSec={winner ? null : isInfinite ? elapsedSec : timeLeft}
