@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import "./Connect4.css";
 
 import Connect4Board, { Disc, WinningCell } from "./shared/Connect4Board";
 import Connect4OnlineRoot from "./online/Connect4OnlineRoot";
+import GameStatusBar from "../_shared/hud/GameStatusBar";
+import GameScorePanel from "../_shared/hud/GameScorePanel";
 
 const ROWS = 6;
 const COLS = 7;
+
+const TURN_SECONDS = 10;
 
 interface Props {
   mode: "ai" | "friend" | "online";
@@ -37,7 +41,6 @@ export default function Connect4({ mode, setMode }: Props) {
   const [isDraw, setIsDraw] = useState(false);
   const [score, setScore] = useState({ red: 0, yellow: 0 });
   const [hoverCol, setHoverCol] = useState<number | null>(null);
-
   const [winningCells, setWinningCells] = useState<WinningCell[]>([]);
 
   const checkWinner = (
@@ -135,6 +138,51 @@ export default function Connect4({ mode, setMode }: Props) {
       .filter((col) => board[0][col] === null);
   };
 
+  // règle d’interaction (offline) : friend = toujours, ai = seulement quand red joue
+  const canInteract =
+    mode === "friend" || (mode === "ai" && currentPlayer === "red");
+
+  /* ---------------- TIMER OFFLINE (comme TTT) ---------------- */
+
+  const [timeLeftSec, setTimeLeftSec] = useState<number | null>(TURN_SECONDS);
+
+  const timerActive = !winner && !isDraw && canInteract;
+
+  // reset timer à chaque changement de tour (ou si le timer s’active)
+  useEffect(() => {
+    if (!timerActive) {
+      setTimeLeftSec(null);
+      return;
+    }
+    setTimeLeftSec(TURN_SECONDS);
+  }, [timerActive, currentPlayer]);
+
+  // tick
+  useEffect(() => {
+    if (!timerActive || timeLeftSec === null || timeLeftSec <= 0) return;
+
+    const id = window.setInterval(() => {
+      setTimeLeftSec((prev) => (prev && prev > 1 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => window.clearInterval(id);
+  }, [timerActive, timeLeftSec]);
+
+  // timeout -> auto move (random colonne)
+  useEffect(() => {
+    if (!timerActive) return;
+    if (timeLeftSec !== 0) return;
+    if (winner || isDraw) return;
+
+    const available = getAvailableColumns();
+    if (available.length === 0) return;
+
+    const col = available[Math.floor(Math.random() * available.length)];
+    dropDisc(col);
+  }, [timeLeftSec, timerActive, winner, isDraw, board]);
+
+  /* ---------------- AI (simple) ---------------- */
+
   useEffect(() => {
     if (mode === "ai" && currentPlayer === "yellow" && !winner && !isDraw) {
       const timeout = setTimeout(() => {
@@ -158,88 +206,70 @@ export default function Connect4({ mode, setMode }: Props) {
     return false;
   };
 
-  // ✅ règle d’interaction (offline) : friend = toujours, ai = seulement quand red joue
-  const canInteract =
-    mode === "friend" || (mode === "ai" && currentPlayer === "red");
+  /* ---------------- Labels pour la status bar ---------------- */
+
+  const actorLabel = useMemo(() => {
+    if (mode === "ai") {
+      return currentPlayer === "red"
+        ? t("common.players.you")
+        : t("common.players.computer");
+    }
+    return currentPlayer === "red"
+      ? t("common.players.player1")
+      : t("common.players.player2");
+  }, [mode, currentPlayer, t]);
+
+  const centerText = winner
+    ? `${t(`games.connect4.colors.${winner}`)} ${t("games.connect4.inGame.wins")}!`
+    : isDraw
+      ? t("common.results.draw")
+      : actorLabel;
+
+  const p1Label =
+    mode === "ai" ? t("common.players.you") : t("common.players.player1");
+  const p2Label =
+    mode === "ai" ? t("common.players.computer") : t("common.players.player2");
 
   return (
     <div className="connect4">
-      <h2>
-        {winner ? (
-          <>
-            <span
-              className={`connect4Badge ${
-                winner === "red" ? "connect4RedBadge" : "connect4YellowBadge"
-              }`}
-            >
-              {t(`games.connect4.colors.${winner}`)}
-            </span>{" "}
-            {t("games.connect4.inGame.wins")}!
-          </>
-        ) : !isDraw ? (
-          <>
-            <span
-              className={`connect4Badge ${
-                currentPlayer === "red"
-                  ? "connect4RedBadge"
-                  : "connect4YellowBadge"
-              }`}
-            >
-              {t(`games.connect4.colors.${currentPlayer}`)}
-            </span>{" "}
-            {t("games.connect4.inGame.turn")}
-          </>
-        ) : null}
-      </h2>
-
-      {isDraw && !winner && <h2>{t("common.results.draw")}</h2>}
+      <GameStatusBar
+        leftText={winner || isDraw ? "" : `${t("common.labels.turn")} :`}
+        leftBadge={isDraw ? null : winner ? (winner as Disc) : currentPlayer}
+        centerText={centerText}
+        timeSec={winner || isDraw ? null : timeLeftSec}
+        isInfinite={false}
+      />
 
       <div className="commonGameLayout">
         <div className="side">
-          <div className="scoreCard">
-            <div className="scoreCardMode">
-              <div className="modeText">
-                {t("common.modes.gameMode")} :{" "}
-                {mode === "ai"
-                  ? t("common.modes.withai")
-                  : t("common.modes.withfriend")}
-              </div>
-            </div>
+          <GameScorePanel
+            modeLabel={mode}
+            players={[
+              {
+                label: p1Label,
+                score: score.red,
+                badge: "red",
+                isTurn: currentPlayer === "red" && !winner && !isDraw,
 
-            <div className="scoreCardHeader">
-              <div className="scoreTitle">{t("common.labels.score")}</div>
-            </div>
-
-            <div className="scoreCardBody">
-              <p>
-                <span className="connect4RedBadge connect4Badge">
-                  {t("games.connect4.colors.red")}
-                </span>{" "}
-                - {score.red}
-              </p>
-              <p>
-                <span className="connect4YellowBadge connect4Badge">
-                  {t("games.connect4.colors.yellow")}
-                </span>{" "}
-                - {score.yellow}
-              </p>
-            </div>
-
-            <div className="scoreCardFooter">
-              <button
-                className="commonButton commonMediumButton resetScore"
-                onClick={resetScore}
-              >
-                {t("common.actions.resetScore")}
-              </button>
-              <button
-                className="commonButton commonMediumButton changeModeButton"
-                onClick={() => setMode(null)}
-              >
-                {t("common.modes.changeGameMode")}
-              </button>
-            </div>
-          </div>
+                matchWinner: winner === "red",
+              },
+              {
+                label: p2Label,
+                score: score.yellow,
+                badge: "yellow",
+                isTurn: currentPlayer === "yellow" && !winner && !isDraw,
+                matchWinner: winner === "yellow",
+              },
+            ]}
+            roundsToWin={null}
+            actions={[
+              { label: t("common.actions.resetScore"), onClick: resetScore },
+              {
+                label: t("common.modes.changeGameMode"),
+                onClick: () => setMode(null),
+              },
+            ]}
+          />
         </div>
 
         <div className="center">

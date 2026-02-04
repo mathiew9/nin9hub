@@ -30,7 +30,6 @@ body[data-theme="light"] .connect4 h2 {
   background-color: #0044cc;
   padding: 10px;
   border-radius: 10px;
-  margin-top: 60px;
   z-index: 2;
 }
 

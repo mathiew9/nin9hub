@@ -1,12 +1,14 @@
 import { FaStopwatch } from "react-icons/fa";
 
+import { useTranslation } from "react-i18next";
+
 import "./GameStatusBar.css";
 
 type Props = {
   leftText?: string;
   leftBadge?: string | null;
 
-  centerText: string;
+  centerText: string | null;
   timeSec?: number | null;
   isInfinite?: boolean;
 
@@ -35,6 +37,8 @@ export default function GameStatusBar({
   state = "playing",
   className = "",
 }: Props) {
+  const { t } = useTranslation();
+
   // Timer related
   const hasTime = typeof timeSec === "number" && Number.isFinite(timeSec);
   const timerLevel =
@@ -42,9 +46,7 @@ export default function GameStatusBar({
 
   return (
     <div
-      className={["statusBar", `statusBar--${state}`, className]
-        .filter(Boolean)
-        .join(" ")}
+      className={["statusBar", className].filter(Boolean).join(" ")}
       role="status"
       aria-live={state === "playing" ? "polite" : "off"}
     >
@@ -59,7 +61,9 @@ export default function GameStatusBar({
                 className={`statusBar__roleBadge statusBar__roleBadge-${leftBadge.toLowerCase()}`}
                 aria-label={`Badge ${leftBadge}`}
               >
-                {leftBadge}
+                {leftBadge === "red" || leftBadge === "yellow"
+                  ? t(`games.connect4.colors.${leftBadge}`)
+                  : leftBadge}
               </span>
             )}
           </div>

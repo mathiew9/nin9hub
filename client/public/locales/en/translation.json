@@ -13,6 +13,7 @@
       "startGame": "Start Game",
       "playAgain": "Play again",
       "requestRematch": "Request a rematch",
+      "rematch": "Rematch",
       "resetScore": "Reset score",
       "changeSettings": "Change settings"
     },
@@ -89,7 +90,6 @@
     "tictactoe": {
       "name": "Tic-Tac-Toe",
       "onlineTitle": "Tic-Tac-Toe - Online",
-      "rematch": "Rematch",
       "settings": {
         "gridSize": "Gridsize"
       },

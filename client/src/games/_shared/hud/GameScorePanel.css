@@ -1,0 +1,203 @@
+/* === NEW SCORE CARD === */
+/* === TTT SCORE PANEL === */
+.scorePanel {
+  border-radius: 10px;
+  overflow: hidden;
+  width: fit-content;
+  min-width: 260px;
+  font-size: 18px;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  border: 1px solid;
+}
+
+/* Dark / Light container */
+body[data-theme="dark"] .scorePanel {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+body[data-theme="light"] .scorePanel {
+  background-color: #f0f4f8;
+  border-color: #ccc;
+}
+
+/* Header block */
+.scorePanel__header {
+  border-bottom: 1px solid;
+}
+
+body[data-theme="dark"] .scorePanel__header {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+body[data-theme="light"] .scorePanel__header {
+  background-color: #dfe9f3;
+  border-color: #ccc;
+}
+.scorePanel__titleRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+}
+.scorePanel__header.has-rounds .scorePanel__titleRow::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.25;
+}
+.scorePanel__title {
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1;
+}
+
+body[data-theme="dark"] .scorePanel__title {
+  color: #facc15;
+}
+
+body[data-theme="light"] .scorePanel__title {
+  color: #ffb300;
+}
+.scorePanel__modeBadge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+body[data-theme="light"] .scorePanel__modeBadge {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.75);
+}
+.scorePanel__subtitle {
+  padding: 6px 10px 10px;
+  font-size: 14px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+body[data-theme="dark"] .scorePanel__subtitle {
+  color: #e2e8f0;
+}
+
+body[data-theme="light"] .scorePanel__subtitle {
+  color: #555;
+}
+
+/* Body */
+.scorePanel__body {
+  border-bottom: 1px solid;
+}
+
+body[data-theme="dark"] .scorePanel__body {
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+body[data-theme="light"] .scorePanel__body {
+  color: #555;
+  border-color: #ccc;
+}
+
+/* Rows (replace old <p>) */
+.scorePanel__row {
+  padding: 14px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scorePanel__row + .scorePanel__row {
+  border-top: 1px solid;
+}
+
+body[data-theme="dark"] .scorePanel__row + .scorePanel__row {
+  border-color: #334155;
+}
+
+body[data-theme="light"] .scorePanel__row + .scorePanel__row {
+  border-color: #ccc;
+}
+
+/* Left side: name + badge */
+.scorePanel__rowLeft {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Player label */
+.scorePanel__playerName {
+  font-weight: 700;
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+.scorePanel__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scorePanel__matchWinnerIcon {
+  color: #fbbf24;
+  font-size: 1.2em;
+}
+.scorePanel__turnIcon {
+  opacity: 0.9;
+  font-size: 0.9em;
+}
+
+/* Score number */
+.scorePanel__score {
+  font-weight: 800;
+  font-size: 20px;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* Optional highlight */
+.scorePanel__row.is-highlight {
+  position: relative;
+}
+
+body[data-theme="dark"] .scorePanel__row.is-highlight {
+  background: rgba(56, 189, 248, 0.08);
+}
+
+body[data-theme="light"] .scorePanel__row.is-highlight {
+  background: rgba(13, 110, 253, 0.08);
+}
+
+/* Footer actions */
+.scorePanel__footer {
+  padding: 10px;
+  display: inline-flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+/* Optional: make panel buttons not full-width even if commonButton is flex */
+.scorePanel__btn {
+  width: auto;
+}

@@ -13,6 +13,7 @@
       "startGame": "Démarrer la partie",
       "playAgain": "Rejouer",
       "requestRematch": "Proposer un rematch",
+      "rematch": "Nouveau match",
       "resetScore": "Réinitialiser le score",
       "changeSettings": "Changer les paramètres"
     },
@@ -89,7 +90,6 @@
     "tictactoe": {
       "name": "Morpion",
       "onlineTitle": "Morpion - En ligne",
-      "rematch": "Nouveau match",
       "settings": {
         "gridSize": "Taille de la grille"
       },

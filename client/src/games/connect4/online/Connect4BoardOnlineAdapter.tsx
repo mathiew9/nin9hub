@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Connect4Board from "../shared/Connect4Board";
 
 import GameStatusBar from "../../_shared/hud/GameStatusBar";
-import TicTacToeScorePanel from "../../tictactoe/shared/TicTacToeScorePanel";
+import GameScorePanel from "../../_shared/hud/GameScorePanel";
 
 import { useOnline } from "./Connect4OnlineProvider";
 
@@ -51,7 +51,7 @@ export default function Connect4BoardOnlineAdapter() {
 
   const isMatchEnded = !!matchWinner;
   const actionLabelBase = isMatchEnded
-    ? t("games.connect4.rematch")
+    ? t("common.actions.rematch")
     : t("common.actions.playAgain");
 
   /* ---------------- Timer (comme TTT adapter) ---------------- */
@@ -174,21 +174,23 @@ export default function Connect4BoardOnlineAdapter() {
 
       <div className="commonGameLayout">
         <div className="side">
-          <TicTacToeScorePanel
+          <GameScorePanel
             modeLabel="online"
             roundsToWin={roundsToWin}
             players={[
               {
                 label: t("common.players.you"),
                 score: myScore,
-                // ✅ pas de "symbol" (ton ScorePanel ne gère que X/O pour l’instant)
+                badge: myColor,
+
                 isTurn: isMyTurn,
+
                 matchWinner: iWonMatch,
               },
               {
                 label: t("common.players.opponent"),
                 score: oppScore,
-                // ✅ pas de "symbol"
+                badge: oppColor,
                 isTurn: isOppTurn,
                 matchWinner: oppWonMatch,
               },

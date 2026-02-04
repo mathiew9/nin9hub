@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import TicTacToeBoard from "../shared/TicTacToeBoard";
 import GameStatusBar from "../../_shared/hud/GameStatusBar";
-import TicTacToeScorePanel from "../shared/TicTacToeScorePanel";
+import GameScorePanel from "../../_shared/hud/GameScorePanel";
 import { useOnline } from "./TicTacToeOnlineProvider";
 import { useTranslation } from "react-i18next";
 
@@ -38,7 +38,7 @@ export default function TicTacToeBoardOnlineAdapter() {
   const { t } = useTranslation();
   const isMatchEnded = !!matchWinner;
   const actionLabelBase = isMatchEnded
-    ? t("games.tictactoe.rematch")
+    ? t("common.actions.rematch")
     : t("common.actions.playAgain");
 
   // Timer tick (used to compute remaining time)
@@ -154,14 +154,14 @@ export default function TicTacToeBoardOnlineAdapter() {
 
       <div className="commonGameLayout">
         <div className="side">
-          <TicTacToeScorePanel
+          <GameScorePanel
             modeLabel="online"
             roundsToWin={roundsToWin}
             players={[
               {
                 label: t("common.players.you"),
                 score: myScore,
-                symbol: mySymbol,
+                badge: mySymbol,
 
                 isTurn: isMyTurn,
 
@@ -170,7 +170,7 @@ export default function TicTacToeBoardOnlineAdapter() {
               {
                 label: t("common.players.opponent"),
                 score: oppScore,
-                symbol: oppSymbol,
+                badge: oppSymbol,
                 isTurn: isOppTurn,
                 matchWinner: oppWonMatch,
               },
