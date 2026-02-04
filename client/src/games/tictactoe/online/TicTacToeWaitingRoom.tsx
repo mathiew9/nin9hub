@@ -1,6 +1,10 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useOnline } from "./TicTacToeOnlineProvider";
 import { useTranslation } from "react-i18next";
+
+import RoomCodeBlock from "../../_shared/online/waiting-room/RoomCodeBlock";
+import PlayersBlock from "../../_shared/online/waiting-room/PlayersBlock";
+
 import "./TicTacToeWR.css";
 
 type Player = "X" | "O";
@@ -33,16 +37,7 @@ export default function TicTacToeWaitingRoom() {
   }, [role, isHost]);
 
   const guestRole: Player = hostRole === "X" ? "O" : "X";
-  const hostConnected = true;
   const guestConnected = playersCount === 2;
-
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    if (!roomId) return;
-    await navigator.clipboard.writeText(roomId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   // Helpers pour UI settings
   const gs = settings?.gridSize ?? 3;
@@ -73,125 +68,25 @@ export default function TicTacToeWaitingRoom() {
       <h3 className="commonMenuTitle">{t("common.labels.waitingRoom")}</h3>
 
       {/* Bloc Code room */}
-      <div className="ttt-wr-roomCodeBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle">{t("common.labels.roomCode")}</div>
-
-        <div
-          className={`ttt-wr-roomBox ttt-wr-roomBox--grid ${
-            isHost ? "" : "ttt-wr-roomBox--readonly"
-          }`}
-        >
-          <span className="ttt-wr-roomCode">{roomId}</span>
-
-          {isHost && (
-            <button
-              className="commonButton commonMenuButton ttt-wr-btn"
-              onClick={copy}
-            >
-              {copied
-                ? t("common.status.copied") + " ✓"
-                : t("common.actions.copy")}
-            </button>
-          )}
-        </div>
-
-        <div className="ttt-wr-roomCodeBlock-hint">
-          {isHost
-            ? t("common.messages.shareThisCode")
-            : t("common.labels.roomCode")}
-        </div>
-      </div>
+      <RoomCodeBlock roomId={roomId} isHost={isHost} />
 
       {/* Bloc Joueurs */}
-      <div className="ttt-wr-playersBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle ttt-wr-playersTitle">
-          <span className="ttt-wr-colTitle ttt-wr-colTitle--player">
-            {t("common.labels.players")}
-          </span>
-          <span className="ttt-wr-colTitle ttt-wr-colTitle--role">
-            {t("common.labels.role")}
-          </span>
-        </div>
-
-        {/* Hôte */}
-        <div className="ttt-wr-playerRow commonBox ttt-wr-playerRow--host">
-          <div className="ttt-wr-cell ttt-wr-cell--player">
-            <span
-              className={`ttt-wr-dot ${hostConnected ? "online" : "offline"}`}
-            />
-            <span className="ttt-wr-playerName">
-              {t("common.players.host")}{" "}
-              {isHost ? `(${t("common.players.you")})` : ""}
-            </span>
-          </div>
-          <div className="ttt-wr-cell ttt-wr-cell--role">
-            <span
-              className={`ttt-wr-role ${
-                hostRole === "X" ? "ttt-wr-role--x" : "ttt-wr-role--o"
-              }`}
-            >
-              {hostRole}
-            </span>
-          </div>
-        </div>
-
-        {/* Invité */}
-        <div className="ttt-wr-playerRow ttt-wr-playerRow--guest commonBox">
-          <div className="ttt-wr-cell ttt-wr-cell--player">
-            <span
-              className={`ttt-wr-dot ${guestConnected ? "online" : "offline"}`}
-            />
-            <span className="ttt-wr-playerName">
-              {guestConnected
-                ? isHost
-                  ? ` ${t("common.players.guest")}`
-                  : `${t("common.players.guest")} (${t("common.players.you")})`
-                : `${t("common.status.waiting")}…`}
-            </span>
-          </div>
-
-          {/* Opponent left */}
-          <div className="ttt-wr-cell ttt-wr-cell--status">
-            {opponentLeft && (
-              <span className="ttt-wr-miniAlert">
-                {t("common.messages.yourOpponentHasLeftTheGame")}
-              </span>
-            )}
-          </div>
-
-          <div className="ttt-wr-cell ttt-wr-cell--role">
-            <span
-              className={`ttt-wr-role ${
-                guestConnected
-                  ? guestRole === "X"
-                    ? "ttt-wr-role--x"
-                    : "ttt-wr-role--o"
-                  : "ttt-wr-role--ghost"
-              }`}
-            >
-              {guestRole}
-            </span>
-          </div>
-        </div>
-
-        {/* Footer Joueurs : hint + bouton swap */}
-        <div className="ttt-wr-playersFooter">
-          <div className="ttt-wr-playersBlock-hint">
-            {t("games.tictactoe.hints.XAlwaysGoesFirst")}
-          </div>
-
-          {isHost && (
-            <button
-              className="commonButton ttt-wr-swapRolesBtn"
-              onClick={() => swapRolesNow()}
-              disabled={!guestConnected}
-              title="Inverser X ↔ O"
-            >
-              {t("games.tictactoe.actions.swapRoles")}
-            </button>
-          )}
-        </div>
-      </div>
+      <PlayersBlock
+        isHost={isHost}
+        guestConnected={guestConnected}
+        opponentLeft={opponentLeft}
+        hostRoleLabel={hostRole}
+        hostRoleClassname={
+          hostRole === "X" ? "ttt-wr-role--x" : "ttt-wr-role--o"
+        }
+        guestRoleLabel={guestRole}
+        guestRoleClassname={
+          guestRole === "X" ? "ttt-wr-role--x" : "ttt-wr-role--o"
+        }
+        swapRolesNowLabel={t("games.tictactoe.actions.swapRoles")}
+        swapRolesNow={swapRolesNow}
+        hint={t("games.tictactoe.hints.XAlwaysGoesFirst")}
+      />
 
       {/* —— Bloc Paramètres —— */}
       <div className="ttt-wr-settingsBlock ttt-wr-commonBlock">

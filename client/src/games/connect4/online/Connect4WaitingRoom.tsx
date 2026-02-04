@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useOnline } from "./Connect4OnlineProvider";
 import { useTranslation } from "react-i18next";
 
-// Tu peux créer un fichier CSS dédié plus tard.
-// Pour l’instant je garde la même base de classes que le WR TTT
+import RoomCodeBlock from "../../_shared/online/waiting-room/RoomCodeBlock";
+import PlayersBlock from "../../_shared/online/waiting-room/PlayersBlock";
+
 import "../../tictactoe/online/TicTacToeWR.css";
 
 type Player = "red" | "yellow";
@@ -37,19 +38,9 @@ export default function Connect4WaitingRoom() {
   }, [role, isHost]);
 
   const guestRole: Player = hostRole === "red" ? "yellow" : "red";
-  const hostConnected = true;
   const guestConnected = playersCount === 2;
 
-  // Copy room code
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    if (!roomId) return;
-    await navigator.clipboard.writeText(roomId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  // ✅ Seulement les 2 settings que tu veux exposer
+  // Seulement les 2 settings que tu veux exposer
   const rounds = settings?.roundsToWin ?? 1;
   const tms = settings?.turnTimeMs ?? 0;
 
@@ -76,126 +67,25 @@ export default function Connect4WaitingRoom() {
       <h3 className="commonMenuTitle">{t("common.labels.waitingRoom")}</h3>
 
       {/* Bloc Code room */}
-      <div className="ttt-wr-roomCodeBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle">{t("common.labels.roomCode")}</div>
-
-        <div
-          className={`ttt-wr-roomBox ttt-wr-roomBox--grid ${
-            isHost ? "" : "ttt-wr-roomBox--readonly"
-          }`}
-        >
-          <span className="ttt-wr-roomCode">{roomId}</span>
-
-          {isHost && (
-            <button
-              className="commonButton commonMenuButton ttt-wr-btn"
-              onClick={copy}
-            >
-              {copied
-                ? t("common.status.copied") + " ✓"
-                : t("common.actions.copy")}
-            </button>
-          )}
-        </div>
-
-        <div className="ttt-wr-roomCodeBlock-hint">
-          {isHost
-            ? t("common.messages.shareThisCode")
-            : t("common.labels.roomCode")}
-        </div>
-      </div>
+      <RoomCodeBlock roomId={roomId} isHost={isHost} />
 
       {/* Bloc Joueurs */}
-      <div className="ttt-wr-playersBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle ttt-wr-playersTitle">
-          <span className="ttt-wr-colTitle ttt-wr-colTitle--player">
-            {t("common.labels.players")}
-          </span>
-          <span className="ttt-wr-colTitle ttt-wr-colTitle--role">
-            {t("common.labels.role")}
-          </span>
-        </div>
-
-        {/* Hôte */}
-        <div className="ttt-wr-playerRow commonBox ttt-wr-playerRow--host">
-          <div className="ttt-wr-cell ttt-wr-cell--player">
-            <span
-              className={`ttt-wr-dot ${hostConnected ? "online" : "offline"}`}
-            />
-            <span className="ttt-wr-playerName">
-              {t("common.players.host")}{" "}
-              {isHost ? `(${t("common.players.you")})` : ""}
-            </span>
-          </div>
-
-          <div className="ttt-wr-cell ttt-wr-cell--role">
-            <span
-              className={`ttt-wr-role ${
-                hostRole === "red" ? "connect4RedBadge" : "connect4YellowBadge"
-              }`}
-            >
-              {roleLabel(hostRole)}
-            </span>
-          </div>
-        </div>
-
-        {/* Invité */}
-        <div className="ttt-wr-playerRow ttt-wr-playerRow--guest commonBox">
-          <div className="ttt-wr-cell ttt-wr-cell--player">
-            <span
-              className={`ttt-wr-dot ${guestConnected ? "online" : "offline"}`}
-            />
-            <span className="ttt-wr-playerName">
-              {guestConnected
-                ? isHost
-                  ? ` ${t("common.players.guest")}`
-                  : `${t("common.players.guest")} (${t("common.players.you")})`
-                : `${t("common.status.waiting")}…`}
-            </span>
-          </div>
-
-          {/* Opponent left */}
-          <div className="ttt-wr-cell ttt-wr-cell--status">
-            {opponentLeft && (
-              <span className="ttt-wr-miniAlert">
-                {t("common.messages.yourOpponentHasLeftTheGame")}
-              </span>
-            )}
-          </div>
-
-          <div className="ttt-wr-cell ttt-wr-cell--role">
-            <span
-              className={`ttt-wr-role ${
-                guestConnected
-                  ? guestRole === "red"
-                    ? "connect4RedBadge"
-                    : "connect4YellowBadge"
-                  : "ttt-wr-role--ghost"
-              }`}
-            >
-              {roleLabel(guestRole)}
-            </span>
-          </div>
-        </div>
-
-        {/* Footer Joueurs : hint + bouton swap */}
-        <div className="ttt-wr-playersFooter">
-          <div className="ttt-wr-playersBlock-hint">
-            {t("games.connect4.hints.redAlwaysGoesFirst")}
-          </div>
-
-          {isHost && (
-            <button
-              className="commonButton ttt-wr-swapRolesBtn"
-              onClick={() => swapRolesNow()}
-              disabled={!guestConnected}
-              title="Inverser Red ↔ Yellow"
-            >
-              {t("games.connect4.actions.swapColors")}
-            </button>
-          )}
-        </div>
-      </div>
+      <PlayersBlock
+        isHost={isHost}
+        guestConnected={guestConnected}
+        opponentLeft={opponentLeft}
+        hostRoleLabel={roleLabel(hostRole)}
+        hostRoleClassname={`connect4Badge ${
+          hostRole === "red" ? "connect4RedBadge" : "connect4YellowBadge"
+        }`}
+        guestRoleLabel={roleLabel(guestRole)}
+        guestRoleClassname={`connect4Badge ${
+          guestRole === "red" ? "connect4RedBadge" : "connect4YellowBadge"
+        }`}
+        swapRolesNowLabel={t("games.connect4.actions.swapColors")}
+        swapRolesNow={swapRolesNow}
+        hint={t("games.connect4.hints.redAlwaysGoesFirst")}
+      />
 
       {/* —— Bloc Paramètres —— */}
       <div className="ttt-wr-settingsBlock ttt-wr-commonBlock">

@@ -1,0 +1,21 @@
+/* === BADGES JOUEURS === */
+.connect4Badge {
+  line-height: 1.2;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 80px;
+  width: fit-content;
+  text-align: center;
+}
+
+.connect4RedBadge {
+  background-color: #e74c3c;
+  color: #fcefee;
+}
+
+.connect4YellowBadge {
+  background-color: #f1c40f;
+  color: #4a3d00;
+}
