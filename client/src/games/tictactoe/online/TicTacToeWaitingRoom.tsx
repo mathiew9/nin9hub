@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import RoomCodeBlock from "../../_shared/online/waiting-room/RoomCodeBlock";
 import PlayersBlock from "../../_shared/online/waiting-room/PlayersBlock";
+import SettingsBlock from "../../_shared/online/waiting-room/SettingsBlock";
 
 import "./TicTacToeWR.css";
 
@@ -89,107 +90,62 @@ export default function TicTacToeWaitingRoom() {
       />
 
       {/* —— Bloc Paramètres —— */}
-      <div className="ttt-wr-settingsBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle ttt-wr-settingsTitle">
-          {t("common.labels.settings")}{" "}
-        </div>
-
-        <div className="ttt-wr-settings commonBox">
-          <div className="ttt-wr-settingsTable">
-            {/* Ligne labels */}
-            <div className="ttt-wr-settingsRow ttt-wr-settingsRow--labels">
-              <div className="ttt-wr-settingsCell">
-                {t("common.labels.gridSize")}
-              </div>
-              <div className="ttt-wr-settingsCell">
-                {t("common.labels.roundsToWin")}
-              </div>
-              <div className="ttt-wr-settingsCell">
-                {t("common.labels.swapRolesOnRematch")}
-              </div>
-              <div className="ttt-wr-settingsCell">
-                {t("common.labels.turnTime")}
-              </div>
-            </div>
-
-            {/* Ligne contrôles */}
-            <div className="ttt-wr-settingsRow ttt-wr-settingsRow--controls">
-              {/* Taille de grille */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                {isHost ? (
-                  <select
-                    value={gs}
-                    disabled={disabled}
-                    onChange={(e) => applyGrid(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-select "
-                  >
-                    <option value={3}>3×3</option>
-                    <option value={4}>4×4</option>
-                    <option value={5}>5×5</option>
-                  </select>
-                ) : (
-                  <div className="ttt-wr-pillValue">
-                    {gs}×{gs}
-                  </div>
-                )}
-              </div>
-
-              {/* Manches */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                {isHost ? (
-                  <input
-                    type="number"
-                    min={1}
-                    max={5}
-                    value={rounds}
-                    disabled={disabled}
-                    onChange={(e) => applyRounds(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-input"
-                  />
-                ) : (
-                  <div className="ttt-wr-pillValue">{rounds}</div>
-                )}
-              </div>
-
-              {/* Swap rôles au rematch */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                <label className="ttt-wr-toggle">
-                  <input
-                    type="checkbox"
-                    checked={swap}
-                    disabled={disabled}
-                    onChange={(e) => applySwap(e.target.checked)}
-                  />
-                  <span className="ttt-wr-toggleTrack">
-                    <span className="ttt-wr-toggleThumb" />
-                  </span>
-                </label>
-              </div>
-
-              {/* Temps par tour */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                {isHost ? (
-                  <select
-                    value={tms}
-                    disabled={disabled}
-                    onChange={(e) => applyTurnMs(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-select"
-                  >
-                    <option value={0}>{t("common.status.unlimited")}</option>
-                    <option value={10_000}>10 s</option>
-                    <option value={20_000}>20 s</option>
-                    <option value={30_000}>30 s</option>
-                  </select>
-                ) : (
-                  <div className="ttt-wr-pillValue">
-                    {tms === 0 ? "Illimité" : `${tms / 1000} s`}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <SettingsBlock
+        isHost={isHost}
+        fields={[
+          {
+            key: "gridSize",
+            label: t("common.labels.gridSize"),
+            type: "select",
+            value: gs,
+            options: [
+              { value: 3, label: "3×3" },
+              { value: 4, label: "4×4" },
+              { value: 5, label: "5×5" },
+            ],
+            onChange: (v) => applyGrid(Number(v)),
+            disabled: disabled,
+            readOnlyValue: `${gs}×${gs}`,
+          },
+          {
+            key: "roundsToWin",
+            label: t("common.labels.roundsToWin"),
+            type: "number",
+            value: rounds,
+            min: 1,
+            max: 5,
+            step: 1,
+            onChange: applyRounds,
+            disabled: disabled,
+            readOnlyValue: String(rounds),
+          },
+          {
+            key: "swapRolesOnRematch",
+            label: t("common.labels.swapRolesOnRematch"),
+            type: "toggle",
+            value: swap,
+            onChange: (v) => applySwap(v),
+            disabled: disabled,
+            readOnlyValue: String(swap),
+          },
+          {
+            key: "turnTimeMs",
+            label: t("common.labels.turnTime"),
+            type: "select",
+            value: tms,
+            options: [
+              { value: 0, label: t("common.status.unlimited") },
+              { value: 10_000, label: "10 s" },
+              { value: 20_000, label: "20 s" },
+              { value: 30_000, label: "30 s" },
+            ],
+            onChange: (v) => applyTurnMs(Number(v)),
+            disabled: disabled,
+            readOnlyValue:
+              tms === 0 ? t("common.status.unlimited") : `${tms / 1000} s`,
+          },
+        ]}
+      />
 
       {/* Bloc Infos */}
       <div className="ttt-wr-badgesRow">

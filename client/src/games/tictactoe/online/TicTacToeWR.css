@@ -200,11 +200,6 @@
   color: #dbeafe;
 }
 
-.ttt-wr-role--ghost {
-  background: #0b1220;
-  color: #64748b;
-}
-
 /* Footer du bloc joueurs : texte à gauche, bouton à droite */
 .ttt-wr-playersFooter {
   display: flex;

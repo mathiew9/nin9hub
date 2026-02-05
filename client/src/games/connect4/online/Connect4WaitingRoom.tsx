@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import RoomCodeBlock from "../../_shared/online/waiting-room/RoomCodeBlock";
 import PlayersBlock from "../../_shared/online/waiting-room/PlayersBlock";
+import SettingsBlock from "../../_shared/online/waiting-room/SettingsBlock";
 
 import "../../tictactoe/online/TicTacToeWR.css";
 
@@ -88,70 +89,41 @@ export default function Connect4WaitingRoom() {
       />
 
       {/* —— Bloc Paramètres —— */}
-      <div className="ttt-wr-settingsBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle ttt-wr-settingsTitle">
-          {t("common.labels.settings")}{" "}
-        </div>
-
-        <div className="ttt-wr-settings commonBox">
-          <div className="ttt-wr-settingsTable">
-            {/* Ligne labels */}
-            <div className="ttt-wr-settingsRow ttt-wr-settingsRow--labels">
-              <div className="ttt-wr-settingsCell">
-                {t("common.labels.roundsToWin")}
-              </div>
-              <div className="ttt-wr-settingsCell">
-                {t("common.labels.turnTime")}
-              </div>
-            </div>
-
-            {/* Ligne contrôles */}
-            <div className="ttt-wr-settingsRow ttt-wr-settingsRow--controls">
-              {/* Manches */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                {isHost ? (
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={rounds}
-                    disabled={disabled}
-                    onChange={(e) => applyRounds(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-input"
-                  />
-                ) : (
-                  <div className="ttt-wr-pillValue">{rounds}</div>
-                )}
-              </div>
-
-              {/* Temps par tour */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                {isHost ? (
-                  <select
-                    value={tms}
-                    disabled={disabled}
-                    onChange={(e) => applyTurnMs(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-select"
-                  >
-                    <option value={0}>{t("common.status.unlimited")}</option>
-                    <option value={10_000}>10 s</option>
-                    <option value={20_000}>20 s</option>
-                    <option value={30_000}>30 s</option>
-                    <option value={45_000}>45 s</option>
-                    <option value={60_000}>60 s</option>
-                  </select>
-                ) : (
-                  <div className="ttt-wr-pillValue">
-                    {tms === 0
-                      ? t("common.status.unlimited")
-                      : `${tms / 1000} s`}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <SettingsBlock
+        isHost={isHost}
+        fields={[
+          {
+            key: "rounds",
+            label: t("common.labels.roundsToWin"),
+            type: "number",
+            value: rounds,
+            min: 1,
+            max: 10,
+            step: 1,
+            onChange: applyRounds,
+            disabled: disabled,
+            readOnlyValue: String(rounds),
+          },
+          {
+            key: "turnTimeMs",
+            label: t("common.labels.turnTime"),
+            type: "select",
+            value: tms,
+            options: [
+              { value: 0, label: t("common.status.unlimited") },
+              { value: 10_000, label: "10 s" },
+              { value: 20_000, label: "20 s" },
+              { value: 30_000, label: "30 s" },
+              { value: 45_000, label: "45 s" },
+              { value: 60_000, label: "60 s" },
+            ],
+            onChange: (v) => applyTurnMs(Number(v)),
+            disabled: disabled,
+            readOnlyValue:
+              tms === 0 ? t("common.status.unlimited") : `${tms / 1000} s`,
+          },
+        ]}
+      />
 
       {/* Bloc Infos */}
       <div className="ttt-wr-badgesRow">

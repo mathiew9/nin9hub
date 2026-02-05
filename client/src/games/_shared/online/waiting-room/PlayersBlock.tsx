@@ -83,7 +83,9 @@ export default function PlayersBlock({
         <div className="ttt-wr-cell ttt-wr-cell--role">
           <span
             className={`ttt-wr-role ${
-              guestConnected ? guestRoleClassname : "ttt-wr-role--ghost"
+              guestConnected
+                ? guestRoleClassname
+                : `ttt-wr-role--ghost ${guestRoleClassname}`
             }`}
           >
             {guestRoleLabel.toUpperCase()}
