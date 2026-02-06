@@ -13,7 +13,6 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 🔔 notifier le provider qu’on quitte l’online (navigation interne)
   const fireExitOnline = useCallback(() => {
     window.dispatchEvent(new Event("ninehub:exit-online"));
   }, []);
@@ -65,7 +64,6 @@ export default function Header() {
         }
       />
 
-      {/* Logo / Titre → onClick déclenche la sortie online */}
       <Link
         to="/"
         onClick={fireExitOnline}
@@ -82,7 +80,6 @@ export default function Header() {
 
       <div className="header-controls">
         {gameName && (
-          // Bouton “Menu/Jeux” → idem, on déclenche la sortie
           <Link to="/" className="header-back" onClick={fireExitOnline}>
             {t("header.menu")}
           </Link>

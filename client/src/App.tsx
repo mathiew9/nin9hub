@@ -11,13 +11,9 @@ function App() {
   const location = useLocation();
 
   return (
-    <div
-      className={`app_container ${
-        location.pathname === "/" ? "home_layout" : ""
-      }`}
-    >
+    <div className="app_container">
       <Header />
-      <main>
+      <main className={location.pathname === "/" ? "home_layout" : ""}>
         <Routes>
           <Route path="/" element={<GameSelection />} />
           {games
