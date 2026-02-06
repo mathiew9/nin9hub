@@ -257,7 +257,7 @@ export default function Game2048() {
           className="commonButton commonMediumButton"
           onClick={restartGame}
         >
-          {t("common.playAgain")}
+          {t("common.actions.playAgain")}
         </button>
         <div className="controls2048">
           <button onClick={() => handleMove("left")}>

@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import "./TicTacToe.css";
 
 import TicTacToeBoard from "./shared/TicTacToeBoard";
-import TicTacToeStatusBar from "./shared/TicTacToeStatusBar";
+import GameStatusBar from "../_shared/hud/GameStatusBar";
+import GameScorePanel from "../_shared/hud/GameScorePanel";
 import TicTacToeOnlineRoot from "./online/TicTacToeOnlineRoot";
 
 interface Props {
@@ -30,7 +31,7 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
 
   // LOCAL GAME STATE
   const [board, setBoard] = useState<SquareValue[]>(() =>
-    Array(gridSize * gridSize).fill(null)
+    Array(gridSize * gridSize).fill(null),
   );
 
   const [player1Symbol, setPlayer1Symbol] = useState<Player>("X");
@@ -48,16 +49,25 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
   const draw = !winner && !board.includes(null);
 
   // LABELS
-  const isPlayer1Turn = currentPlayer === player1Symbol;
+  const isPlayer1Turn =
+    currentPlayer === player1Symbol && winner === null && !draw;
+  const isPlayer2Turn =
+    currentPlayer === player2Symbol && winner === null && !draw;
 
   const currentActorLabel = useMemo(() => {
-    if (isPlayer1Turn) return t("tictactoe.player1");
-    return mode === "ai" ? t("tictactoe.computer") : t("tictactoe.player2");
+    if (isPlayer1Turn) {
+      if (mode === "ai") return t("common.players.you");
+      return t("common.players.player1");
+    }
+    return mode === "ai"
+      ? t("common.players.computer")
+      : t("common.players.player2");
   }, [isPlayer1Turn, mode, t]);
 
-  const p1Label = t("tictactoe.player1");
+  const p1Label =
+    mode === "ai" ? t("common.players.you") : t("common.players.player1");
   const p2Label =
-    mode === "ai" ? t("tictactoe.computer") : t("tictactoe.player2");
+    mode === "ai" ? t("common.players.computer") : t("common.players.player2");
 
   // TURN TIMER
   const TURN_SECONDS = 10;
@@ -162,71 +172,50 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
 
   return (
     <div className="tictactoe">
-      <TicTacToeStatusBar
-        leftText={winner || draw ? "" : t("tictactoe.toPlayShort")}
-        leftSymbol={winner || draw ? null : currentPlayer}
+      <GameStatusBar
+        leftText={winner || draw ? "" : t("games.tictactoe.inGame.toPlayShort")}
+        leftBadge={winner || draw ? null : currentPlayer}
         centerText={
           winner
             ? `${winner === player1Symbol ? p1Label : p2Label} ${t(
-                "tictactoe.won"
+                "games.tictactoe.results.won",
               )}`
             : draw
-            ? t("tictactoe.draw")
-            : currentActorLabel
+              ? t("common.results.draw")
+              : currentActorLabel
         }
         timeSec={winner || draw ? null : timeLeftSec}
       />
 
       <div className="commonGameLayout">
         <div className="side">
-          <div className="scoreCard">
-            <div className="scoreCardMode">
-              <div className="modeText">
-                {t("tictactoe.gamemode")} :{" "}
-                {mode === "ai"
-                  ? t("tictactoe.withai")
-                  : t("tictactoe.withfriend")}
-              </div>
-            </div>
-
-            <div className="scoreCardHeader">
-              <div className="scoreTitle">{t("common.score")}</div>
-            </div>
-
-            <div className="scoreCardBody">
-              <p>
-                {p1Label} - {scoreP1}{" "}
-                <span
-                  className={`symbol-badge symbol-${player1Symbol.toLowerCase()}`}
-                >
-                  {player1Symbol}
-                </span>
-              </p>
-              <p>
-                {p2Label} - {scoreP2}{" "}
-                <span
-                  className={`symbol-badge symbol-${player2Symbol.toLowerCase()}`}
-                >
-                  {player2Symbol}
-                </span>
-              </p>
-            </div>
-
-            <div className="scoreCardFooter">
-              <button
-                className="commonScoreButton commonButton"
-                onClick={resetScore}
-              >
-                {t("tictactoe.resetScore")}
-              </button>
-              <button
-                className="commonScoreButton commonButton"
-                onClick={() => setMode(null)}
-              >
-                {t("tictactoe.changeGameMode")}
-              </button>
-            </div>
-          </div>
+          <GameScorePanel
+            modeLabel={mode}
+            players={[
+              {
+                label: p1Label,
+                score: scoreP1,
+                badge: player1Symbol,
+                isTurn: isPlayer1Turn,
+                matchWinner: !!winner && winner === player1Symbol,
+              },
+              {
+                label: p2Label,
+                score: scoreP2,
+                badge: player2Symbol,
+                isTurn: isPlayer2Turn,
+                matchWinner: !!winner && winner === player2Symbol,
+              },
+            ]}
+            roundsToWin={null}
+            actions={[
+              { label: t("common.actions.resetScore"), onClick: resetScore },
+              {
+                label: t("common.modes.changeGameMode"),
+                onClick: () => setMode(null),
+              },
+            ]}
+          />
         </div>
 
         <div className="center">
@@ -245,8 +234,11 @@ export default function TicTacToe({ mode, gridSize, setMode }: Props) {
         <div className="side hidden" />
       </div>
 
-      <button onClick={reset} className="commonButton commonMediumButton">
-        {t("common.playAgain")}
+      <button
+        onClick={reset}
+        className="commonButton commonMediumButton ttt-playAgainButton"
+      >
+        {t("common.actions.playAgain")}
       </button>
     </div>
   );

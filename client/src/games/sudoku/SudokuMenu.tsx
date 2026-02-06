@@ -53,14 +53,16 @@ export default function SudokuMenu({ onStart }: Props) {
 
   return (
     <div className="commonMenu">
-      <h2 className="commonMenuTitle">{t("common.selectDifficulty")}</h2>
+      <h2 className="commonMenuTitle">
+        {t("common.difficulty.selectDifficulty")}
+      </h2>
       <div className="commonMenuButtons">
         <button
           className="commonButton commonMenuButton sudokuButtonOfTheDay"
           onClick={() => onStart("daily")}
         >
           <span className="sudoku-menu-button-content">
-            {t("common.ofTheDay", { game: "Sudoku" })}
+            {t("common.meta.ofTheDay", { game: t("games.sudoku.name") })}
             {renderIcon(dailyStatus)}
           </span>
         </button>
@@ -72,7 +74,7 @@ export default function SudokuMenu({ onStart }: Props) {
             onClick={() => handleClick(lvl)}
           >
             <span className="sudoku-menu-button-content">
-              {t(`common.${lvl}`)}
+              {t(`common.difficulty.${lvl}`)}
               {savedClassic &&
                 !savedClassic.gameFinished &&
                 savedClassic.level === lvl && (
@@ -85,15 +87,15 @@ export default function SudokuMenu({ onStart }: Props) {
       {pendingLevel && (
         <div className="sudoku-confirm-popup">
           <div className="sudoku-confirm-popup-content">
-            <p>{t("sudoku.popupWarning1")}</p>
-            <p>{t("sudoku.popupWarning2")}</p>
-            <p>{t("sudoku.popupWarning3")}</p>
+            <p>{t("games.sudoku.messages.popupWarning1")}</p>
+            <p>{t("games.sudoku.messages.popupWarning2")}</p>
+            <p>{t("games.sudoku.messages.popupWarning3")}</p>
             <div className="sudoku-confirm-buttons">
               <button
                 className="commonButton"
                 onClick={() => setPendingLevel(null)}
               >
-                {t("sudoku.cancel")}
+                {t("games.sudoku.actions.cancel")}
               </button>
               <button
                 className="commonButton"
@@ -103,7 +105,7 @@ export default function SudokuMenu({ onStart }: Props) {
                   setPendingLevel(null);
                 }}
               >
-                {t("sudoku.continue")}
+                {t("games.sudoku.actions.continue")}
               </button>
             </div>
           </div>

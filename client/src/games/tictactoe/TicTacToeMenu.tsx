@@ -16,10 +16,10 @@ export default function TicTacToeMenu({
 
   return (
     <div className="commonMenu">
-      <h2 className="commonMenuTitle">{t("common.selectgamemode")}</h2>
+      <h2 className="commonMenuTitle">{t("common.modes.selectGameMode")}</h2>
 
       <div className="gridSizeSelector">
-        <label>{t("tictactoe.gridsize")} : </label>
+        <label>{t("common.labels.gridSize")} : </label>
         <select
           id="gridSize"
           value={gridSize}
@@ -38,19 +38,19 @@ export default function TicTacToeMenu({
           className="commonButton commonMenuButton"
           onClick={() => onSelectMode("friend")}
         >
-          {t("common.playwithfriend")}
+          {t("common.modes.playWithFriend")}
         </button>
         <button
           className="commonButton commonMenuButton"
           onClick={() => onSelectMode("ai")}
         >
-          {t("common.playwithai")}
+          {t("common.modes.playWithAi")}
         </button>
         <button
           className="commonButton commonMenuButton"
           onClick={() => onSelectMode("online")}
         >
-          Jouer en ligne
+          {t("common.modes.playOnline")}
         </button>
       </div>
     </div>

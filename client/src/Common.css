@@ -83,9 +83,15 @@ body[data-theme="light"] .commonButton {
   border-radius: 0;
   cursor: pointer;
   letter-spacing: 1.5px;
-  box-shadow: 1px 1px 0px 0px #44403c, 2px 2px 0px 0px #44403c,
-    3px 3px 0px 0px #44403c, 4px 4px 0px 0px #44403c, 5px 5px 0px 0px #44403c;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow:
+    1px 1px 0px 0px #44403c,
+    2px 2px 0px 0px #44403c,
+    3px 3px 0px 0px #44403c,
+    4px 4px 0px 0px #44403c,
+    5px 5px 0px 0px #44403c;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
 }
 
 body[data-theme="dark"] .commonButton:hover,
@@ -167,6 +173,19 @@ body[data-theme="light"] .commonBox {
   border: 2px solid #44403c;
   border-radius: 0;
   letter-spacing: 2px;
-  box-shadow: 1px 1px 0px 0px #44403c, 2px 2px 0px 0px #44403c,
-    3px 3px 0px 0px #44403c, 4px 4px 0px 0px #44403c, 5px 5px 0px 0px #44403c;
+  box-shadow:
+    1px 1px 0px 0px #44403c,
+    2px 2px 0px 0px #44403c,
+    3px 3px 0px 0px #44403c,
+    4px 4px 0px 0px #44403c,
+    5px 5px 0px 0px #44403c;
+}
+
+.is-disabled {
+  opacity: 0.6;
+  filter: grayscale(0.2);
+  cursor: not-allowed;
+}
+body[data-theme="light"] .is-disabled {
+  opacity: 0.7;
 }

@@ -1,0 +1,17 @@
+.connect4-online-actions {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.connect4-online-actionBtn {
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+
+  min-width: 160px;
+  text-align: center;
+}

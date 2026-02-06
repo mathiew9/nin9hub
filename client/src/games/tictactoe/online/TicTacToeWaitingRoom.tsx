@@ -1,6 +1,11 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useOnline } from "./TicTacToeOnlineProvider";
-import "./TicTacToeWR.css";
+import { useTranslation } from "react-i18next";
+
+import RoomCodeBlock from "../../_shared/online/waiting-room/RoomCodeBlock";
+import PlayersBlock from "../../_shared/online/waiting-room/PlayersBlock";
+import SettingsBlock from "../../_shared/online/waiting-room/SettingsBlock";
+import ActionsBlock from "../../_shared/online/waiting-room/ActionsBlock";
 
 type Player = "X" | "O";
 function otherRole(r: Player): Player {
@@ -23,6 +28,7 @@ export default function TicTacToeWaitingRoom() {
     swapRolesNow,
   } = useOnline();
 
+  const { t } = useTranslation();
   const canStart = isHost && playersCount === 2;
 
   const hostRole: Player = useMemo(() => {
@@ -31,16 +37,7 @@ export default function TicTacToeWaitingRoom() {
   }, [role, isHost]);
 
   const guestRole: Player = hostRole === "X" ? "O" : "X";
-  const hostConnected = true;
   const guestConnected = playersCount === 2;
-
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    if (!roomId) return;
-    await navigator.clipboard.writeText(roomId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   // Helpers pour UI settings
   const gs = settings?.gridSize ?? 3;
@@ -67,252 +64,95 @@ export default function TicTacToeWaitingRoom() {
   };
 
   return (
-    <div className="commonMenu ttt-wr-container">
-      <h3 className="commonMenuTitle">Salle d’attente</h3>
+    <div className="commonMenu lobby-container">
+      <h3 className="commonMenuTitle">{t("common.labels.waitingRoom")}</h3>
 
       {/* Bloc Code room */}
-      <div className="ttt-wr-roomCodeBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle">Code de la room</div>
-
-        <div
-          className={`ttt-wr-roomBox ttt-wr-roomBox--grid ${
-            isHost ? "" : "ttt-wr-roomBox--readonly"
-          }`}
-        >
-          <span className="ttt-wr-roomCode">{roomId}</span>
-
-          {isHost && (
-            <button
-              className="commonButton commonMenuButton ttt-wr-btn"
-              onClick={copy}
-            >
-              {copied ? "Copié ✓" : "Copier"}
-            </button>
-          )}
-        </div>
-
-        <div className="ttt-wr-roomCodeBlock-hint">
-          {isHost ? "Partage ce code à ton ami" : "Code de la room."}
-        </div>
-      </div>
+      <RoomCodeBlock roomId={roomId} isHost={isHost} />
 
       {/* Bloc Joueurs */}
-      <div className="ttt-wr-playersBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle ttt-wr-playersTitle">
-          <span className="ttt-wr-colTitle ttt-wr-colTitle--player">
-            Joueurs
-          </span>
-          <span className="ttt-wr-colTitle ttt-wr-colTitle--role">Rôle</span>
-        </div>
-
-        {/* Hôte */}
-        <div className="ttt-wr-playerRow commonBox ttt-wr-playerRow--host">
-          <div className="ttt-wr-cell ttt-wr-cell--player">
-            <span
-              className={`ttt-wr-dot ${hostConnected ? "online" : "offline"}`}
-            />
-            <span className="ttt-wr-playerName">
-              Hôte {isHost ? "(toi)" : ""}
-            </span>
-          </div>
-          <div className="ttt-wr-cell ttt-wr-cell--role">
-            <span
-              className={`ttt-wr-role ${
-                hostRole === "X" ? "ttt-wr-role--x" : "ttt-wr-role--o"
-              }`}
-            >
-              {hostRole}
-            </span>
-          </div>
-        </div>
-
-        {/* Invité */}
-        <div className="ttt-wr-playerRow ttt-wr-playerRow--guest commonBox">
-          <div className="ttt-wr-cell ttt-wr-cell--player">
-            <span
-              className={`ttt-wr-dot ${guestConnected ? "online" : "offline"}`}
-            />
-            <span className="ttt-wr-playerName">
-              {guestConnected
-                ? isHost
-                  ? "Invité"
-                  : "Invité (toi)"
-                : "En attente…"}
-            </span>
-          </div>
-
-          {/* Opponent left */}
-          <div className="ttt-wr-cell ttt-wr-cell--status">
-            {opponentLeft && (
-              <span className="ttt-wr-miniAlert">
-                L'adversaire a quitté la partie
-              </span>
-            )}
-          </div>
-
-          <div className="ttt-wr-cell ttt-wr-cell--role">
-            <span
-              className={`ttt-wr-role ${
-                guestConnected
-                  ? guestRole === "X"
-                    ? "ttt-wr-role--x"
-                    : "ttt-wr-role--o"
-                  : "ttt-wr-role--ghost"
-              }`}
-            >
-              {guestRole}
-            </span>
-          </div>
-        </div>
-
-        {/* Footer Joueurs : hint + bouton swap */}
-        <div className="ttt-wr-playersFooter">
-          <div className="ttt-wr-playersBlock-hint">X commence toujours</div>
-
-          {isHost && (
-            <button
-              className="commonButton ttt-wr-swapRolesBtn"
-              onClick={() => swapRolesNow()}
-              disabled={!guestConnected}
-              title="Inverser X ↔ O"
-            >
-              Inverser les rôles
-            </button>
-          )}
-        </div>
-      </div>
+      <PlayersBlock
+        isHost={isHost}
+        guestConnected={guestConnected}
+        opponentLeft={opponentLeft}
+        hostRoleLabel={hostRole}
+        hostRoleClassname={hostRole === "X" ? "lobby-role--x" : "lobby-role--o"}
+        guestRoleLabel={guestRole}
+        guestRoleClassname={
+          guestRole === "X" ? "lobby-role--x" : "lobby-role--o"
+        }
+        swapRolesNowLabel={t("games.tictactoe.actions.swapRoles")}
+        swapRolesNow={swapRolesNow}
+        hint={t("games.tictactoe.hints.XAlwaysGoesFirst")}
+      />
 
       {/* —— Bloc Paramètres —— */}
-      <div className="ttt-wr-settingsBlock ttt-wr-commonBlock">
-        <div className="ttt-wr-commonTitle ttt-wr-settingsTitle">
-          Paramètres{" "}
-        </div>
+      <SettingsBlock
+        isHost={isHost}
+        fields={[
+          {
+            key: "gridSize",
+            label: t("common.labels.gridSize"),
+            type: "select",
+            value: gs,
+            options: [
+              { value: 3, label: "3×3" },
+              { value: 4, label: "4×4" },
+              { value: 5, label: "5×5" },
+            ],
+            onChange: (v) => applyGrid(Number(v)),
+            disabled: disabled,
+            readOnlyValue: `${gs}×${gs}`,
+          },
+          {
+            key: "roundsToWin",
+            label: t("common.labels.roundsToWin"),
+            type: "number",
+            value: rounds,
+            min: 1,
+            max: 5,
+            step: 1,
+            onChange: applyRounds,
+            disabled: disabled,
+            readOnlyValue: String(rounds),
+          },
+          {
+            key: "swapRolesOnRematch",
+            label: t("common.labels.swapRolesOnRematch"),
+            type: "toggle",
+            value: swap,
+            onChange: (v) => applySwap(v),
+            disabled: disabled,
+            readOnlyValue: String(swap),
+          },
+          {
+            key: "turnTimeMs",
+            label: t("common.labels.turnTime"),
+            type: "select",
+            value: tms,
+            options: [
+              { value: 0, label: t("common.status.unlimited") },
+              { value: 10_000, label: "10 s" },
+              { value: 20_000, label: "20 s" },
+              { value: 30_000, label: "30 s" },
+            ],
+            onChange: (v) => applyTurnMs(Number(v)),
+            disabled: disabled,
+            readOnlyValue:
+              tms === 0 ? t("common.status.unlimited") : `${tms / 1000} s`,
+          },
+        ]}
+      />
 
-        <div className="ttt-wr-settings commonBox">
-          <div className="ttt-wr-settingsTable">
-            {/* Ligne labels */}
-            <div className="ttt-wr-settingsRow ttt-wr-settingsRow--labels">
-              <div className="ttt-wr-settingsCell">Taille de grille</div>
-              <div className="ttt-wr-settingsCell">
-                Manches pour gagner le match
-              </div>
-              <div className="ttt-wr-settingsCell">
-                Inverser les rôles au rematch
-              </div>
-              <div className="ttt-wr-settingsCell">Temps par tour</div>
-            </div>
-
-            {/* Ligne contrôles */}
-            <div className="ttt-wr-settingsRow ttt-wr-settingsRow--controls">
-              {/* Taille de grille */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                {isHost ? (
-                  <select
-                    value={gs}
-                    disabled={disabled}
-                    onChange={(e) => applyGrid(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-select "
-                  >
-                    <option value={3}>3×3</option>
-                    <option value={4}>4×4</option>
-                    <option value={5}>5×5</option>
-                  </select>
-                ) : (
-                  <div className="ttt-wr-pillValue">
-                    {gs}×{gs}
-                  </div>
-                )}
-              </div>
-
-              {/* Manches */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                {isHost ? (
-                  <input
-                    type="number"
-                    min={1}
-                    max={5}
-                    value={rounds}
-                    disabled={disabled}
-                    onChange={(e) => applyRounds(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-input"
-                  />
-                ) : (
-                  <div className="ttt-wr-pillValue">{rounds}</div>
-                )}
-              </div>
-
-              {/* Swap rôles au rematch */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                <label className="ttt-wr-toggle">
-                  <input
-                    type="checkbox"
-                    checked={swap}
-                    disabled={disabled}
-                    onChange={(e) => applySwap(e.target.checked)}
-                  />
-                  <span className="ttt-wr-toggleTrack">
-                    <span className="ttt-wr-toggleThumb" />
-                  </span>
-                </label>
-              </div>
-
-              {/* Temps par tour */}
-              <div className="ttt-wr-settingsCell ttt-wr-settingsCell--control">
-                {isHost ? (
-                  <select
-                    value={tms}
-                    disabled={disabled}
-                    onChange={(e) => applyTurnMs(Number(e.target.value))}
-                    className="ttt-wr-field ttt-wr-select"
-                  >
-                    <option value={0}>Illimité</option>
-                    <option value={10_000}>10 s</option>
-                    <option value={20_000}>20 s</option>
-                    <option value={30_000}>30 s</option>
-                  </select>
-                ) : (
-                  <div className="ttt-wr-pillValue">
-                    {tms === 0 ? "Illimité" : `${tms / 1000} s`}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bloc Infos */}
-      <div className="ttt-wr-badgesRow">
-        {lastError && (
-          <span className="wr-alert error" onClick={clearError}>
-            {lastError.message}
-          </span>
-        )}
-      </div>
-
-      {/* Bloc Actions */}
-      <div className="ttt-wr-actions">
-        <button
-          className="commonButton commonMenuButton ttt-wr-btn"
-          onClick={() => leave()}
-        >
-          Quitter
-        </button>
-        <button
-          className={`commonButton commonMenuButton ttt-wr-btn ${
-            isHost ? (canStart ? "" : "is-disabled") : "is-disabled"
-          }`}
-          onClick={() => {
-            if (isHost && canStart) {
-              clearError();
-              startGame();
-            }
-          }}
-          disabled={!isHost || !canStart}
-        >
-          {isHost ? "Commencer la partie" : "En attente que l’hôte démarre…"}
-        </button>
-      </div>
+      {/* Bloc Infos + Actions */}
+      <ActionsBlock
+        isHost={isHost}
+        canStart={canStart}
+        clearError={clearError}
+        startGame={startGame}
+        leave={leave}
+        lastError={lastError}
+      />
     </div>
   );
 }

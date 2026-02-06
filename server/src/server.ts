@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { Server } from "socket.io";
-import { registerOnline } from "./sockets/registerOnline";
+import { registerSockets } from "./registerSockets";
 
 const app = express();
 app.use(cors());
@@ -16,9 +16,9 @@ const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
-registerOnline(io);
+registerSockets(io);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
 server.listen(PORT, () => {
-  console.log(`[ttt-online] Server running on http://localhost:${PORT}`);
+  console.log(`[Nin9hub-online] Server running on http://localhost:${PORT}`);
 });

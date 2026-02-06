@@ -1,11 +1,10 @@
 import { io, Socket } from "socket.io-client";
 
-const SERVER_URL =
-  import.meta.env.VITE_TTT_SERVER_URL ?? "http://localhost:4000";
+const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? "http://localhost:4000";
 
 let socket: Socket | null = null;
 
-export function getTicTacToeSocket(): Socket {
+export function getSocket(): Socket {
   if (!socket) {
     socket = io(SERVER_URL, {
       autoConnect: true,

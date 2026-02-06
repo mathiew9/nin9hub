@@ -1,98 +1,191 @@
 {
   "common": {
-    "availableSoon": "Disponible bientot",
-    "score": "Score",
-    "selectgamemode": "Choisir le mode de jeu",
-    "playwithfriend": "Jouer avec un ami",
-    "playwithai": "Jouer Contre l'ordinateur",
-    "playAgain": "Rejouer",
-    "selectDifficulty": "Choisissez un niveau",
-    "easy": "Facile",
-    "medium": "Moyen",
-    "hard": "Difficile",
-    "ofTheDay": "{{game}} du jour",
-    "changeLevel": "Changer de niveau",
-    "level": "Niveau",
-    "daily": "Journalier",
-    "roomCode": "Code de la salle",
-    "join": "Rejoindre",
-    "hostGame": "Héberger une partie",
-    "back": "Retour"
+    "meta": {
+      "availableSoon": "Disponible bientôt",
+      "ofTheDay": "{{game}} du jour"
+    },
+    "actions": {
+      "back": "Retour",
+      "copy": "Copier",
+      "join": "Rejoindre la salle",
+      "hostGame": "Héberger une partie",
+      "leave": "Quitter",
+      "startGame": "Démarrer la partie",
+      "playAgain": "Rejouer",
+      "requestRematch": "Proposer un rematch",
+      "rematch": "Nouveau match",
+      "resetScore": "Réinitialiser le score",
+      "changeSettings": "Changer les paramètres"
+    },
+    "labels": {
+      "score": "Score",
+      "players": "Joueurs",
+      "role": "Rôle",
+      "turn": "Tour",
+      "roomCode": "CODE DE SALLE",
+      "settings": "Paramètres",
+      "gridSize": "Taille de la grille",
+      "roundsToWin": "Manches pour gagner",
+      "swapRolesOnRematch": "Inverser les rôles au rematch",
+      "turnTime": "Temps par tour",
+      "waitingRoom": "Salle d’attente"
+    },
+    "modes": {
+      "selectGameMode": "Choisir le mode de jeu",
+      "gameMode": "Mode de jeu",
+      "changeGameMode": "Changer de mode",
+      "playWithFriend": "Jouer avec un ami",
+      "playWithAi": "Jouer contre l’IA",
+      "withfriend": "Avec un ami",
+      "playOnline": "Jouer en ligne",
+      "withai": "Contre l’IA",
+      "online": "En ligne"
+    },
+    "difficulty": {
+      "selectDifficulty": "Choisir la difficulté",
+      "changeDifficulty": "Changer de difficulté",
+      "difficulty": "difficulté",
+      "easy": "Facile",
+      "medium": "Moyen",
+      "hard": "Difficile",
+      "daily": "Quotidien"
+    },
+    "status": {
+      "waiting": "En attente",
+      "copied": "Copié !",
+      "unlimited": "Illimité",
+      "waitingForHostToStart": "En attente que l’hôte démarre",
+      "waitingForOpponent": "En attente de l’adversaire"
+    },
+    "results": {
+      "victory": "Victoire",
+      "defeat": "Défaite",
+      "draw": "Match nul"
+    },
+    "messages": {
+      "shareThisCode": "Partage ce code avec un ami",
+      "yourOpponentHasLeftTheGame": "L’adversaire a quitté la partie",
+      "youAre": "Vous êtes"
+    },
+    "players": {
+      "host": "Hôte",
+      "guest": "Invité",
+      "you": "Vous",
+      "opponent": "Adversaire",
+      "player1": "Joueur 1",
+      "player2": "Joueur 2",
+      "computer": "Ordinateur"
+    },
+    "turn": {
+      "yourTurn": "À vous de jouer"
+    }
   },
   "header": {
     "menu": "Jeux"
   },
-  "tictactoe": {
-    "name": "Morpion",
-    "gridsize": "Taille de la grille",
-    "changeGameMode": "Changer de mode",
-    "withfriend": "Avec un ami",
-    "gamemode": "Mode de jeu",
-    "withai": "Contre l'ordinateur",
-    "player1": "Joueur 1",
-    "player2": "Joueur 2",
-    "computer": "Ordinateur",
-    "toPlayShort": "à jouer",
-    "won": "à gagné",
-    "draw": "Match nul",
-    "resetScore": "Reinitialiser le score",
-    "onlineTitle": "Morpion - En ligne"
-  },
-  "chess": {
-    "name": "Échecs"
-  },
-  "connect4": {
-    "name": "Puissance 4",
-    "red": "Rouge",
-    "yellow": "Jaune",
-    "turn": "à jouer",
-    "wins": "à gagné"
-  },
-  "snake": {
-    "name": "Snake",
-    "time": "Temps"
-  },
-  "hangman": {
-    "name": "Pendu",
-    "infiniteMode": "Mode infini"
-  },
-  "minesweeper": {
-    "name": "Démineur",
-    "beginner": "Débutant",
-    "intermediate": "Intermédiaire",
-    "expert": "Expert",
-    "custom": "Personnalisé",
-    "rows": "Lignes",
-    "cols": "Colonnes",
-    "mines": "Mines",
-    "start": "Commencer",
-    "grid": "Grille",
-    "changeSize": "Changer de taille",
-    "victory": "Victoire",
-    "defeat": "Défaite"
-  },
-  "2048": {
-    "name": "2048"
-  },
-  "solitaire": {
-    "name": "Solitaire"
-  },
-  "ultimatetictactoe": {
-    "name": "Morpion Ultime"
-  },
-  "sudoku": {
-    "name": "Sudoku",
-    "newGrid": "Nouvelle grille",
-    "completed": "Sudoku terminé",
-    "cancel": "Annuler",
-    "continue": "Continuer",
-    "popupWarning1": "Une partie est déjà en cours.",
-    "popupWarning2": "Lancer une nouvelle grille l’écrasera.",
-    "popupWarning3": "Continuer ?",
-    "erase": "Effacer",
-    "noteMode": "Mode note"
-  },
-  "pacxon": {
-    "name": "Pacxon"
+  "games": {
+    "2048": {
+      "name": "2048"
+    },
+    "tictactoe": {
+      "name": "Morpion",
+      "onlineTitle": "Morpion - En ligne",
+      "settings": {
+        "gridSize": "Taille de la grille"
+      },
+      "results": {
+        "won": "a gagné"
+      },
+      "inGame": {
+        "toPlayShort": "À jouer"
+      },
+      "plural": {
+        "firstToRounds_one": "Premier à {{count}} manche",
+        "firstToRounds_other": "Premier à {{count}} manches"
+      },
+      "hints": {
+        "XAlwaysGoesFirst": "X commence toujours"
+      },
+      "actions": {
+        "swapRoles": "Inverser les rôles"
+      }
+    },
+    "connect4": {
+      "name": "Puissance 4",
+      "colors": {
+        "red": "Rouge",
+        "yellow": "Jaune"
+      },
+      "inGame": {
+        "turn": "à jouer",
+        "wins": "a gagné"
+      },
+      "hints": {
+        "redAlwaysGoesFirst": "Rouge commence toujours"
+      },
+      "actions": {
+        "swapColors": "Inverser les couleurs"
+      }
+    },
+    "snake": {
+      "name": "Snake",
+      "labels": {
+        "time": "Temps"
+      }
+    },
+    "hangman": {
+      "name": "Pendu",
+      "modes": {
+        "infiniteMode": "Mode infini"
+      }
+    },
+    "minesweeper": {
+      "name": "Démineur",
+      "levels": {
+        "beginner": "Débutant",
+        "intermediate": "Intermédiaire",
+        "expert": "Expert",
+        "custom": "Personnalisé"
+      },
+      "labels": {
+        "rows": "Lignes",
+        "cols": "Colonnes",
+        "mines": "Mines",
+        "grid": "Grille"
+      },
+      "actions": {
+        "changeSize": "Changer la taille"
+      }
+    },
+    "sudoku": {
+      "name": "Sudoku",
+      "actions": {
+        "newGrid": "Nouvelle grille",
+        "cancel": "Annuler",
+        "continue": "Continuer",
+        "erase": "Effacer"
+      },
+      "messages": {
+        "completed": "Sudoku terminé",
+        "popupWarning1": "Une partie est déjà en cours.",
+        "popupWarning2": "Lancer une nouvelle grille l’écrasera.",
+        "popupWarning3": "Continuer ?"
+      },
+      "labels": {
+        "noteMode": "Mode note"
+      }
+    },
+    "chess": {
+      "name": "Échecs"
+    },
+    "solitaire": {
+      "name": "Solitaire"
+    },
+    "ultimatetictactoe": {
+      "name": "Morpion Ultime"
+    },
+    "pacxon": {
+      "name": "PacXon"
+    }
   }
 }

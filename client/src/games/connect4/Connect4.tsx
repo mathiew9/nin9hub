@@ -1,65 +1,110 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+
 import "./Connect4.css";
+
+import Connect4Board, { Disc, WinningCell } from "./shared/Connect4Board";
+import Connect4OnlineRoot from "./online/Connect4OnlineRoot";
+import GameStatusBar from "../_shared/hud/GameStatusBar";
+import GameScorePanel from "../_shared/hud/GameScorePanel";
 
 const ROWS = 6;
 const COLS = 7;
 
+const TURN_SECONDS = 10;
+
 interface Props {
-  mode: "ai" | "friend";
-  setMode: (mode: "ai" | "friend" | null) => void;
+  mode: "ai" | "friend" | "online";
+  setMode: (mode: "ai" | "friend" | "online" | null) => void;
 }
 
 export default function Connect4({ mode, setMode }: Props) {
   const { t } = useTranslation();
-  const [board, setBoard] = useState(
+
+  // ONLINE MODE
+  if (mode === "online") {
+    return (
+      <div className="tictactoe">
+        <Connect4OnlineRoot onBack={() => setMode(null)} />
+      </div>
+    );
+  }
+
+  const [board, setBoard] = useState<Disc[][]>(
     Array(ROWS)
       .fill(null)
-      .map(() => Array(COLS).fill(null))
+      .map(() => Array(COLS).fill(null)),
   );
-  const [currentPlayer, setCurrentPlayer] = useState("red");
-  const [winner, setWinner] = useState<string | null>(null);
+
+  const [currentPlayer, setCurrentPlayer] = useState<"red" | "yellow">("red");
+  const [winner, setWinner] = useState<"red" | "yellow" | null>(null);
   const [isDraw, setIsDraw] = useState(false);
   const [score, setScore] = useState({ red: 0, yellow: 0 });
   const [hoverCol, setHoverCol] = useState<number | null>(null);
-  const [lastMove, setLastMove] = useState<{ row: number; col: number } | null>(
-    null
-  );
-  const [winningCells, setWinningCells] = useState<
-    { row: number; col: number }[]
-  >([]);
-  const fallTimeoutRef = useRef<number | null>(null);
+  const [winningCells, setWinningCells] = useState<WinningCell[]>([]);
 
-  useEffect(() => {
-    return () => {
-      if (fallTimeoutRef.current !== null) {
-        clearTimeout(fallTimeoutRef.current);
+  const checkWinner = (
+    b: (string | null)[][],
+    row: number,
+    col: number,
+    player: string,
+  ): WinningCell[] | null => {
+    const directions = [
+      [0, 1],
+      [1, 0],
+      [1, 1],
+      [1, -1],
+    ];
+
+    for (const [dx, dy] of directions) {
+      const cells: WinningCell[] = [{ row, col }];
+
+      for (let step = 1; step < 4; step++) {
+        const r = row + step * dx;
+        const c = col + step * dy;
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS || b[r][c] !== player)
+          break;
+        cells.push({ row: r, col: c });
       }
-    };
-  }, []);
+
+      for (let step = 1; step < 4; step++) {
+        const r = row - step * dx;
+        const c = col - step * dy;
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS || b[r][c] !== player)
+          break;
+        cells.push({ row: r, col: c });
+      }
+
+      if (cells.length >= 4) return cells;
+    }
+
+    return null;
+  };
+
+  const checkDraw = (b: (string | null)[][]) => {
+    return b.every((row) => row.every((cell) => cell !== null));
+  };
+
+  const isColumnFull = (col: number) => board[0][col] !== null;
 
   const dropDisc = (col: number) => {
     if (winner || isDraw) return;
+    if (isColumnFull(col)) return;
+
     const newBoard = board.map((row) => [...row]);
+
     for (let row = ROWS - 1; row >= 0; row--) {
       if (!newBoard[row][col]) {
         newBoard[row][col] = currentPlayer;
-        setLastMove({ row, col });
-        if (fallTimeoutRef.current) {
-          clearTimeout(fallTimeoutRef.current);
-        }
-        fallTimeoutRef.current = window.setTimeout(() => {
-          setLastMove(null);
-          fallTimeoutRef.current = null;
-        }, 1000);
         setBoard(newBoard);
+
         const result = checkWinner(newBoard, row, col, currentPlayer);
         if (result) {
           setWinner(currentPlayer);
           setWinningCells(result);
           setScore((prev) => ({
             ...prev,
-            [currentPlayer]: prev[currentPlayer as keyof typeof prev] + 1,
+            [currentPlayer]: prev[currentPlayer] + 1,
           }));
         } else if (checkDraw(newBoard)) {
           setIsDraw(true);
@@ -71,55 +116,11 @@ export default function Connect4({ mode, setMode }: Props) {
     }
   };
 
-  const checkWinner = (
-    board: string[][],
-    row: number,
-    col: number,
-    player: string
-  ): { row: number; col: number }[] | null => {
-    const directions = [
-      [0, 1], // horizontal
-      [1, 0], // vertical
-      [1, 1], // diagonale ↘
-      [1, -1], // diagonale ↙
-    ];
-
-    for (const [dx, dy] of directions) {
-      const cells = [{ row, col }];
-
-      for (let step = 1; step < 4; step++) {
-        const r = row + step * dx;
-        const c = col + step * dy;
-        if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c] !== player)
-          break;
-        cells.push({ row: r, col: c });
-      }
-
-      for (let step = 1; step < 4; step++) {
-        const r = row - step * dx;
-        const c = col - step * dy;
-        if (r < 0 || r >= ROWS || c < 0 || c >= COLS || board[r][c] !== player)
-          break;
-        cells.push({ row: r, col: c });
-      }
-
-      if (cells.length >= 4) {
-        return cells;
-      }
-    }
-
-    return null;
-  };
-
-  const checkDraw = (board: string[][]) => {
-    return board.every((row) => row.every((cell) => cell !== null));
-  };
-
   const resetGame = () => {
     setBoard(
       Array(ROWS)
         .fill(null)
-        .map(() => Array(COLS).fill(null))
+        .map(() => Array(COLS).fill(null)),
     );
     setCurrentPlayer("red");
     setWinner(null);
@@ -137,6 +138,51 @@ export default function Connect4({ mode, setMode }: Props) {
       .filter((col) => board[0][col] === null);
   };
 
+  // règle d’interaction (offline) : friend = toujours, ai = seulement quand red joue
+  const canInteract =
+    mode === "friend" || (mode === "ai" && currentPlayer === "red");
+
+  /* ---------------- TIMER OFFLINE (comme TTT) ---------------- */
+
+  const [timeLeftSec, setTimeLeftSec] = useState<number | null>(TURN_SECONDS);
+
+  const timerActive = !winner && !isDraw && canInteract;
+
+  // reset timer à chaque changement de tour (ou si le timer s’active)
+  useEffect(() => {
+    if (!timerActive) {
+      setTimeLeftSec(null);
+      return;
+    }
+    setTimeLeftSec(TURN_SECONDS);
+  }, [timerActive, currentPlayer]);
+
+  // tick
+  useEffect(() => {
+    if (!timerActive || timeLeftSec === null || timeLeftSec <= 0) return;
+
+    const id = window.setInterval(() => {
+      setTimeLeftSec((prev) => (prev && prev > 1 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => window.clearInterval(id);
+  }, [timerActive, timeLeftSec]);
+
+  // timeout -> auto move (random colonne)
+  useEffect(() => {
+    if (!timerActive) return;
+    if (timeLeftSec !== 0) return;
+    if (winner || isDraw) return;
+
+    const available = getAvailableColumns();
+    if (available.length === 0) return;
+
+    const col = available[Math.floor(Math.random() * available.length)];
+    dropDisc(col);
+  }, [timeLeftSec, timerActive, winner, isDraw, board]);
+
+  /* ---------------- AI (simple) ---------------- */
+
   useEffect(() => {
     if (mode === "ai" && currentPlayer === "yellow" && !winner && !isDraw) {
       const timeout = setTimeout(() => {
@@ -147,6 +193,7 @@ export default function Connect4({ mode, setMode }: Props) {
           dropDisc(randomCol);
         }
       }, 800);
+
       return () => clearTimeout(timeout);
     }
   }, [board, currentPlayer, mode, winner, isDraw]);
@@ -159,188 +206,96 @@ export default function Connect4({ mode, setMode }: Props) {
     return false;
   };
 
-  const isColumnFull = (col: number) => board[0][col] !== null;
+  /* ---------------- Labels pour la status bar ---------------- */
+
+  const actorLabel = useMemo(() => {
+    if (mode === "ai") {
+      return currentPlayer === "red"
+        ? t("common.players.you")
+        : t("common.players.computer");
+    }
+    return currentPlayer === "red"
+      ? t("common.players.player1")
+      : t("common.players.player2");
+  }, [mode, currentPlayer, t]);
+
+  const centerText = winner
+    ? `${t(`games.connect4.colors.${winner}`)} ${t("games.connect4.inGame.wins")}!`
+    : isDraw
+      ? t("common.results.draw")
+      : actorLabel;
+
+  const p1Label =
+    mode === "ai" ? t("common.players.you") : t("common.players.player1");
+  const p2Label =
+    mode === "ai" ? t("common.players.computer") : t("common.players.player2");
 
   return (
     <div className="connect4">
-      <h2>
-        {winner ? (
-          <>
-            <span
-              className={`connect4Badge ${
-                winner === "red" ? "connect4RedBadge" : "connect4YellowBadge"
-              }`}
-            >
-              {t(`connect4.${winner}`)}
-            </span>{" "}
-            {t("connect4.wins")}!
-          </>
-        ) : !isDraw ? (
-          <>
-            <span
-              className={`connect4Badge ${
-                currentPlayer === "red"
-                  ? "connect4RedBadge"
-                  : "connect4YellowBadge"
-              }`}
-            >
-              {t(`connect4.${currentPlayer}`)}
-            </span>{" "}
-            {t("connect4.turn")}
-          </>
-        ) : null}
-      </h2>
+      <GameStatusBar
+        leftText={winner || isDraw ? "" : `${t("common.labels.turn")} :`}
+        leftBadge={isDraw ? null : winner ? (winner as Disc) : currentPlayer}
+        centerText={centerText}
+        timeSec={winner || isDraw ? null : timeLeftSec}
+        isInfinite={false}
+      />
 
-      {isDraw && !winner && <h2>{t("tictactoe.draw")}</h2>}
       <div className="commonGameLayout">
         <div className="side">
-          <div className="scoreCard">
-            <div className="scoreCardMode">
-              <div className="modeText">
-                {t("tictactoe.gamemode")} :{" "}
-                {mode === "ai"
-                  ? t("tictactoe.withai")
-                  : t("tictactoe.withfriend")}
-              </div>
-            </div>
-            <div className="scoreCardHeader">
-              <div className="scoreTitle">{t("common.score")}</div>
-            </div>
-            <div className="scoreCardBody">
-              <p>
-                <span className="connect4RedBadge connect4Badge">
-                  {t("connect4.red")}
-                </span>{" "}
-                - {score.red}
-              </p>
-              <p>
-                <span className="connect4YellowBadge connect4Badge">
-                  {t("connect4.yellow")}
-                </span>{" "}
-                - {score.yellow}
-              </p>
-            </div>
-            <div className="scoreCardFooter">
-              <button
-                className="commonButton commonMediumButton resetScore"
-                onClick={resetScore}
-              >
-                {t("tictactoe.resetScore")}
-              </button>
-              <button
-                className="commonButton commonMediumButton changeModeButton"
-                onClick={() => setMode(null)}
-              >
-                {t("tictactoe.changeGameMode")}
-              </button>
-            </div>
-          </div>
+          <GameScorePanel
+            modeLabel={mode}
+            players={[
+              {
+                label: p1Label,
+                score: score.red,
+                badge: "red",
+                isTurn: currentPlayer === "red" && !winner && !isDraw,
+
+                matchWinner: winner === "red",
+              },
+              {
+                label: p2Label,
+                score: score.yellow,
+                badge: "yellow",
+                isTurn: currentPlayer === "yellow" && !winner && !isDraw,
+                matchWinner: winner === "yellow",
+              },
+            ]}
+            roundsToWin={null}
+            actions={[
+              { label: t("common.actions.resetScore"), onClick: resetScore },
+              {
+                label: t("common.modes.changeGameMode"),
+                onClick: () => setMode(null),
+              },
+            ]}
+          />
         </div>
 
         <div className="center">
-          <div className="connect4-board">
-            {/* Jeton fantôme au-dessus de la colonne survolée */}
-            {hoverCol !== null &&
-              !winner &&
-              !isDraw &&
-              !isColumnFull(hoverCol) &&
-              (mode === "friend" || currentPlayer === "red") && (
-                <div
-                  key={`${currentPlayer}-${hoverCol}`}
-                  className={`ghost-token ${currentPlayer}`}
-                  style={{
-                    left: `${hoverCol * 68 + 13}px`,
-                    top: "-70px",
-                  }}
-                />
-              )}
-
-            <div className="column-overlays">
-              {Array(COLS)
-                .fill(null)
-                .map((_, colIndex) => (
-                  <div
-                    key={colIndex}
-                    className={`column-overlay ${
-                      isColumnFull(colIndex) ? "col-full" : "col-playable"
-                    }`}
-                    onMouseEnter={() => setHoverCol(colIndex)}
-                    onMouseLeave={() => setHoverCol(null)}
-                    onClick={() => {
-                      if (
-                        (mode === "friend" || currentPlayer === "red") &&
-                        !winner &&
-                        !isDraw &&
-                        !isColumnFull(colIndex)
-                      ) {
-                        dropDisc(colIndex);
-                      }
-                    }}
-                  />
-                ))}
-            </div>
-            {board.map((row, rowIndex) => (
-              <div key={rowIndex} className="row">
-                {row.map((cell, colIndex) => (
-                  <div
-                    key={`${colIndex}-${
-                      lastMove?.row === rowIndex && lastMove?.col === colIndex
-                        ? Date.now()
-                        : ""
-                    }`}
-                    className={`cell ${cell || ""}
-                    ${
-                      !winner &&
-                      !isDraw &&
-                      (mode === "friend" || currentPlayer === "red") &&
-                      isHoveredPlayable(rowIndex, colIndex)
-                        ? `hoverable hoverable-${currentPlayer}`
-                        : ""
-                    }
-                    ${
-                      lastMove?.row === rowIndex && lastMove?.col === colIndex
-                        ? "falling"
-                        : ""
-                    }
-                    ${
-                      lastMove === null &&
-                      winningCells.some(
-                        (c) => c.row === rowIndex && c.col === colIndex
-                      )
-                        ? "cell--win"
-                        : ""
-                    }
-                  `}
-                    style={
-                      lastMove?.row === rowIndex && lastMove?.col === colIndex
-                        ? ({
-                            ["--fall-distance" as any]: `${
-                              -(rowIndex + 1) * 68
-                            }px`,
-                          } as React.CSSProperties)
-                        : undefined
-                    }
-                    onMouseEnter={() => setHoverCol(colIndex)}
-                    onMouseLeave={() => setHoverCol(null)}
-                    onClick={() => {
-                      if (mode === "friend" || currentPlayer === "red") {
-                        dropDisc(colIndex);
-                      }
-                    }}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
+          <Connect4Board
+            board={board}
+            currentPlayer={currentPlayer}
+            winner={winner}
+            isDraw={isDraw}
+            hoverCol={hoverCol}
+            setHoverCol={setHoverCol}
+            winningCells={winningCells}
+            canInteract={canInteract}
+            dropDisc={dropDisc}
+            isHoveredPlayable={isHoveredPlayable}
+            isColumnFull={isColumnFull}
+          />
         </div>
 
         <div className="side hidden" />
       </div>
+
       <button
-        className="commonButton commonMediumButton C4-playAgainButton"
+        className="commonButton commonMediumButton connect4PlayAgainButton"
         onClick={resetGame}
       >
-        {t("common.playAgain")}
+        {t("common.actions.playAgain")}
       </button>
     </div>
   );

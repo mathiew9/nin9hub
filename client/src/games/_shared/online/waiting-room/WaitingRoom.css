@@ -1,0 +1,539 @@
+/* ==========================
+   Generic blocks
+   ========================== */
+
+.lobby-container {
+  display: grid;
+  gap: 16px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.lobby-commonBlock {
+  display: grid;
+  gap: 6px;
+}
+
+.lobby-commonTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+/* ==========================
+   RoomCodeBlock
+   ========================== */
+
+.lobby-roomCodeBox {
+  background: #0f172a;
+  border: 2px dashed #334155;
+  border-radius: 8px;
+}
+
+.lobby-roomCodeBox--grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.lobby-roomCodeBox--readonly {
+  grid-template-columns: 1fr;
+}
+
+.lobby-roomCode {
+  font:
+    700 1.4rem/1 ui-monospace,
+    Menlo,
+    Consolas,
+    monospace;
+  letter-spacing: 0.08em;
+  color: #f8fafc;
+}
+
+.lobby-roomCodeBlock-hint,
+.lobby-playersBlock-hint {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+.lobby-playersBlock-hint {
+  align-self: flex-start;
+}
+
+/* ==========================
+   PlayersBlock
+   ========================== */
+
+.lobby-colTitle--player {
+  text-align: left;
+}
+
+.lobby-colTitle--role {
+  text-align: right;
+  margin-left: auto;
+}
+
+.lobby-playerRow.commonBox {
+  display: grid !important;
+  grid-template-columns: 1fr 120px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  justify-content: initial;
+  text-align: initial;
+}
+
+.lobby-playerRow--guest.commonBox {
+  grid-template-columns: 1fr auto 120px;
+}
+
+.lobby-playerRow {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.lobby-playerRow--host {
+  margin-bottom: 0.3em;
+}
+
+.lobby-cell--player {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.lobby-cell--role {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.lobby-cell--status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+}
+
+.lobby-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+.lobby-dot.online {
+  background: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.lobby-dot.offline {
+  background: #6b7280;
+}
+
+.lobby-playerName {
+  font-weight: 600;
+}
+
+.lobby-miniAlert {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(253, 230, 138, 0.45);
+  background: rgba(63, 63, 31, 0.55);
+  color: #fde68a;
+  white-space: nowrap;
+}
+
+/* === BADGES JOUEURS === */
+.lobby-connect4Badge {
+  line-height: 1.2;
+  padding: 0px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 80px;
+  width: fit-content;
+  text-align: center;
+}
+
+.lobby-connect4RedBadge {
+  background-color: #e74c3c;
+  color: #fcefee;
+}
+
+.lobby-connect4YellowBadge {
+  background-color: #f1c40f;
+  color: #4a3d00;
+}
+
+.lobby-role {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: 2px solid #44403c;
+  box-shadow: 1px 1px 0 #44403c;
+}
+
+.lobby-role--x {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+.lobby-role--o {
+  background: #1e3a8a;
+  color: #dbeafe;
+}
+
+.lobby-role--ghost {
+  background: #0b1220;
+  color: #64748b;
+}
+
+.lobby-playersBlockFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 0 2px;
+}
+
+.lobby-playersBlock-swapRolesBtn {
+  min-width: auto;
+  padding-inline: 14px;
+  font-size: 0.9rem;
+  padding: 4px 16px;
+}
+
+button.lobby-playersBlock-swapRolesBtn:disabled {
+  opacity: 0.5;
+  filter: grayscale(0.3);
+  pointer-events: none;
+}
+
+/* ==========================
+   SettingsBlock
+   ========================== */
+
+.lobby-settingsBox {
+  padding: 10px 14px;
+}
+
+.lobby-settingsTable {
+  display: grid;
+  row-gap: 4px;
+}
+
+.lobby-settingsRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 12px;
+}
+
+.lobby-settingsCell {
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ── Ligne des labels ───────────────── */
+
+.lobby-settingsRow--labels {
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.lobby-settingsRow--labels .lobby-settingsCell {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  opacity: 0.9;
+}
+
+.lobby-settingsRow .lobby-settingsCell:not(:last-child) {
+  border-right: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.lobby-settingsRow--controls .lobby-settingsCell {
+  padding-top: 10px;
+}
+
+/* ── Ligne des contrôles ───────────────── */
+
+.lobby-settingsCell--control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lobby-field,
+.lobby-input,
+.lobby-select {
+  width: 100%;
+  max-width: 120px;
+  background: #020617;
+  border-radius: 6px;
+  border: 1px solid #4b5563;
+  padding: 6px 8px;
+  color: #e5e7eb;
+  font-size: inherit;
+  font-weight: 700;
+  letter-spacing: inherit;
+  font-family: inherit;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lobby-select {
+  max-width: 130px;
+  text-align: center;
+  text-align-last: center;
+}
+
+/* ==========================
+   Toggle custom (swap roles)
+   ========================== */
+
+.lobby-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.lobby-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lobby-toggleTrack {
+  width: 42px;
+  height: 22px;
+  border-radius: 999px;
+  background: #111827;
+  border: 1px solid #4b5563;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.lobby-toggleThumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #9ca3af;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.5);
+  transform: translateX(2px);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.lobby-toggle input:checked + .lobby-toggleTrack {
+  background: #0f766e;
+  border-color: #14b8a6;
+}
+
+.lobby-toggle input:checked + .lobby-toggleTrack .lobby-toggleThumb {
+  transform: translateX(22px);
+  background: #ecfeff;
+}
+
+.lobby-toggle input:disabled + .lobby-toggleTrack {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.lobby-pillValue {
+  min-width: 84px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #0b1220;
+  border: 1px solid #4b5563;
+  color: #e5e7eb;
+  font-weight: 700;
+  text-align: center;
+}
+
+.lobby-pillValue.is-on {
+  border-color: #14b8a6;
+  color: #a7f3d0;
+}
+
+.lobby-pillValue.is-off {
+  color: #94a3b8;
+}
+
+/* ==========================
+   ActionsBlock
+   ========================== */
+
+.lobby-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.lobby-btn {
+  min-width: 220px;
+}
+
+.lobby-infos {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lobby-alert {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  border: 2px solid #44403c;
+  background: #3f1f1f;
+  color: #fecaca;
+  box-shadow: 1px 1px 0 #44403c;
+}
+
+/* ==========================
+LIGHT MODE OVERRIDES
+========================== */
+
+body[data-theme="light"] .lobby-commonTitle {
+  color: #334155;
+}
+
+body[data-theme="light"] .lobby-roomCodeBox {
+  background: #eef2ff;
+  border-color: #94a3b8;
+}
+
+body[data-theme="light"] .lobby-roomCode {
+  color: #0f172a;
+}
+
+body[data-theme="light"] .lobby-roomCodeBlock-hint,
+body[data-theme="light"] .lobby-playersBlock-hint {
+  color: #475569;
+}
+
+body[data-theme="light"] .lobby-role {
+  border-color: #cbd5e1;
+  box-shadow: 1px 1px 0 #cbd5e1;
+}
+
+body[data-theme="light"] .lobby-role--x {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+body[data-theme="light"] .lobby-role--o {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+body[data-theme="light"] .lobby-role--ghost {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+body[data-theme="light"] .lobby-miniAlert {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.14);
+  color: #92400e;
+}
+
+body[data-theme="light"] .lobby-settingsRow--labels {
+  border-bottom-color: rgba(51, 65, 85, 0.25);
+}
+
+body[data-theme="light"]
+  .lobby-settingsRow
+  .lobby-settingsCell:not(:last-child) {
+  border-right-color: rgba(51, 65, 85, 0.22);
+}
+
+body[data-theme="light"] .lobby-settingsRow--labels .lobby-settingsCell {
+  color: #e5e7eb;
+  opacity: 0.9;
+}
+
+body[data-theme="light"] .lobby-field,
+body[data-theme="light"] .lobby-input,
+body[data-theme="light"] .lobby-select {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+body[data-theme="light"] .lobby-input::placeholder {
+  color: #64748b;
+}
+
+body[data-theme="light"] .lobby-toggleTrack {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+body[data-theme="light"] .lobby-toggleThumb {
+  background: #64748b;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.18);
+}
+
+body[data-theme="light"] .lobby-toggle input:checked + .lobby-toggleTrack {
+  background: rgba(20, 184, 166, 0.18); /* teal tint */
+  border-color: #14b8a6; /* teal */
+}
+
+body[data-theme="light"]
+  .lobby-toggle
+  input:checked
+  + .lobby-toggleTrack
+  .lobby-toggleThumb {
+  background: #ecfeff;
+}
+
+body[data-theme="light"] .lobby-pillValue {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+body[data-theme="light"] .lobby-pillValue.is-on {
+  border-color: #14b8a6;
+  color: #0f766e;
+}
+
+body[data-theme="light"] .lobby-pillValue.is-off {
+  color: #64748b;
+}
+
+body[data-theme="light"] .lobby-alert {
+  border-color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+  color: #991b1b;
+  box-shadow: 1px 1px 0 #fca5a5;
+}

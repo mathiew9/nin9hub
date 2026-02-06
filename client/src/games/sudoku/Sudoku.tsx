@@ -236,10 +236,10 @@ export default function Sudoku({ level, onBack }: Props) {
   return (
     <div className="sudoku">
       <button className="commonButton commonMediumButton" onClick={onBack}>
-        {t("common.changeLevel")}
+        {t("common.difficulty.changeDifficulty")}
       </button>
       <div className="sudoku-current-level">
-        {t("common.level")} : {t(`common.${level}`)}
+        {t("common.difficulty.difficulty")} : {t(`common.difficulty.${level}`)}
       </div>
       <div className="commonGameLayout">
         <div className="side hidden" />
@@ -346,7 +346,9 @@ export default function Sudoku({ level, onBack }: Props) {
 
           {gameFinished && (
             <div className="sudoku-end-banner">
-              <div className="sudoku-end-title">{t("sudoku.completed")}</div>
+              <div className="sudoku-end-title">
+                {t("games.sudoku.messages.completed")}
+              </div>
             </div>
           )}
           {level !== "daily" && (
@@ -369,22 +371,22 @@ export default function Sudoku({ level, onBack }: Props) {
                 }
               }}
             >
-              {t("sudoku.newGrid")}
+              {t("games.sudoku.actions.newGrid")}
             </button>
           )}
 
           {newGridRequested && (
             <div className="sudoku-confirm-popup">
               <div className="sudoku-confirm-popup-content">
-                <p>{t("sudoku.popupWarning1")}</p>
-                <p>{t("sudoku.popupWarning2")}</p>
-                <p>{t("sudoku.popupWarning3")}</p>
+                <p>{t("games.sudoku.messages.popupWarning1")}</p>
+                <p>{t("games.sudoku.messages.popupWarning2")}</p>
+                <p>{t("games.sudoku.messages.popupWarning3")}</p>
                 <div className="sudoku-confirm-buttons">
                   <button
                     className="commonButton"
                     onClick={() => setNewGridRequested(false)}
                   >
-                    {t("sudoku.cancel")}
+                    {t("games.sudoku.actions.cancel")}
                   </button>
                   <button
                     className="commonButton"
@@ -401,7 +403,7 @@ export default function Sudoku({ level, onBack }: Props) {
                       setNewGridRequested(false);
                     }}
                   >
-                    {t("sudoku.continue")}
+                    {t("games.sudoku.actions.continue")}
                   </button>
                 </div>
               </div>

@@ -30,7 +30,6 @@ body[data-theme="light"] .connect4 h2 {
   background-color: #0044cc;
   padding: 10px;
   border-radius: 10px;
-  margin-top: 60px;
   z-index: 2;
 }
 
@@ -58,7 +57,9 @@ body[data-theme="light"] .connect4 h2 {
   transform: scale(1.1);
   box-sizing: border-box;
   border: 2px solid transparent;
-  transition: transform 0.2s, border 0.2s;
+  transition:
+    transform 0.2s,
+    border 0.2s;
 }
 
 .connect4-board .row .cell.hoverable-red {
@@ -100,31 +101,6 @@ body[data-theme="light"] .connect4 h2 {
 
 .ghost-token.yellow {
   background-color: #f1c40f;
-}
-
-/* === EFFET CHUTE === */
-@keyframes fallToken {
-  0% {
-    transform: translateY(var(--fall-distance, -400px));
-    opacity: 1;
-  }
-  30% {
-    transform: translateY(0);
-  }
-  60% {
-    transform: translateY(-50px);
-  }
-  85% {
-    transform: translateY(5px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.cell.falling {
-  animation: fallToken 0.6s ease;
-  z-index: 1;
 }
 
 /* === CELLULE VICTORIEUSE === */
@@ -172,42 +148,6 @@ body[data-theme="light"] .connect4 h2 {
   cursor: default;
 }
 
-/* === BADGES JOUEURS === */
-.connect4Badge {
-  vertical-align: middle;
-  display: inline-block;
-  line-height: 1.2;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-weight: bold;
-  font-size: 0.9rem;
-  min-width: 60px;
-  text-align: center;
-}
-
-.connect4RedBadge {
-  background-color: #e74c3c;
-  color: #fcefee;
-}
-
-.connect4YellowBadge {
-  background-color: #f1c40f;
-  color: #4a3d00;
-}
-
-/* LIGHT THEME */
-body[data-theme="light"] .connect4-restart-button {
-  background-color: #34d399;
-  color: #222;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-body[data-theme="light"] .connect4-restart-button:hover {
-  background-color: #10b981;
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
-
-.C4-playAgainButton {
+.connect4PlayAgainButton {
   margin: 20px auto 0 auto;
 }

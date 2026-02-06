@@ -1,12 +1,14 @@
 import { FaStopwatch } from "react-icons/fa";
 
-type PlayerSymbol = "X" | "O";
+import { useTranslation } from "react-i18next";
+
+import "./GameStatusBar.css";
 
 type Props = {
   leftText?: string;
-  leftSymbol?: PlayerSymbol | null;
+  leftBadge?: string | null;
 
-  centerText: string;
+  centerText: string | null;
   timeSec?: number | null;
   isInfinite?: boolean;
 
@@ -26,58 +28,60 @@ function formatMMSS(totalSec: number) {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-export default function TicTacToeStatusBar({
+export default function GameStatusBar({
   leftText,
-  leftSymbol = null,
+  leftBadge = null,
   centerText,
   timeSec = null,
   isInfinite = false,
   state = "playing",
   className = "",
 }: Props) {
-  const hasTime = typeof timeSec === "number" && Number.isFinite(timeSec);
+  const { t } = useTranslation();
 
+  // Timer related
+  const hasTime = typeof timeSec === "number" && Number.isFinite(timeSec);
   const timerLevel =
     hasTime && !isInfinite ? getTimerLevel(timeSec) : ("ok" as const);
 
   return (
     <div
-      className={["tttStatusBar", `tttStatusBar--${state}`, className]
-        .filter(Boolean)
-        .join(" ")}
+      className={["statusBar", className].filter(Boolean).join(" ")}
       role="status"
       aria-live={state === "playing" ? "polite" : "off"}
     >
-      <div className="tttStatusBar__left">
-        {(leftText || leftSymbol) && (
-          <div className="tttStatusBar__leftInner">
+      <div className="statusBar__left">
+        {(leftText || leftBadge) && (
+          <div className="statusBar__leftInner">
             {leftText && (
-              <span className="tttStatusBar__leftLabel">{leftText}</span>
+              <span className="statusBar__leftLabel">{leftText}</span>
             )}
-            {leftSymbol && (
+            {leftBadge && (
               <span
-                className={`symbol-badge symbol-${leftSymbol.toLowerCase()}`}
-                aria-label={`Symbole ${leftSymbol}`}
+                className={`statusBar__roleBadge statusBar__roleBadge-${leftBadge.toLowerCase()}`}
+                aria-label={`Badge ${leftBadge}`}
               >
-                {leftSymbol}
+                {leftBadge === "red" || leftBadge === "yellow"
+                  ? t(`games.connect4.colors.${leftBadge}`)
+                  : leftBadge}
               </span>
             )}
           </div>
         )}
       </div>
 
-      <div className="tttStatusBar__center">
-        <span className="tttStatusBar__centerText">{centerText}</span>
+      <div className="statusBar__center">
+        <span className="statusBar__centerText">{centerText}</span>
       </div>
 
-      <div className="tttStatusBar__right">
+      <div className="statusBar__right">
         {hasTime ? (
           <span
             className={[
-              "tttStatusBar__timer",
+              "statusBar__timer",
               isInfinite
-                ? "tttStatusBar__timer--infinite"
-                : `tttStatusBar__timer--${timerLevel}`,
+                ? "statusBar__timer--infinite"
+                : `statusBar__timer--${timerLevel}`,
             ].join(" ")}
             aria-label={
               isInfinite

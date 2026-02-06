@@ -17,101 +17,13 @@ body[data-theme="light"] .tictactoe {
   color: #222;
 }
 
-/* === SCORE CARD === */
-.scoreCard {
-  border-radius: 10px;
-  overflow: hidden;
-  width: fit-content;
-  min-width: 260px;
-  font-size: 18px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-  border: 1px solid;
-}
-
-/* Dark mode ScoreCard */
-body[data-theme="dark"] .scoreCard {
-  background-color: #1e293b;
-  border-color: #334155;
-}
-
-/* Light mode ScoreCard */
-body[data-theme="light"] .scoreCard {
-  background-color: #f0f4f8;
-  border-color: #ccc;
-}
-
-.scoreCardMode {
-  padding: 10px;
-  font-weight: bold;
-  font-size: 18px;
-  border-bottom: 1px solid;
-}
-
-/* Mode header colors */
-body[data-theme="dark"] .scoreCardMode {
-  background-color: #0f172a;
-  color: #38bdf8;
-  border-color: #334155;
-}
-
-body[data-theme="light"] .scoreCardMode {
-  background-color: #dfe9f3;
-  color: #0d6efd;
-  border-color: #ccc;
-}
-
-.scoreCardHeader {
-  padding: 10px;
-  font-weight: bold;
-  font-size: 20px;
-  border-bottom: 1px solid;
-}
-
-body[data-theme="dark"] .scoreCardHeader {
-  background-color: #0f172a;
-  color: #facc15;
-  border-color: #334155;
-}
-
-body[data-theme="light"] .scoreCardHeader {
-  background-color: #dfe9f3;
-  color: #ffb300;
-  border-color: #ccc;
-}
-
-.scoreCardBody {
-  border-bottom: 1px solid;
-}
-
-body[data-theme="dark"] .scoreCardBody {
-  color: #e2e8f0;
-  border-color: #334155;
-}
-
-body[data-theme="light"] .scoreCardBody {
-  color: #555;
-  border-color: #ccc;
-}
-
-.scoreCardBody p {
-  margin: 20px 0;
-}
-
-.scoreCardFooter {
-  padding: 10px;
-  display: inline-flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: nowrap;
+.ttt-playAgainButton {
+  margin-top: 20px;
 }
 
 /* === BOARD === */
 .tictactoe h2 {
   font-size: 24px;
-  margin-top: 4em;
   margin-bottom: 20px;
   text-align: center;
 }
@@ -138,7 +50,9 @@ body[data-theme="light"] .tictactoe h2 {
   border: 2px solid;
   cursor: pointer;
   border-radius: 8px;
-  transition: transform 0.1s ease, background-color 0.2s;
+  transition:
+    transform 0.1s ease,
+    background-color 0.2s;
 }
 
 /* Colors for square in dark mode */
@@ -186,35 +100,6 @@ body[data-theme="light"] .squareEmpty:hover {
   background-position: center;
   background-size: 60%;
   opacity: 0.9;
-}
-
-/* === SYMBOL BADGE === */
-.symbol-badge {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  font-weight: bold;
-  font-size: 1rem;
-  line-height: 1;
-  margin: 0 4px;
-  text-transform: uppercase;
-}
-
-h2 .symbol-badge {
-  vertical-align: middle;
-}
-
-.symbol-x {
-  background-color: #e53935;
-  color: white;
-}
-
-.symbol-o {
-  background-color: #1e88e5;
-  color: white;
 }
 
 /* === ANIMATIONS === */

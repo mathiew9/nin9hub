@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 
 import TicTacToeBoard from "../shared/TicTacToeBoard";
-import TicTacToeStatusBar from "../shared/TicTacToeStatusBar";
+import GameStatusBar from "../../_shared/hud/GameStatusBar";
+import GameScorePanel from "../../_shared/hud/GameScorePanel";
 import { useOnline } from "./TicTacToeOnlineProvider";
+import { useTranslation } from "react-i18next";
 
 type Player = "X" | "O";
 type Cell = Player | null;
 
 export default function TicTacToeBoardOnlineAdapter() {
-  // Online game state & actions
+  const online = useOnline();
   const {
     board,
     role,
@@ -16,17 +18,28 @@ export default function TicTacToeBoardOnlineAdapter() {
     winner,
     winningLine,
     canPlay,
-    //playersCount,
-    //opponentLeft,
     rematchVotes,
     myRematchVoted,
     requestRematch,
     leave,
     playTurn,
+    backToSettings,
     settings,
     turnDeadlineAt,
     turnStartedAt,
-  } = useOnline();
+    matchScore,
+    matchWinner,
+    isHost,
+
+    myId,
+    seats,
+  } = online as any;
+
+  const { t } = useTranslation();
+  const isMatchEnded = !!matchWinner;
+  const actionLabelBase = isMatchEnded
+    ? t("common.actions.rematch")
+    : t("common.actions.playAgain");
 
   // Timer tick (used to compute remaining time)
   const [now, setNow] = useState(() => Date.now());
@@ -83,75 +96,144 @@ export default function TicTacToeBoardOnlineAdapter() {
     playTurn(i);
   };
 
+  const oppId: string | null = useMemo(() => {
+    if (!myId || !seats) return null;
+    if (seats.p1 === myId) return seats.p2 || null;
+    if (seats.p2 === myId) return seats.p1 || null;
+    return null;
+  }, [myId, seats]);
+
+  const myScore = (myId ? matchScore?.[myId] : null) ?? 0;
+  const oppScore = (oppId ? matchScore?.[oppId] : null) ?? 0;
+
+  const iWonMatch = !!(myId && matchWinner === myId);
+  const oppWonMatch = !!(oppId && matchWinner === oppId);
+  const mySymbol = (role ?? "X") as Player;
+  const oppSymbol: Player = mySymbol === "X" ? "O" : "X";
+
+  const roundsToWin = settings?.roundsToWin ?? null;
+
+  const scoreActions = isHost
+    ? [
+        {
+          label: t("common.actions.changeSettings"),
+          onClick: backToSettings,
+        },
+      ]
+    : [];
+
+  const isMyTurn = turn === mySymbol && !winner;
+  const isOppTurn = turn === oppSymbol && !winner;
+
   return (
     <>
-      {/* uncommented code below when reconnectGraceMs and preserveGameOnLeave are implemented */}
-      {/* {opponentLeft && (
-        <div className="wr-banner warn">
-          Ton adversaire a quitté la partie. En attente d’un joueur…
-        </div>
-      )} */}
-
-      <TicTacToeStatusBar
-        leftText={winner ? "" : "Tour :"}
-        leftSymbol={
-          winner === "draw" ? null : winner ? (winner as Player) : turn ?? null
+      <GameStatusBar
+        leftText={winner ? "" : `${t("common.labels.turn")} :`}
+        leftBadge={
+          winner === "draw"
+            ? null
+            : winner
+              ? (winner as Player)
+              : (turn ?? null)
         }
         centerText={
           winner === "draw"
-            ? "Égalité"
+            ? t("common.results.draw")
             : winner
-            ? winner === role
-              ? "Victoire !"
-              : "Défaite."
-            : canPlay
-            ? "À vous de jouer"
-            : "En attente"
+              ? winner === role
+                ? `${t("common.results.victory")} !`
+                : `${t("common.results.defeat")}.`
+              : canPlay
+                ? `${t("common.turn.yourTurn")}`
+                : `${t("common.status.waiting")}...`
         }
         isInfinite={isInfinite}
         timeSec={winner ? null : isInfinite ? elapsedSec : timeLeft}
         state={stateForBar}
       />
 
-      <div className="ttt-online-boardBox">
-        <TicTacToeBoard
-          board={board as Cell[]}
-          gridSize={gridSize}
-          currentPlayer={(turn ?? "X") as Player}
-          winningLine={winningLine}
-          gameDone={!!winner}
-          onCellClick={onCellClick}
-          mode="online"
-          canPlay={canPlay}
-        />
-        <div className="ttt-online-help">{"Vous êtes " + role + "."}</div>
-      </div>
+      <div className="commonGameLayout">
+        <div className="side">
+          <GameScorePanel
+            modeLabel="online"
+            roundsToWin={roundsToWin}
+            players={[
+              {
+                label: t("common.players.you"),
+                score: myScore,
+                badge: mySymbol,
 
-      {winner && (
-        <div className="ttt-online-actions">
-          <button
-            className={`commonButton ttt-online-actionBtn ${
-              myRematchVoted || rematchVotes === 2 ? "is-disabled" : ""
-            }`}
-            onClick={requestRematch}
-            disabled={myRematchVoted || rematchVotes === 2}
-            title={
-              myRematchVoted ? "En attente de l’autre…" : "Proposer un rematch"
-            }
-          >
-            {rematchVotes === 0 && !myRematchVoted && "Rejouer (0/2)"}
-            {rematchVotes === 1 && !myRematchVoted && "Rejouer (1/2)"}
-            {myRematchVoted &&
-              rematchVotes < 2 &&
-              "En attente de l’autre (1/2)…"}
-            {rematchVotes === 2 && "Rejouer (2/2)"}
-          </button>
+                isTurn: isMyTurn,
 
-          <button className="commonButton ttt-online-actionBtn" onClick={leave}>
-            Quitter
-          </button>
+                matchWinner: iWonMatch,
+              },
+              {
+                label: t("common.players.opponent"),
+                score: oppScore,
+                badge: oppSymbol,
+                isTurn: isOppTurn,
+                matchWinner: oppWonMatch,
+              },
+            ]}
+            actions={scoreActions}
+          />
         </div>
-      )}
+
+        <div className="center">
+          <div className="ttt-online-boardBox">
+            <TicTacToeBoard
+              board={board as Cell[]}
+              gridSize={gridSize}
+              currentPlayer={(turn ?? "X") as Player}
+              winningLine={winningLine}
+              gameDone={!!winner}
+              onCellClick={onCellClick}
+              mode="online"
+              canPlay={canPlay}
+            />
+            <div className="ttt-online-help">
+              {t("common.messages.youAre") + " " + role + "."}
+            </div>
+          </div>
+
+          {winner && (
+            <div className="ttt-online-actions">
+              <button
+                className={`commonButton ttt-online-actionBtn ${
+                  myRematchVoted || rematchVotes === 2 ? "is-disabled" : ""
+                }`}
+                onClick={requestRematch}
+                disabled={myRematchVoted || rematchVotes === 2}
+                title={
+                  myRematchVoted
+                    ? `${t("common.status.waitingForOpponent")}…`
+                    : t("common.actions.requestRematch")
+                }
+              >
+                {rematchVotes === 0 &&
+                  !myRematchVoted &&
+                  `${actionLabelBase} (0/2)`}
+                {rematchVotes === 1 &&
+                  !myRematchVoted &&
+                  `${actionLabelBase} (1/2)`}
+                {myRematchVoted &&
+                  rematchVotes < 2 &&
+                  `${t("common.status.waitingForOpponent")} (1/2)…`}
+                {rematchVotes === 2 && `${actionLabelBase} (2/2)`}
+              </button>
+
+              <button
+                className="commonButton ttt-online-actionBtn"
+                onClick={leave}
+              >
+                {t("common.actions.leave")}
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="side hidden" />
+      </div>
     </>
   );
 }

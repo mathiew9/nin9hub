@@ -356,12 +356,12 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
         <div className="topBarCenter">
           {victory && (
             <span className="topBarMessage victory">
-              {t("minesweeper.victory")} !
+              {t("common.results.victory")} !
             </span>
           )}
           {gameOver && !victory && (
             <span className="topBarMessage gameOver">
-              {t("minesweeper.defeat")} !
+              {t("common.results.defeat")} !
             </span>
           )}
         </div>
@@ -435,7 +435,7 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
 
       <div className="gameStatus">
         <button onClick={initGrid} className="commonButton commonMediumButton">
-          {t("common.playAgain")}
+          {t("common.actions.playAgain")}
         </button>
       </div>
     </div>

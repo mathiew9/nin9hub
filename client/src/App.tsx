@@ -5,18 +5,15 @@ import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
 import { games } from "./data/games";
 import { useTranslation } from "react-i18next";
+import { IoPeopleCircleOutline } from "react-icons/io5";
 
 function App() {
   const location = useLocation();
 
   return (
-    <div
-      className={`app_container ${
-        location.pathname === "/" ? "home_layout" : ""
-      }`}
-    >
+    <div className="app_container">
       <Header />
-      <main>
+      <main className={location.pathname === "/" ? "home_layout" : ""}>
         <Routes>
           <Route path="/" element={<GameSelection />} />
           {games
@@ -43,6 +40,7 @@ function GameSelection() {
     <div className="game_selection">
       {games.map((game) => {
         const isAvailable = game.available;
+        const online = game.online;
         const classes = `${game.id}_button select_game_button ${
           isAvailable ? "" : "game_unavailable"
         }`;
@@ -51,9 +49,14 @@ function GameSelection() {
           <button
             className={classes}
             disabled={!isAvailable}
-            title={!isAvailable ? t("common.availableSoon") : undefined}
+            title={!isAvailable ? t("common.meta.availableSoon") : undefined}
           >
-            {t(`${game.id}.name`)}
+            {online && (
+              <span className="gameButtonIcon">
+                <IoPeopleCircleOutline />
+              </span>
+            )}
+            {t(`games.${game.id}.name`)}
           </button>
         );
 

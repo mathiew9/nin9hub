@@ -1,0 +1,142 @@
+import { useMemo } from "react";
+import { useOnline } from "./Connect4OnlineProvider";
+import { useTranslation } from "react-i18next";
+
+import RoomCodeBlock from "../../_shared/online/waiting-room/RoomCodeBlock";
+import PlayersBlock from "../../_shared/online/waiting-room/PlayersBlock";
+import SettingsBlock from "../../_shared/online/waiting-room/SettingsBlock";
+import ActionsBlock from "../../_shared/online/waiting-room/ActionsBlock";
+
+type Player = "red" | "yellow";
+function otherRole(r: Player): Player {
+  return r === "red" ? "yellow" : "red";
+}
+
+export default function Connect4WaitingRoom() {
+  const {
+    roomId,
+    role,
+    playersCount,
+    opponentLeft,
+    lastError,
+    clearError,
+    startGame,
+    leave,
+    isHost,
+    settings,
+    updateSettings,
+    swapRolesNow,
+  } = useOnline();
+
+  const { t } = useTranslation();
+  const canStart = isHost && playersCount === 2;
+
+  // Qui est "host color" vs "guest color"
+  const hostRole: Player = useMemo(() => {
+    if (role) return isHost ? (role as Player) : otherRole(role as Player);
+    return "red";
+  }, [role, isHost]);
+
+  const guestRole: Player = hostRole === "red" ? "yellow" : "red";
+  const guestConnected = playersCount === 2;
+
+  // Seulement les 2 settings que tu veux exposer
+  const rounds = settings?.roundsToWin ?? 1;
+  const tms = settings?.turnTimeMs ?? 0;
+
+  const disabled = !isHost;
+
+  const applyRounds = async (v: number) => {
+    const roundsToWin = Math.max(1, Math.min(10, Math.floor(v)));
+    await updateSettings({ roundsToWin });
+  };
+
+  const applyTurnMs = async (v: number) => {
+    const ms = Math.max(0, Math.floor(v));
+    await updateSettings({ turnTimeMs: ms });
+  };
+
+  // Petit helper UI pour afficher les couleurs dans la colonne "role"
+  const roleLabel = (p: Player) =>
+    p === "red"
+      ? t("games.connect4.colors.red")
+      : t("games.connect4.colors.yellow");
+
+  return (
+    <div className="commonMenu lobby-container">
+      <h3 className="commonMenuTitle">{t("common.labels.waitingRoom")}</h3>
+
+      {/* Bloc Code room */}
+      <RoomCodeBlock roomId={roomId} isHost={isHost} />
+
+      {/* Bloc Joueurs */}
+      <PlayersBlock
+        isHost={isHost}
+        guestConnected={guestConnected}
+        opponentLeft={opponentLeft}
+        hostRoleLabel={roleLabel(hostRole)}
+        hostRoleClassname={`lobby-connect4Badge ${
+          hostRole === "red"
+            ? "lobby-connect4RedBadge"
+            : "lobby-connect4YellowBadge"
+        }`}
+        guestRoleLabel={roleLabel(guestRole)}
+        guestRoleClassname={`lobby-connect4Badge ${
+          guestRole === "red"
+            ? "lobby-connect4RedBadge"
+            : "lobby-connect4YellowBadge"
+        }`}
+        swapRolesNowLabel={t("games.connect4.actions.swapColors")}
+        swapRolesNow={swapRolesNow}
+        hint={t("games.connect4.hints.redAlwaysGoesFirst")}
+      />
+
+      {/* —— Bloc Paramètres —— */}
+      <SettingsBlock
+        isHost={isHost}
+        fields={[
+          {
+            key: "rounds",
+            label: t("common.labels.roundsToWin"),
+            type: "number",
+            value: rounds,
+            min: 1,
+            max: 10,
+            step: 1,
+            onChange: applyRounds,
+            disabled: disabled,
+            readOnlyValue: String(rounds),
+          },
+          {
+            key: "turnTimeMs",
+            label: t("common.labels.turnTime"),
+            type: "select",
+            value: tms,
+            options: [
+              { value: 0, label: t("common.status.unlimited") },
+              { value: 10_000, label: "10 s" },
+              { value: 20_000, label: "20 s" },
+              { value: 30_000, label: "30 s" },
+              { value: 45_000, label: "45 s" },
+              { value: 60_000, label: "60 s" },
+            ],
+            onChange: (v) => applyTurnMs(Number(v)),
+            disabled: disabled,
+            readOnlyValue:
+              tms === 0 ? t("common.status.unlimited") : `${tms / 1000} s`,
+          },
+        ]}
+      />
+
+      {/* Bloc Infos + Actions */}
+      <ActionsBlock
+        isHost={isHost}
+        canStart={canStart}
+        clearError={clearError}
+        startGame={startGame}
+        leave={leave}
+        lastError={lastError}
+      />
+    </div>
+  );
+}

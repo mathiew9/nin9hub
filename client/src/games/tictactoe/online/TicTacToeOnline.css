@@ -15,11 +15,17 @@
   font-weight: bold;
   border: 2px solid #44403c;
   border-radius: 0;
-  box-shadow: 1px 1px 0px #44403c, 2px 2px 0px #44403c, 3px 3px 0px #44403c,
-    4px 4px 0px #44403c, 5px 5px 0px #44403c;
+  box-shadow:
+    1px 1px 0px #44403c,
+    2px 2px 0px #44403c,
+    3px 3px 0px #44403c,
+    4px 4px 0px #44403c,
+    5px 5px 0px #44403c;
   outline: none;
   letter-spacing: 1px;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
   width: 50%;
 }
 
@@ -197,4 +203,35 @@ body[data-theme="light"] .tttStatusBar__timer--danger {
 
   min-width: 160px;
   text-align: center;
+}
+
+/* ===== Light mode overrides (Online Setup) ===== */
+
+body[data-theme="light"] .multiInput {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1; /* slate-300 */
+  box-shadow:
+    1px 1px 0px #cbd5e1,
+    2px 2px 0px #cbd5e1,
+    3px 3px 0px #cbd5e1,
+    4px 4px 0px #cbd5e1,
+    5px 5px 0px #cbd5e1;
+}
+
+body[data-theme="light"] .multiInput::placeholder {
+  color: #64748b; /* slate-500 */
+}
+
+body[data-theme="light"] .multiInput:focus {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+  border-color: #94a3b8; /* slate-400 (un peu plus “focus”) */
+}
+
+body[data-theme="light"] .ttt-online-help {
+  color: rgba(15, 23, 42, 0.65); /* slate-900-ish */
+}
+body[data-theme="light"] .ttt-online-joinRoom {
+  color: #0f172a;
 }
