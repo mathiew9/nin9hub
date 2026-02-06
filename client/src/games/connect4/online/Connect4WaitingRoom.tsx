@@ -5,8 +5,7 @@ import { useTranslation } from "react-i18next";
 import RoomCodeBlock from "../../_shared/online/waiting-room/RoomCodeBlock";
 import PlayersBlock from "../../_shared/online/waiting-room/PlayersBlock";
 import SettingsBlock from "../../_shared/online/waiting-room/SettingsBlock";
-
-import "../../tictactoe/online/TicTacToeWR.css";
+import ActionsBlock from "../../_shared/online/waiting-room/ActionsBlock";
 
 type Player = "red" | "yellow";
 function otherRole(r: Player): Player {
@@ -64,7 +63,7 @@ export default function Connect4WaitingRoom() {
       : t("games.connect4.colors.yellow");
 
   return (
-    <div className="commonMenu ttt-wr-container">
+    <div className="commonMenu lobby-container">
       <h3 className="commonMenuTitle">{t("common.labels.waitingRoom")}</h3>
 
       {/* Bloc Code room */}
@@ -76,12 +75,16 @@ export default function Connect4WaitingRoom() {
         guestConnected={guestConnected}
         opponentLeft={opponentLeft}
         hostRoleLabel={roleLabel(hostRole)}
-        hostRoleClassname={`connect4Badge ${
-          hostRole === "red" ? "connect4RedBadge" : "connect4YellowBadge"
+        hostRoleClassname={`lobby-connect4Badge ${
+          hostRole === "red"
+            ? "lobby-connect4RedBadge"
+            : "lobby-connect4YellowBadge"
         }`}
         guestRoleLabel={roleLabel(guestRole)}
-        guestRoleClassname={`connect4Badge ${
-          guestRole === "red" ? "connect4RedBadge" : "connect4YellowBadge"
+        guestRoleClassname={`lobby-connect4Badge ${
+          guestRole === "red"
+            ? "lobby-connect4RedBadge"
+            : "lobby-connect4YellowBadge"
         }`}
         swapRolesNowLabel={t("games.connect4.actions.swapColors")}
         swapRolesNow={swapRolesNow}
@@ -125,41 +128,15 @@ export default function Connect4WaitingRoom() {
         ]}
       />
 
-      {/* Bloc Infos */}
-      <div className="ttt-wr-badgesRow">
-        {lastError && (
-          <span className="wr-alert error" onClick={clearError}>
-            {lastError.message}
-          </span>
-        )}
-      </div>
-
-      {/* Bloc Actions */}
-      <div className="ttt-wr-actions">
-        <button
-          className="commonButton commonMenuButton ttt-wr-btn"
-          onClick={() => leave()}
-        >
-          {t("common.actions.leave")}
-        </button>
-
-        <button
-          className={`commonButton commonMenuButton ttt-wr-btn ${
-            isHost ? (canStart ? "" : "is-disabled") : "is-disabled"
-          }`}
-          onClick={() => {
-            if (isHost && canStart) {
-              clearError();
-              startGame();
-            }
-          }}
-          disabled={!isHost || !canStart}
-        >
-          {isHost
-            ? `${t("common.actions.startGame")}`
-            : `${t("common.status.waitingForHostToStart")}`}
-        </button>
-      </div>
+      {/* Bloc Infos + Actions */}
+      <ActionsBlock
+        isHost={isHost}
+        canStart={canStart}
+        clearError={clearError}
+        startGame={startGame}
+        leave={leave}
+        lastError={lastError}
+      />
     </div>
   );
 }

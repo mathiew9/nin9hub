@@ -5,8 +5,7 @@ import { useTranslation } from "react-i18next";
 import RoomCodeBlock from "../../_shared/online/waiting-room/RoomCodeBlock";
 import PlayersBlock from "../../_shared/online/waiting-room/PlayersBlock";
 import SettingsBlock from "../../_shared/online/waiting-room/SettingsBlock";
-
-import "./TicTacToeWR.css";
+import ActionsBlock from "../../_shared/online/waiting-room/ActionsBlock";
 
 type Player = "X" | "O";
 function otherRole(r: Player): Player {
@@ -65,7 +64,7 @@ export default function TicTacToeWaitingRoom() {
   };
 
   return (
-    <div className="commonMenu ttt-wr-container">
+    <div className="commonMenu lobby-container">
       <h3 className="commonMenuTitle">{t("common.labels.waitingRoom")}</h3>
 
       {/* Bloc Code room */}
@@ -77,12 +76,10 @@ export default function TicTacToeWaitingRoom() {
         guestConnected={guestConnected}
         opponentLeft={opponentLeft}
         hostRoleLabel={hostRole}
-        hostRoleClassname={
-          hostRole === "X" ? "ttt-wr-role--x" : "ttt-wr-role--o"
-        }
+        hostRoleClassname={hostRole === "X" ? "lobby-role--x" : "lobby-role--o"}
         guestRoleLabel={guestRole}
         guestRoleClassname={
-          guestRole === "X" ? "ttt-wr-role--x" : "ttt-wr-role--o"
+          guestRole === "X" ? "lobby-role--x" : "lobby-role--o"
         }
         swapRolesNowLabel={t("games.tictactoe.actions.swapRoles")}
         swapRolesNow={swapRolesNow}
@@ -147,40 +144,15 @@ export default function TicTacToeWaitingRoom() {
         ]}
       />
 
-      {/* Bloc Infos */}
-      <div className="ttt-wr-badgesRow">
-        {lastError && (
-          <span className="wr-alert error" onClick={clearError}>
-            {lastError.message}
-          </span>
-        )}
-      </div>
-
-      {/* Bloc Actions */}
-      <div className="ttt-wr-actions">
-        <button
-          className="commonButton commonMenuButton ttt-wr-btn"
-          onClick={() => leave()}
-        >
-          {t("common.actions.leave")}
-        </button>
-        <button
-          className={`commonButton commonMenuButton ttt-wr-btn ${
-            isHost ? (canStart ? "" : "is-disabled") : "is-disabled"
-          }`}
-          onClick={() => {
-            if (isHost && canStart) {
-              clearError();
-              startGame();
-            }
-          }}
-          disabled={!isHost || !canStart}
-        >
-          {isHost
-            ? `${t("common.actions.startGame")}`
-            : `${t("common.status.waitingForHostToStart")}`}
-        </button>
-      </div>
+      {/* Bloc Infos + Actions */}
+      <ActionsBlock
+        isHost={isHost}
+        canStart={canStart}
+        clearError={clearError}
+        startGame={startGame}
+        leave={leave}
+        lastError={lastError}
+      />
     </div>
   );
 }

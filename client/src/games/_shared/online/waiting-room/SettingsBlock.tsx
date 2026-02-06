@@ -65,10 +65,10 @@ export default function SettingsBlock({
   const renderGuestValue = (f: SettingField) => {
     if (f.type === "toggle") {
       return (
-        <label className="ttt-wr-toggle">
+        <label className="lobby-toggle">
           <input type="checkbox" checked={f.value} disabled />
-          <span className="ttt-wr-toggleTrack">
-            <span className="ttt-wr-toggleThumb" />
+          <span className="lobby-toggleTrack">
+            <span className="lobby-toggleThumb" />
           </span>
         </label>
       );
@@ -89,7 +89,7 @@ export default function SettingsBlock({
           onChange={(e) =>
             f.onChange(coerceSelectValue(e.target.value, f.options))
           }
-          className="ttt-wr-field ttt-wr-select"
+          className="lobby-field lobby-select"
         >
           {f.options.map((opt) => (
             <option
@@ -113,57 +113,55 @@ export default function SettingsBlock({
           step={f.step}
           disabled={disabled}
           onChange={(e) => f.onChange(Number(e.target.value))}
-          className="ttt-wr-field ttt-wr-input"
+          className="lobby-field lobby-input"
         />
       );
     }
 
     // toggle
     return (
-      <label className="ttt-wr-toggle">
+      <label className="lobby-toggle">
         <input
           type="checkbox"
           checked={f.value}
           disabled={disabled}
           onChange={(e) => f.onChange(e.target.checked)}
         />
-        <span className="ttt-wr-toggleTrack">
-          <span className="ttt-wr-toggleThumb" />
+        <span className="lobby-toggleTrack">
+          <span className="lobby-toggleThumb" />
         </span>
       </label>
     );
   };
 
   return (
-    <div className="ttt-wr-settingsBlock ttt-wr-commonBlock">
-      <div className="ttt-wr-commonTitle ttt-wr-settingsTitle">
-        {t(titleKey)}
-      </div>
+    <div className="lobby-settingsBlock lobby-commonBlock">
+      <div className="lobby-commonTitle lobby-settingsTitle">{t(titleKey)}</div>
 
-      <div className="ttt-wr-settings commonBox">
-        <div className="ttt-wr-settingsTable">
+      <div className="lobby-settingsBox commonBox">
+        <div className="lobby-settingsTable">
           {/* Labels row */}
-          <div className="ttt-wr-settingsRow ttt-wr-settingsRow--labels">
+          <div className="lobby-settingsRow lobby-settingsRow--labels">
             {fields.map((f) => (
-              <div key={`label-${f.key}`} className="ttt-wr-settingsCell">
+              <div key={`label-${f.key}`} className="lobby-settingsCell">
                 {f.label}
               </div>
             ))}
           </div>
 
           {/* Controls row */}
-          <div className="ttt-wr-settingsRow ttt-wr-settingsRow--controls">
+          <div className="lobby-settingsRow lobby-settingsRow--controls">
             {fields.map((f) => (
               <div
                 key={`control-${f.key}`}
-                className="ttt-wr-settingsCell ttt-wr-settingsCell--control"
+                className="lobby-settingsCell lobby-settingsCell--control"
               >
                 {isHost ? (
                   renderHostControl(f)
                 ) : f.type === "toggle" ? (
                   renderGuestValue(f)
                 ) : (
-                  <div className="ttt-wr-pillValue">{renderGuestValue(f)}</div>
+                  <div className="lobby-pillValue">{renderGuestValue(f)}</div>
                 )}
               </div>
             ))}

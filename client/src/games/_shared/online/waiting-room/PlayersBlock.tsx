@@ -30,39 +30,37 @@ export default function PlayersBlock({
   const { t } = useTranslation();
 
   return (
-    <div className="ttt-wr-playersBlock ttt-wr-commonBlock">
-      <div className="ttt-wr-commonTitle ttt-wr-playersTitle">
-        <span className="ttt-wr-colTitle ttt-wr-colTitle--player">
+    <div className="lobby-playersBlock lobby-commonBlock">
+      <div className="lobby-commonTitle">
+        <span className="lobby-colTitle--player">
           {t("common.labels.players")}
         </span>
-        <span className="ttt-wr-colTitle ttt-wr-colTitle--role">
-          {t("common.labels.role")}
-        </span>
+        <span className="lobby-colTitle--role">{t("common.labels.role")}</span>
       </div>
 
       {/* Hôte */}
-      <div className="ttt-wr-playerRow commonBox ttt-wr-playerRow--host">
-        <div className="ttt-wr-cell ttt-wr-cell--player">
-          <span className="ttt-wr-dot online" />
-          <span className="ttt-wr-playerName">
+      <div className="lobby-playerRow commonBox lobby-playerRow--host">
+        <div className="lobby-cell--player">
+          <span className="lobby-dot online" />
+          <span className="lobby-playerName">
             {t("common.players.host")}{" "}
             {isHost ? `(${t("common.players.you")})` : ""}
           </span>
         </div>
-        <div className="ttt-wr-cell ttt-wr-cell--role">
-          <span className={`ttt-wr-role ${hostRoleClassname}`}>
+        <div className="lobby-cell--role">
+          <span className={`lobby-role ${hostRoleClassname}`}>
             {hostRoleLabel.toUpperCase()}
           </span>
         </div>
       </div>
 
       {/* Invité */}
-      <div className="ttt-wr-playerRow ttt-wr-playerRow--guest commonBox">
-        <div className="ttt-wr-cell ttt-wr-cell--player">
+      <div className="lobby-playerRow lobby-playerRow--guest commonBox">
+        <div className="lobby-cell--player">
           <span
-            className={`ttt-wr-dot ${guestConnected ? "online" : "offline"}`}
+            className={`lobby-dot ${guestConnected ? "online" : "offline"}`}
           />
-          <span className="ttt-wr-playerName">
+          <span className="lobby-playerName">
             {guestConnected
               ? isHost
                 ? ` ${t("common.players.guest")}`
@@ -72,20 +70,20 @@ export default function PlayersBlock({
         </div>
 
         {/* Opponent left */}
-        <div className="ttt-wr-cell ttt-wr-cell--status">
+        <div className="lobby-cell--status">
           {opponentLeft && (
-            <span className="ttt-wr-miniAlert">
+            <span className="lobby-miniAlert">
               {t("common.messages.yourOpponentHasLeftTheGame")}
             </span>
           )}
         </div>
 
-        <div className="ttt-wr-cell ttt-wr-cell--role">
+        <div className="lobby-cell--role">
           <span
-            className={`ttt-wr-role ${
+            className={`lobby-role ${
               guestConnected
                 ? guestRoleClassname
-                : `ttt-wr-role--ghost ${guestRoleClassname}`
+                : `lobby-role--ghost ${guestRoleClassname}`
             }`}
           >
             {guestRoleLabel.toUpperCase()}
@@ -94,12 +92,12 @@ export default function PlayersBlock({
       </div>
 
       {/* Footer Joueurs : hint + bouton swap */}
-      <div className="ttt-wr-playersFooter">
-        <div className="ttt-wr-playersBlock-hint">{hint}</div>
+      <div className="lobby-playersBlockFooter">
+        <div className="lobby-playersBlock-hint">{hint}</div>
 
         {isHost && (
           <button
-            className="commonButton ttt-wr-swapRolesBtn"
+            className="commonButton lobby-playersBlock-swapRolesBtn"
             onClick={() => swapRolesNow()}
             disabled={!guestConnected}
             title="Inverser X ↔ O"

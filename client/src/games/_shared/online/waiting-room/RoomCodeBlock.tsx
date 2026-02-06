@@ -20,19 +20,19 @@ export default function RoomCodeBlock({ roomId, isHost }: Props) {
   };
 
   return (
-    <div className="ttt-wr-roomCodeBlock ttt-wr-commonBlock">
-      <div className="ttt-wr-commonTitle">{t("common.labels.roomCode")}</div>
+    <div className="lobby-roomCodeBlock lobby-commonBlock">
+      <div className="lobby-commonTitle">{t("common.labels.roomCode")}</div>
 
       <div
-        className={`ttt-wr-roomBox ttt-wr-roomBox--grid ${
-          isHost ? "" : "ttt-wr-roomBox--readonly"
+        className={`lobby-roomCodeBox lobby-roomCodeBox--grid ${
+          isHost ? "" : "lobby-roomCodeBox--readonly"
         }`}
       >
-        <span className="ttt-wr-roomCode">{roomId}</span>
+        <span className="lobby-roomCode">{roomId}</span>
 
         {isHost && (
           <button
-            className="commonButton commonMenuButton ttt-wr-btn"
+            className="commonButton commonMenuButton lobby-btn"
             onClick={copy}
           >
             {copied
@@ -42,7 +42,7 @@ export default function RoomCodeBlock({ roomId, isHost }: Props) {
         )}
       </div>
 
-      <div className="ttt-wr-roomCodeBlock-hint">
+      <div className="lobby-roomCodeBlock-hint">
         {isHost
           ? t("common.messages.shareThisCode")
           : t("common.labels.roomCode")}
