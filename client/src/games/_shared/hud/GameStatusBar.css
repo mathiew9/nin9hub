@@ -20,6 +20,13 @@
   font-size: 16px;
 }
 
+@media (max-width: 600px) {
+  .statusBar {
+    width: 85%;
+    margin: 1.5em auto 8px auto;
+  }
+}
+
 /* Zones */
 .statusBar__left,
 .statusBar__center,
@@ -73,20 +80,20 @@
   color: #4a3d00;
 }
 
-.statusBar__roleBadge-x,
-.statusBar__roleBadge-o {
+.statusBar__roleBadge-X,
+.statusBar__roleBadge-O {
   width: 28px;
   border-radius: 50%;
   height: 28px;
   font-size: 1rem;
 }
 
-.statusBar__roleBadge-x {
+.statusBar__roleBadge-X {
   background-color: #e53935;
   color: white;
 }
 
-.statusBar__roleBadge-o {
+.statusBar__roleBadge-O {
   background-color: #1e88e5;
   color: white;
 }
@@ -111,6 +118,16 @@
 
 .statusBar__timer--infinite svg {
   font-size: 20px;
+}
+
+/* Dark mode */
+body[data-theme="dark"] .timerIcon {
+  color: #38bdf8;
+}
+
+/* Light mode */
+body[data-theme="light"] .timerIcon {
+  color: #3b82f6;
 }
 
 /* Timer states */

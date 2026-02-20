@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import "./Minesweeper.css";
-import { FaBomb, FaFlag, FaQuestion, FaStopwatch } from "react-icons/fa";
+import { FaBomb, FaFlag, FaQuestion } from "react-icons/fa";
 import { LiaTimesSolid } from "react-icons/lia";
 import { useTranslation } from "react-i18next";
+
+import "./Minesweeper.css";
+
+import GameStatusBar from "../_shared/hud/GameStatusBar";
+
 interface Cell {
   isMine: boolean;
   revealed: boolean;
@@ -132,7 +136,7 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
       newGrid.forEach((row) =>
         row.forEach((cell) => {
           if (cell.isMine) cell.revealed = true;
-        })
+        }),
       );
 
       // Marque cette bombe comme responsable
@@ -154,7 +158,7 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
           if (cell.isMine && !cell.revealed) {
             cell.flag = "flag";
           }
-        })
+        }),
       );
       setVictory(true);
       setGameOver(true);
@@ -191,7 +195,7 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
   const handleRightClick = (
     e: React.MouseEvent<HTMLDivElement>,
     x: number,
-    y: number
+    y: number,
   ) => {
     e.preventDefault();
     if (gameOver || grid[y][x].revealed) return;
@@ -235,7 +239,7 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
     }
 
     const flagged = adjacentCoords.filter(
-      ({ x, y }) => grid[y][x].flag === "flag"
+      ({ x, y }) => grid[y][x].flag === "flag",
     );
     if (flagged.length !== cell.adjacentMines) return;
 
@@ -253,12 +257,12 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
           if (cell.flag === "flag" && !cell.isMine) {
             cell.flag = "wrong"; // drapeau barré, sans fond rouge
           }
-        })
+        }),
       );
 
       // Trouver la bombe fautive (non flaggée)
       const culprit = adjacentCoords.find(
-        ({ x, y }) => newGrid[y][x].isMine && newGrid[y][x].flag !== "flag"
+        ({ x, y }) => newGrid[y][x].isMine && newGrid[y][x].flag !== "flag",
       );
       if (culprit) {
         newGrid[culprit.y][culprit.x].isWrongTrigger = true;
@@ -287,7 +291,7 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
           if (cell.isMine && !cell.revealed) {
             cell.flag = "flag";
           }
-        })
+        }),
       );
       setVictory(true);
       setGameOver(true);
@@ -338,39 +342,23 @@ export default function Minesweeper({ rows, cols, mines }: Props) {
     return () => clearInterval(interval);
   }, [gameOver, victory]);
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
+  const minesLeft = mines - countFlags(grid);
+
+  const centerText = victory
+    ? `${t("common.results.victory")} !`
+    : gameOver
+      ? `${t("common.results.defeat")} !`
+      : "";
 
   return (
     <div className="minesweeper">
-      <div className="top-bar">
-        <span className="scoreText">
-          <FaFlag /> {mines - countFlags(grid)}
-        </span>
-
-        <div className="topBarCenter">
-          {victory && (
-            <span className="topBarMessage victory">
-              {t("common.results.victory")} !
-            </span>
-          )}
-          {gameOver && !victory && (
-            <span className="topBarMessage gameOver">
-              {t("common.results.defeat")} !
-            </span>
-          )}
-        </div>
-
-        <div className="timerContainer">
-          <FaStopwatch className="timerIcon" />
-          <span className="timerText">{formatTime(timer)}</span>
-        </div>
-      </div>
+      <GameStatusBar
+        leftText={String(minesLeft)}
+        leftBadge={<FaFlag />}
+        centerText={centerText}
+        timeSec={timer}
+        isInfinite={true}
+      />
 
       <div className="minesweeperGrid">
         {grid.map((row, y) => (

@@ -1,0 +1,274 @@
+.solitaire {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px;
+  box-sizing: border-box;
+}
+
+.solitaire-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.solitaire-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.solitaire-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.solitaire-btn {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.solitaire-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.solitaire-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+.solitaire-win {
+  font-weight: 700;
+}
+
+.solitaire-toprow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.solitaire-zone {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.solitaire-zoneTitle {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+
+.solitaire-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.solitaire-foundations {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sol-slot {
+  width: 78px;
+  height: 108px;
+  border-radius: 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.18);
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.06);
+  user-select: none;
+}
+
+.sol-slot.is-clickable {
+  cursor: pointer;
+}
+
+.sol-slot.foundation {
+  border-style: dashed;
+}
+
+.slot-label {
+  font-size: 22px;
+  opacity: 0.75;
+}
+
+.slot-count {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.slot-empty {
+  width: 78px;
+  height: 108px;
+  border-radius: 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  opacity: 0.7;
+}
+
+.tableau-empty {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.card {
+  width: 78px;
+  height: 108px;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.card.face {
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.92);
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  padding: 10px;
+  cursor: grab;
+}
+
+.card.face:active {
+  cursor: grabbing;
+}
+
+.card.back {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 255, 255, 0.25),
+      transparent 55%
+    ),
+    linear-gradient(135deg, rgba(30, 64, 175, 0.9), rgba(2, 132, 199, 0.85));
+}
+
+.card.red {
+  color: #b91c1c;
+}
+
+.card.black {
+  color: #111827;
+}
+
+.card-rank {
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.card-suit {
+  justify-self: end;
+  align-self: end;
+  font-size: 22px;
+  opacity: 0.95;
+}
+
+.solitaire-tableau {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(78px, 1fr));
+  gap: 10px;
+}
+
+.tableau-pile {
+  position: relative;
+  min-height: 320px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.tableau-card {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tableau-pile.is-empty {
+  display: grid;
+  place-items: center;
+}
+
+.tableau-pile.is-empty .slot-empty {
+  position: static;
+}
+
+.solitaire-footerHint {
+  margin-top: 12px;
+  opacity: 0.8;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .solitaire-toprow {
+    grid-template-columns: 1fr;
+  }
+  .solitaire-tableau {
+    grid-template-columns: repeat(4, minmax(72px, 1fr));
+  }
+  .tableau-pile {
+    min-height: 280px;
+  }
+  .card,
+  .sol-slot,
+  .slot-empty {
+    width: 72px;
+    height: 100px;
+  }
+  .tableau-card {
+    top: 6px;
+  }
+}
+
+@media (max-width: 560px) {
+  .solitaire-tableau {
+    grid-template-columns: repeat(3, minmax(66px, 1fr));
+  }
+  .tableau-pile {
+    min-height: 250px;
+  }
+  .card,
+  .sol-slot,
+  .slot-empty {
+    width: 66px;
+    height: 92px;
+    border-radius: 11px;
+  }
+  .card.face {
+    padding: 8px;
+  }
+  .card-rank {
+    font-size: 16px;
+  }
+  .card-suit {
+    font-size: 20px;
+  }
+}
+
+/* Tighten stacking on small screens (reduce vertical offset visually) */
+@media (max-width: 560px) {
+  /* the TS uses 22px offsets; visually it's OK, but keep piles shorter */
+  .tableau-pile {
+    overflow: hidden;
+  }
+}

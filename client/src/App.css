@@ -147,6 +147,10 @@ body[data-theme="light"] .select_game_button:hover {
   background-image: url("/images/snake2.png");
 }
 
+.sudoku_button {
+  background-image: url("/images/sudoku.png");
+}
+
 .ultimatetictactoe_button {
   background-image: url("/images/ultimatetictactoe.png");
 }

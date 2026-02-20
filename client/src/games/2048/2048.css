@@ -1,7 +1,13 @@
-:root {
-  --tile-size: 80px;
+.game2048 {
   --gap: 10px;
   --padding: 10px;
+
+  /* Taille responsive, avec marge safe pour éviter “collé” vers 370px */
+  --tile-size: clamp(
+    56px,
+    calc((100vw - 48px - (var(--gap) * 3) - (var(--padding) * 2)) / 4),
+    80px
+  );
 }
 
 .game2048 {
@@ -11,7 +17,7 @@
   margin-top: 30px;
 }
 
-.grid {
+.game2048 .grid {
   position: relative;
   display: grid;
   grid-template-columns: repeat(4, var(--tile-size));
@@ -22,7 +28,9 @@
   height: calc(var(--tile-size) * 4 + var(--gap) * 3);
   background-color: #bbada0;
   border-radius: 10px;
+  touch-action: none;
 }
+
 .grid-background-cell {
   width: var(--tile-size);
   height: var(--tile-size);
@@ -47,7 +55,10 @@
   font-size: 24px;
   font-weight: bold;
   border-radius: 5px;
-  transition: transform 100ms ease, top 100ms ease, left 100ms ease;
+  transition:
+    transform 100ms ease,
+    top 100ms ease,
+    left 100ms ease;
 }
 
 .tile-2 {
@@ -159,4 +170,10 @@
 .controls2048 button:nth-child(4) {
   grid-row: 3;
   grid-column: 2;
+}
+
+@media (max-width: 1024px) {
+  .controls2048 {
+    display: none;
+  }
 }

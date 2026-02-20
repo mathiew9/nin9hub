@@ -7,6 +7,7 @@ import Snake from "../games/snake/Snake";
 import _2048 from "../games/2048/2048";
 import Hangman from "../games/hangman/HangmanWrapper";
 import SudokuWrapper from "../games/sudoku/SudokuWrapper";
+import Solitaire from "../games/solitaire/Solitaire";
 
 export interface GameInfo {
   id: string;
@@ -83,7 +84,7 @@ export const games: GameInfo[] = [
   {
     id: "solitaire",
     name: "Solitaire",
-    component: <div>Solitaire</div>,
+    component: <Solitaire />,
     available: false,
     online: false,
   },

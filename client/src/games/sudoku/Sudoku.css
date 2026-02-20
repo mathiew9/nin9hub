@@ -3,6 +3,15 @@
   text-align: center;
   padding: 1em;
   width: 100%;
+
+  /* taille cellule (desktop) */
+  --sdk-cell: 48px;
+
+  /* largeur max du board sur desktop */
+  --sdk-board-max: 520px;
+
+  /* padding “extérieur” à garder pour le calcul mobile */
+  --sdk-safe-x: 24px;
 }
 
 .sudokuButtonOfTheDay {
@@ -29,8 +38,8 @@
 .sudoku-cell {
   position: relative;
   display: table-cell;
-  width: 48px;
-  height: 48px;
+  width: var(--sdk-cell);
+  height: var(--sdk-cell);
   font-size: 1.5rem;
   text-align: center;
   vertical-align: middle;
@@ -40,6 +49,12 @@
   cursor: pointer;
   border: 1px solid #5f5b57;
   user-select: none;
+}
+
+@media (max-width: 520px) {
+  .sudoku {
+    --sdk-cell: clamp(28px, calc((100vw - 24px) / 9), 48px);
+  }
 }
 
 body[data-theme="light"] .sudoku-cell {
@@ -161,6 +176,10 @@ body[data-theme="light"] .cell-pos-9 {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .keyboard-controls {
@@ -237,6 +256,32 @@ body[data-theme="light"] .keyboard-button.control.active {
   pointer-events: none;
 }
 
+@media (max-width: 1024px) {
+  .sudoku {
+    --kbd-cell: clamp(28px, calc((100vw - 24px - (8 * 6px)) / 9), 44px);
+  }
+
+  .sudoku-keyboard {
+    margin: 0;
+    width: 100%;
+  }
+
+  .keyboard-numbers {
+    display: grid;
+    grid-template-columns: repeat(9, var(--kbd-cell));
+    gap: 6px;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .keyboard-button {
+    width: var(--kbd-cell);
+    height: var(--kbd-cell);
+    font-size: 1rem;
+  }
+}
+
 /* ========== NOTES ========== */
 .note-grid {
   display: grid;
@@ -266,7 +311,13 @@ body[data-theme="light"] .note-grid {
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  padding-right: 10em;
+  padding-right: 5em;
+}
+
+@media (max-width: 1024px) {
+  .commonGameLayout .side.sudoku-right {
+    padding-right: 0;
+  }
 }
 
 /* ========== MISC ========== */
@@ -371,12 +422,12 @@ body[data-theme="light"] .sudoku-confirm-popup-content {
   font-size: 1.2rem;
   font-weight: 700;
   color: #d4a373;
-  margin-bottom: 16px;
   letter-spacing: 0.5px;
   text-align: left;
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 2em;
 }
 
 .sudoku-current-level::before {
@@ -396,6 +447,12 @@ body[data-theme="light"] .sudoku-current-level {
 
 body[data-theme="light"] .sudoku-current-level::before {
   background-color: #0d6efd;
+}
+
+@media (max-width: 1024px) {
+  .sudoku-current-level {
+    margin-bottom: 10px;
+  }
 }
 
 .sudoku-error-icon {

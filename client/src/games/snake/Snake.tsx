@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { FaStopwatch } from "react-icons/fa";
+
 import "./Snake.css";
+
+import GameStatusBar from "../_shared/hud/GameStatusBar";
 
 type Position = {
   x: number;
@@ -25,13 +27,13 @@ export default function Snake() {
   const { t } = useTranslation();
   const [snake, setSnake] = useState<Position[]>([{ x: 5, y: 5 }]);
   const [food, setFood] = useState<Position>(
-    getRandomPosition([{ x: 5, y: 5 }])
+    getRandomPosition([{ x: 5, y: 5 }]),
   );
   const [direction, setDirection] = useState<
     "UP" | "DOWN" | "LEFT" | "RIGHT" | null
   >(null);
   const pendingDirection = useRef<"UP" | "DOWN" | "LEFT" | "RIGHT" | null>(
-    null
+    null,
   );
   const [isGameOver, setIsGameOver] = useState(false);
   const gameInterval = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -126,7 +128,7 @@ export default function Snake() {
         // Collision avec le corps
         if (
           prevSnake.some(
-            (segment) => segment.x === newHead.x && segment.y === newHead.y
+            (segment) => segment.x === newHead.x && segment.y === newHead.y,
           )
         ) {
           endGame();
@@ -172,15 +174,12 @@ export default function Snake() {
   return (
     <div className="snake">
       {!isGameOver && (
-        <div className="top-bar">
-          <span className="scoreText">
-            {t("common.labels.score")} : {snake.length - 1}
-          </span>
-          <div className="timerContainer">
-            <FaStopwatch className="timerIcon" />
-            <span className="timerText">{formatTime(timer)}</span>
-          </div>
-        </div>
+        <GameStatusBar
+          leftText={`${t("common.labels.score")} : ${snake.length - 1}`}
+          centerText={null}
+          timeSec={timer}
+          isInfinite={true}
+        />
       )}
 
       <div className={`snake-board ${isGameOver ? "gameover" : ""}`}>
@@ -190,7 +189,7 @@ export default function Snake() {
               const head = snake[0];
               const isHead = head.x === x && head.y === y;
               const isSnake = snake.some(
-                (segment) => segment.x === x && segment.y === y
+                (segment) => segment.x === x && segment.y === y,
               );
               const isFood = food.x === x && food.y === y;
               return (

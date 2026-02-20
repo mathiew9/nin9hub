@@ -5,89 +5,20 @@
   align-items: center;
   padding-top: 1em;
   font-family: "Segoe UI", sans-serif;
+  max-width: 100%;
+  overflow-x: hidden;
+
+  /* defaults */
+  --snake-gap: 1px;
+  --snake-pad: 8px;
 }
 
 /* Color mode */
 body[data-theme="dark"] .snake {
   color: #fff;
 }
-
 body[data-theme="light"] .snake {
   color: #222;
-}
-
-/* === TOP BAR === */
-.snake .top-bar {
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  font-size: 18px;
-  height: 30px;
-  border: 1px solid;
-}
-
-/* Dark mode */
-body[data-theme="dark"] .snake .top-bar {
-  background-color: #1f2937;
-  border-color: #334155;
-  color: #e2e8f0;
-}
-
-/* Light mode */
-body[data-theme="light"] .snake .top-bar {
-  background-color: #f1f5f9;
-  border-color: #cbd5e1;
-  color: #222;
-}
-
-/* Score */
-.scoreText {
-  font-weight: bold;
-}
-
-/* === TIMER CONTAINER === */
-.timerContainer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 8px;
-}
-
-/* Dark mode */
-body[data-theme="dark"] .timerContainer {
-  background-color: #374151;
-}
-
-/* Light mode */
-body[data-theme="light"] .timerContainer {
-  background-color: #e2e8f0;
-}
-
-/* Timer Icon */
-.timerIcon {
-  font-size: 20px;
-}
-
-/* Dark mode */
-body[data-theme="dark"] .timerIcon {
-  color: #38bdf8;
-}
-
-/* Light mode */
-body[data-theme="light"] .timerIcon {
-  color: #3b82f6;
-}
-
-/* Timer Text */
-.timerText {
-  font-weight: bold;
-  font-size: 18px;
 }
 
 /* === SNAKE BOARD === */
@@ -95,12 +26,42 @@ body[data-theme="light"] .timerIcon {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 8px;
+  gap: var(--snake-gap);
+  padding: var(--snake-pad);
   border-radius: 10px;
   border: 2px solid;
-  transition: background-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+  /* IMPORTANT: mets ici ton nombre de colonnes */
+  --snake-cols: 20;
+
+  /* largeur max du board sur desktop */
+  --snake-board-max: 520px;
+
+  /* bordure actuelle = 2px */
+  --snake-border: 2px;
+
+  /* board: ne dépasse jamais l’écran */
+  --snake-board-w: min(var(--snake-board-max), calc(100vw - 16px));
+  width: var(--snake-board-w);
+
+  /* Taille auto: calcule une case pour que TOUT rentre dans la largeur dispo */
+  --snake-cell: clamp(
+    12px,
+    calc(
+      (
+          var(--snake-board-w) - (2 * var(--snake-pad)) -
+            (2 * var(--snake-border)) -
+            ((var(--snake-cols) - 1) * var(--snake-gap))
+        ) /
+        var(--snake-cols)
+    ),
+    24px
+  );
 }
 
 /* Dark mode */
@@ -123,12 +84,18 @@ body[data-theme="light"] .snake .snake-board {
 /* === BOARD ROWS AND CELLS === */
 .snake .snake-board .row {
   display: flex;
-  gap: 1px;
+  gap: var(--snake-gap);
 }
 
 .snake .snake-board .row .cell {
-  width: 24px;
-  height: 24px;
+  width: var(--snake-cell);
+  aspect-ratio: 1 / 1; /* garantit carré */
+  height: auto; /* laisse aspect-ratio gérer */
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  line-height: 0;
+  box-sizing: border-box;
   transition: background-color 0.1s;
 }
 
@@ -136,7 +103,6 @@ body[data-theme="light"] .snake .snake-board {
 body[data-theme="dark"] .snake .snake-board .row .cell {
   background-color: #222;
 }
-
 body[data-theme="light"] .snake .snake-board .row .cell {
   background-color: #e5e7eb;
 }
@@ -148,24 +114,24 @@ body[data-theme="light"] .snake .snake-board .row .cell {
   border-radius: 4px;
 }
 
-/* Snake head eyes */
+/* Snake head eyes (proportionnels) */
 .snake .snake-board .row .cell.snakeHead::before,
 .snake .snake-board .row .cell.snakeHead::after {
   content: "";
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: clamp(3px, calc(var(--snake-cell) / 6), 4px);
+  aspect-ratio: 1 / 1;
+  height: auto;
   background-color: #fff;
   border-radius: 50%;
-  top: 5px;
+  top: clamp(3px, calc(var(--snake-cell) / 5), 5px);
 }
 
 .snake .snake-board .row .cell.snakeHead::before {
-  left: 6px;
+  left: clamp(4px, calc(var(--snake-cell) / 4), 6px);
 }
-
 .snake .snake-board .row .cell.snakeHead::after {
-  right: 6px;
+  right: clamp(4px, calc(var(--snake-cell) / 4), 6px);
 }
 
 /* Snake body */
@@ -175,12 +141,12 @@ body[data-theme="light"] .snake .snake-board .row .cell.snakeCell {
   outline: 1px solid #003300;
   box-shadow: inset 0 0 2px #007700;
 }
+
 /* Food */
 .snake .snake-board .row .cell.food {
   position: relative;
   background-color: #2a2a2a;
 }
-
 body[data-theme="light"] .snake .snake-board .row .cell.food {
   background-color: #cbd5e1;
 }
@@ -195,11 +161,12 @@ body[data-theme="light"] .snake .snake-board .row .cell.food {
   height: 70%;
   background: radial-gradient(circle at 30% 30%, #ff4d4d, #990000);
   border-radius: 50%;
-  box-shadow: 0 0 8px #ff4d4d, inset 0 0 2px #660000;
+  box-shadow:
+    0 0 8px #ff4d4d,
+    inset 0 0 2px #660000;
   animation: pulseFruit 0.8s infinite alternate;
 }
 
-/* Animations for fruit and blinking */
 @keyframes pulseFruit {
   0% {
     transform: scale(1);
@@ -235,21 +202,17 @@ body[data-theme="light"] .snake .snake-board .row .cell.food {
   flex-direction: column;
 }
 
-/* Dark mode */
 body[data-theme="dark"] .snakeEndGame {
   background-color: #374151;
   border-color: #475569;
   color: #f1f5f9;
 }
-
-/* Light mode */
 body[data-theme="light"] .snakeEndGame {
   background-color: #f1f5f9;
   border-color: #cbd5e1;
   color: #222;
 }
 
-/* End stats */
 .endStats {
   font-size: 18px;
   display: flex;
@@ -257,7 +220,6 @@ body[data-theme="light"] .snakeEndGame {
   margin-bottom: 20px;
 }
 
-/* Fade in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -266,5 +228,16 @@ body[data-theme="light"] .snakeEndGame {
   to {
     opacity: 1;
     transform: translate(-50%, -50%);
+  }
+}
+
+/* (Optionnel) tu peux garder tes media queries pour end screen si tu veux */
+@media (max-width: 360px) {
+  .snakeEndGame {
+    width: 180px;
+    padding: 18px 28px;
+  }
+  .endStats {
+    font-size: 16px;
   }
 }

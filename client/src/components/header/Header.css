@@ -13,15 +13,6 @@
   border-bottom: 2px solid;
 }
 
-@media (max-width: 600px) {
-  .header {
-    padding: 0;
-  }
-  .header .header-controls {
-    gap: 5px;
-  }
-}
-
 /* === HEADER CONTENT === */
 .header-title {
   font-size: 1.5rem;
@@ -141,17 +132,148 @@
     color 0.2s ease;
 }
 
-/* === DARK THEME === */
-body[data-theme="dark"] .header-back {
-  color: white;
-  border-color: #666;
+/* =========================================
+   MOBILE LAYOUT
+   ========================================= */
+.header-mobile-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
 }
 
-body[data-theme="dark"] .header-back:hover {
-  background-color: #ffffff10;
-  color: #ccc;
+.header-mobile-title {
+  padding-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Mobile = NOM DU JEU (style “secondaire”) */
+.header-mobile-title--game {
+  font-size: 1.8rem; /* ou 1.4rem si tu veux plus compact */
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* Mobile = NOM DU SITE (style “principal”) */
+.header-mobile-title--project {
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  opacity: 1;
+}
+/* Burger container */
+.header-burger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.burger-btn {
+  background: none;
+  border: 2px solid;
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Burger dropdown panel */
+.burger-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+
+  width: 220px;
+  border: 1px solid;
+  border-radius: 14px;
+  padding: 10px;
+  z-index: 1200;
+
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+}
+
+.burger-title {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 900;
+  font-size: 1.05rem;
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  margin-bottom: 10px;
+  white-space: nowrap;
+}
+
+.burger-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.burger-item {
+  /* width: 100%; */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 800;
+  background: none;
+  gap: 8px;
+}
+
+/* =========================================
+   RESPONSIVE RULES
+   ========================================= */
+@media (max-width: 600px) {
+  .header {
+    padding: 0 10px;
+  }
+
+  /* Mobile: on n'a pas besoin du layout "25/50/25" */
+  .empty-space-header-show,
+  .empty-space-header-hide,
+  .header-title,
+  .header-game {
+    display: none;
+  }
+
+  .header-controls {
+    width: auto;
+    gap: 8px;
+  }
+
+  .lang-toggle-btn {
+    padding: 6px 8px;
+    font-size: 16px;
+  }
+
+  .theme-toggle {
+    display: none; /* thème dans le burger, comme tu voulais */
+  }
+
+  .header--mobile .theme-toggle {
+    display: inline-flex;
+  }
+
+  .burger-panel {
+    width: 240px;
+  }
+}
+
+/* =========================================
+   THEMES
+   ========================================= */
+
+/* DARK */
 body[data-theme="dark"] .header {
   background-color: #1f1f1f;
   color: white;
@@ -159,65 +281,83 @@ body[data-theme="dark"] .header {
 }
 
 body[data-theme="dark"] .header-title,
+body[data-theme="dark"] .header-game,
 body[data-theme="dark"] .lang-toggle-btn {
   color: white;
 }
-
+body[data-theme="dark"] .header-mobile-title--game,
 body[data-theme="dark"] .header-game {
   color: #ccc;
 }
 
+body[data-theme="dark"] .header-back {
+  color: white;
+  border-color: #666;
+}
+body[data-theme="dark"] .header-back:hover {
+  background-color: #ffffff10;
+  color: #ddd;
+}
+
+body[data-theme="dark"] .theme-toggle,
+body[data-theme="dark"] .burger-btn {
+  color: white;
+  border-color: #666;
+}
+body[data-theme="dark"] .theme-toggle:hover,
+body[data-theme="dark"] .burger-btn:hover {
+  background-color: #333;
+  border-color: #aaa;
+}
+
 body[data-theme="dark"] .lang-dropdown {
-  background-color: #2a2a2a;
-  border-color: #555;
+  background-color: #1f1f1f;
+  border-color: #444;
   color: white;
 }
 
-body[data-theme="dark"] .lang-option {
+body[data-theme="dark"] .burger-panel {
+  background-color: #1f1f1f;
+  border-color: white;
   color: white;
 }
 
 body[data-theme="dark"] .lang-option:hover,
 body[data-theme="dark"] .lang-option.active {
-  background-color: #3c3c3c;
+  background-color: #111827;
 }
 
-body[data-theme="dark"] .theme-toggle {
+body[data-theme="dark"] .burger-item {
   color: white;
-  border-color: #666;
+  border-color: #444;
+  background-color: #1f1f1f;
+}
+body[data-theme="dark"] .burger-item:hover {
+  background-color: #111827;
+  border-color: #64748b;
 }
 
-body[data-theme="dark"] .theme-toggle:hover {
-  background-color: #333;
-  border-color: #aaa;
-}
-
-/* === LIGHT THEME === */
+/* LIGHT */
 body[data-theme="light"] .header {
   background-color: #f5f5f5;
   color: #222;
   border-color: #ccc;
 }
 
-body[data-theme="light"] .header-title {
-  color: #222;
-}
-
-body[data-theme="light"] .header-game {
-  color: #444;
-}
-
+body[data-theme="light"] .header-title,
 body[data-theme="light"] .lang-toggle-btn {
   color: #222;
 }
 
-body[data-theme="light"] .lang-dropdown {
-  background-color: #fff;
-  border-color: #ccc;
-  color: #222;
+body[data-theme="light"] .header-mobile-title--game,
+body[data-theme="light"] .header-game {
+  color: #444;
 }
 
-body[data-theme="light"] .lang-option {
+body[data-theme="light"] .lang-dropdown,
+body[data-theme="light"] .burger-panel {
+  background-color: #fff;
+  border-color: #d1d5db;
   color: #222;
 }
 
@@ -226,12 +366,17 @@ body[data-theme="light"] .lang-option.active {
   background-color: #eee;
 }
 
-body[data-theme="light"] .theme-toggle {
+body[data-theme="light"] .lang-option {
+  color: #222;
+}
+
+body[data-theme="light"] .theme-toggle,
+body[data-theme="light"] .burger-btn {
   color: #222;
   border-color: #aaa;
 }
-
-body[data-theme="light"] .theme-toggle:hover {
+body[data-theme="light"] .theme-toggle:hover,
+body[data-theme="light"] .burger-btn:hover {
   background-color: #eee;
   border-color: #666;
 }
@@ -240,8 +385,17 @@ body[data-theme="light"] .header-back {
   color: #007acc;
   border-color: #007acc;
 }
-
 body[data-theme="light"] .header-back:hover {
   background-color: #007acc10;
   color: #000;
+}
+
+body[data-theme="light"] .burger-item {
+  color: #222;
+  border-color: #d1d5db;
+  background-color: #f8fafc;
+}
+body[data-theme="light"] .burger-item:hover {
+  background-color: #eef2ff;
+  border-color: #94a3b8;
 }

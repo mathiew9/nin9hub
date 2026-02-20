@@ -2,7 +2,6 @@
 .connect4 {
   text-align: center;
   font-family: sans-serif;
-  padding: 20px;
   width: 100%;
 }
 
@@ -23,27 +22,65 @@ body[data-theme="light"] .connect4 h2 {
   color: #0d6efd;
 }
 
+/* === CONNECT 4 RESPONSIVE SIZING === */
+.connect4-board {
+  /* desktop max */
+  --c4-slot: 68px; /* largeur d'une "colonne" (cell + margins) */
+  --c4-margin: 4px; /* margin autour du jeton */
+  --c4-pad: 10px; /* padding du board */
+
+  /* cell = slot - 2*marges */
+  --c4-cell: calc(var(--c4-slot) - (2 * var(--c4-margin)));
+
+  /* largeur totale du board (7 colonnes + padding) */
+  --c4-board-w: calc((7 * var(--c4-slot)) + (2 * var(--c4-pad)));
+
+  /* Empêche de dépasser l'écran */
+  width: min(var(--c4-board-w), calc(100vw - 24px));
+  box-sizing: border-box;
+}
+
+/* Sur petits écrans, on réduit le slot pour que ça rentre */
+@media (max-width: 600px) {
+  .connect4-board {
+    /* 7 colonnes => calcule un slot qui rentre, avec un max desktop */
+    --c4-slot: clamp(
+      44px,
+      calc((100vw - 24px - (2 * var(--c4-pad))) / 7),
+      68px
+    );
+
+    /* option: padding un peu plus petit */
+    --c4-pad: 8px;
+
+    /* margin un peu plus petite pour garder un jeton visible */
+    --c4-margin: 3px;
+  }
+}
+
 /* === PLATEAU === */
 .connect4-board {
   position: relative;
   display: inline-block;
   background-color: #0044cc;
-  padding: 10px;
+  padding: var(--c4-pad);
   border-radius: 10px;
   z-index: 2;
 }
 
+/* Rows */
 .connect4-board .row {
   display: grid;
-  grid-template-columns: repeat(7, 68px);
+  grid-template-columns: repeat(7, var(--c4-slot));
   justify-content: center;
   position: relative;
 }
 
+/* Cells */
 .connect4-board .row .cell {
-  width: 60px;
-  height: 60px;
-  margin: 4px;
+  width: var(--c4-cell);
+  height: var(--c4-cell);
+  margin: var(--c4-margin);
   background-color: white;
   border-radius: 50%;
   cursor: pointer;
@@ -88,8 +125,8 @@ body[data-theme="light"] .connect4 h2 {
 /* === TOKEN FANTÔME === */
 .ghost-token {
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: var(--c4-cell);
+  height: var(--c4-cell);
   border-radius: 50%;
   opacity: 0.5;
   z-index: 5;
@@ -128,7 +165,7 @@ body[data-theme="light"] .connect4 h2 {
   top: 0;
   left: 0;
   display: grid;
-  grid-template-columns: repeat(7, 68px);
+  grid-template-columns: repeat(7, var(--c4-slot));
   width: 100%;
   height: 100%;
   z-index: 1;

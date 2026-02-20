@@ -16,15 +16,11 @@ function usePrevProps<K = any>(value: K): K | undefined {
 export default function Tile({ tile }: Props) {
   const [scale, setScale] = useState(1);
 
-  const tileSize = 80;
-  const gap = 10;
-  const padding = 10;
-
   const style = {
-    top: padding + tile.position[1] * (tileSize + gap),
-    left: padding + tile.position[0] * (tileSize + gap),
-    width: tileSize,
-    height: tileSize,
+    top: `calc(var(--padding) + ${tile.position[1]} * (var(--tile-size) + var(--gap)))`,
+    left: `calc(var(--padding) + ${tile.position[0]} * (var(--tile-size) + var(--gap)))`,
+    width: `var(--tile-size)`,
+    height: `var(--tile-size)`,
     transform: `scale(${scale})`,
     transition: "top 100ms ease, left 100ms ease, transform 100ms ease",
     position: "absolute" as const,

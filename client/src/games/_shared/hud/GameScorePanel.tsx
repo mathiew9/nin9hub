@@ -127,7 +127,7 @@ function ScoreRow({ player }: { player: ScorePlayer }) {
       <div className="scorePanel__rowLeft">
         {badge && (
           <span
-            className={`statusBar__roleBadge statusBar__roleBadge-${badge.toLowerCase()}`}
+            className={`statusBar__roleBadge statusBar__roleBadge-${badge}`}
           >
             {badge === "red" || badge === "yellow"
               ? t(`games.connect4.colors.${badge}`)

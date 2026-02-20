@@ -15,7 +15,8 @@
       "requestRematch": "Request a rematch",
       "rematch": "Rematch",
       "resetScore": "Reset score",
-      "changeSettings": "Change settings"
+      "changeSettings": "Change settings",
+      "toggleTheme": "Toggle theme"
     },
     "labels": {
       "score": "Score",

@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 import "./GameStatusBar.css";
 
 type Props = {
-  leftText?: string;
-  leftBadge?: string | null;
+  leftText?: React.ReactNode | null;
+  leftBadge?: React.ReactNode | null;
 
   centerText: string | null;
   timeSec?: number | null;
@@ -58,7 +58,7 @@ export default function GameStatusBar({
             )}
             {leftBadge && (
               <span
-                className={`statusBar__roleBadge statusBar__roleBadge-${leftBadge.toLowerCase()}`}
+                className={`statusBar__roleBadge statusBar__roleBadge-${leftBadge}`}
                 aria-label={`Badge ${leftBadge}`}
               >
                 {leftBadge === "red" || leftBadge === "yellow"

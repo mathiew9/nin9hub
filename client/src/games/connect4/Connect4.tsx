@@ -233,7 +233,9 @@ export default function Connect4({ mode, setMode }: Props) {
   return (
     <div className="connect4">
       <GameStatusBar
-        leftText={winner || isDraw ? "" : `${t("common.labels.turn")} :`}
+        leftText={
+          winner || isDraw ? "" : `${t("games.tictactoe.inGame.toPlayShort")}`
+        }
         leftBadge={isDraw ? null : winner ? (winner as Disc) : currentPlayer}
         centerText={centerText}
         timeSec={winner || isDraw ? null : timeLeftSec}
