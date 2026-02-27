@@ -85,7 +85,7 @@ export const games: GameInfo[] = [
     id: "solitaire",
     name: "Solitaire",
     component: <Solitaire />,
-    available: false,
+    available: true,
     online: false,
   },
   {

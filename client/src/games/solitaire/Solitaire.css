@@ -1,9 +1,80 @@
-.solitaire {
+/* =========================================================
+   Solitaire CSS (no scroll, always 7 columns on one line)
+   - Cards/slots scale with viewport so the tableau always fits
+   ========================================================= */
+
+/* ---------- Responsive sizing system ---------- */
+:root {
+  --gap: 20px;
+
+  /* container padding becomes smaller on tiny screens (see media queries) */
+  --container-pad: 14px;
+
+  /*
+    Card width is computed to always fit 7 columns + 6 gaps inside the viewport,
+    without horizontal scroll, without overflow.
+
+    cardW = (100vw - left/right padding - gaps) / 7
+  */
+  --card-w: calc((100vw - (2 * var(--container-pad)) - (6 * var(--gap))) / 7);
+
+  /* Keep nice size on desktop, but allow shrinking on small screens */
+  --card-w-clamped: clamp(34px, var(--card-w), 110px);
+
+  /* Card ratio: 110x154 => height = width / 0.7142857 */
+  --card-h: calc(var(--card-w-clamped) / 0.7142857);
+
+  /* Radius scales with card size */
+  --radius: clamp(8px, calc(var(--card-w-clamped) * 0.11), 14px);
+
+  /* Inner padding scales with card size */
+  --card-pad: clamp(4px, calc(var(--card-w-clamped) * 0.09), 10px);
+
+  /* Corner inset scales with card size */
+  --corner-inset: clamp(4px, calc(var(--card-w-clamped) * 0.07), 8px);
+
+  /* Typography / icons scale with card size */
+  --rank-size: clamp(10px, calc(var(--card-w-clamped) * 0.2), 22px);
+  --suit-small-size: clamp(10px, calc(var(--card-w-clamped) * 0.18), 20px);
+  --suit-big-size: clamp(18px, calc(var(--card-w-clamped) * 0.5), 56px);
+
+  /* Slot inner empty placeholder */
+  --empty-w: calc(var(--card-w-clamped) * 0.72);
+  --empty-h: calc(var(--card-h) * 0.72);
+
+  --pile-gap-up: clamp(18px, calc(var(--card-h) * 0.18), 34px);
+  --pile-gap-down: clamp(8px, calc(var(--card-h) * 0.08), 16px);
+}
+
+/* Reduce container padding on very small screens (gain space for the 7 columns) */
+@media (max-width: 960px) {
+  :root {
+    --gap: 12px;
+  }
+}
+@media (max-width: 420px) {
+  :root {
+    --container-pad: 10px;
+    --gap: 8px;
+  }
+}
+@media (max-width: 360px) {
+  :root {
+    --container-pad: 8px;
+    --gap: 6px;
+  }
+}
+
+/* =========================================================
+   Solitaire layout
+   ========================================================= */
+
+.solitaire-container {
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 14px;
   box-sizing: border-box;
+  padding-inline: var(--container-pad);
 }
 
 .solitaire-topbar {
@@ -12,11 +83,7 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
-}
-
-.solitaire-title {
-  font-size: 20px;
-  font-weight: 700;
+  margin: 12px;
 }
 
 .solitaire-actions {
@@ -50,48 +117,87 @@
   font-weight: 700;
 }
 
-.solitaire-toprow {
+.solitaire-topgrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: repeat(7, var(--card-w-clamped));
+  gap: var(--gap);
+  justify-content: center; /* même logique que tableau */
   margin-bottom: 14px;
 }
 
-.solitaire-zone {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.04);
+.top-gap {
+  width: var(--card-w-clamped);
+  height: var(--card-h);
 }
 
-.solitaire-zoneTitle {
-  font-size: 13px;
-  opacity: 0.85;
-  margin-bottom: 8px;
+/* Generic zone */
+.solitaire-zone {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .solitaire-row {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  max-width: 100%;
 }
 
-.solitaire-foundations {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+/* Tableau zone: no frame */
+.solitaire-zone--tableau {
+  border: none;
+  background: transparent;
+  padding: 0;
 }
+
+/* Foundations zone: fit content */
+.solitaire-zone--foundations {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Foundations stay inline on desktop; on small phones we stack zones (see media query) */
+.solitaire-foundations {
+  display: inline-flex;
+  gap: var(--gap);
+  padding: 10px;
+  margin: 0;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   Slots (stock/waste/foundation)
+   ========================================================= */
 
 .sol-slot {
-  width: 78px;
-  height: 108px;
-  border-radius: 12px;
+  width: var(--card-w-clamped);
+  height: var(--card-h);
+  border-radius: var(--radius);
   border: 2px dashed rgba(255, 255, 255, 0.18);
   position: relative;
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.06);
   user-select: none;
+  box-sizing: border-box;
+}
+
+.sol-slot .card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
 }
 
 .sol-slot.is-clickable {
@@ -102,8 +208,17 @@
   border-style: dashed;
 }
 
-.slot-label {
-  font-size: 22px;
+.sol-slot .slot-label {
+  font-size: clamp(14px, calc(var(--card-w-clamped) * 0.22), 22px);
+  opacity: 0.75;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.stock .slot-label svg {
+  font-size: clamp(32px, calc(var(--card-w-clamped) * 0.18), 22px);
   opacity: 0.75;
 }
 
@@ -116,11 +231,12 @@
 }
 
 .slot-empty {
-  width: 78px;
-  height: 108px;
-  border-radius: 12px;
+  width: var(--empty-w);
+  height: var(--empty-h);
+  border-radius: var(--radius);
   border: 2px dashed rgba(255, 255, 255, 0.1);
   opacity: 0.7;
+  box-sizing: border-box;
 }
 
 .tableau-empty {
@@ -129,146 +245,240 @@
   left: 0;
 }
 
+/* =========================================================
+   Cards
+   ========================================================= */
+
+/* Make the card a single block: no selection / no pointer events on SVG */
+.card,
+.card * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+.card svg {
+  pointer-events: none;
+}
+
 .card {
-  width: 78px;
-  height: 108px;
-  border-radius: 12px;
+  width: var(--card-w-clamped);
+  height: var(--card-h);
+  border-radius: var(--radius);
   box-sizing: border-box;
+  touch-action: none;
 }
 
 .card.face {
   border: 1px solid rgba(0, 0, 0, 0.22);
-  background: rgba(255, 255, 255, 0.92);
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  padding: 10px;
+  background: rgba(255, 255, 255, 1);
+  position: relative;
+  padding: var(--card-pad);
   cursor: grab;
+  box-sizing: border-box;
 }
 
 .card.face:active {
   cursor: grabbing;
 }
 
+.card.is-hidden {
+  visibility: hidden;
+}
+
 .card.back {
   border: 1px solid rgba(255, 255, 255, 0.18);
-  background:
+  background-color: rgb(30, 64, 175);
+  background-image:
     radial-gradient(
       circle at 20% 20%,
       rgba(255, 255, 255, 0.25),
       transparent 55%
     ),
-    linear-gradient(135deg, rgba(30, 64, 175, 0.9), rgba(2, 132, 199, 0.85));
+    linear-gradient(135deg, rgb(30, 64, 175), rgb(2, 132, 199));
 }
 
+/* Colors */
 .card.red {
   color: #b91c1c;
 }
-
 .card.black {
   color: #111827;
 }
 
+/* Corners */
+.card-corner {
+  position: absolute;
+  display: grid;
+  place-items: center;
+}
+
+.card-corner--tl {
+  top: var(--corner-inset);
+  left: var(--corner-inset);
+}
+.card-corner--tr {
+  top: var(--corner-inset);
+  right: var(--corner-inset);
+}
+.card-corner--bl {
+  bottom: var(--corner-inset);
+  left: var(--corner-inset);
+}
+.card-corner--br {
+  bottom: var(--corner-inset);
+  right: var(--corner-inset);
+}
+
 .card-rank {
   font-weight: 800;
-  font-size: 18px;
+  font-size: var(--rank-size);
   line-height: 1;
 }
 
-.card-suit {
-  justify-self: end;
-  align-self: end;
-  font-size: 22px;
+.card-suitSmall {
+  font-size: var(--suit-small-size);
   opacity: 0.95;
 }
 
+/* Center */
+.card-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.card-suitBig {
+  font-size: var(--suit-big-size);
+  opacity: 0.9;
+}
+
+/* =========================================================
+   Tableau (always 7 columns, one line, centered, no scroll)
+   ========================================================= */
+
 .solitaire-tableau {
   display: grid;
-  grid-template-columns: repeat(7, minmax(78px, 1fr));
-  gap: 10px;
+  justify-content: center;
+  gap: var(--gap);
+  grid-template-columns: repeat(7, var(--card-w-clamped));
+  max-width: 100%;
+  overflow: visible;
+  padding-inline: 1px;
+  box-sizing: border-box;
 }
 
 .tableau-pile {
   position: relative;
+  width: var(--card-w-clamped);
   min-height: 320px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.03);
-  overflow: hidden;
+  border: none;
+  background: transparent;
+  overflow: visible;
 }
 
-.tableau-card {
+.tableau-pile .card.tableau-card {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
+/* empty pile hint */
 .tableau-pile.is-empty {
   display: grid;
-  place-items: center;
+  place-items: start center;
 }
 
 .tableau-pile.is-empty .slot-empty {
+  margin-top: 8px;
+  opacity: 0.45;
   position: static;
 }
 
-.solitaire-footerHint {
-  margin-top: 12px;
-  opacity: 0.8;
-  font-size: 13px;
-  line-height: 1.35;
-}
+/* =========================================================
+   Responsive behavior (no scroll, keep 7 columns)
+   ========================================================= */
 
-/* Responsive */
-@media (max-width: 900px) {
-  .solitaire-toprow {
-    grid-template-columns: 1fr;
-  }
-  .solitaire-tableau {
-    grid-template-columns: repeat(4, minmax(72px, 1fr));
-  }
-  .tableau-pile {
-    min-height: 280px;
-  }
-  .card,
-  .sol-slot,
-  .slot-empty {
-    width: 72px;
-    height: 100px;
-  }
-  .tableau-card {
-    top: 6px;
-  }
-}
-
+/* Only stack top row on phones; keep 1fr auto on larger screens */
 @media (max-width: 560px) {
-  .solitaire-tableau {
-    grid-template-columns: repeat(3, minmax(66px, 1fr));
+  /* foundations first */
+  .solitaire-zone--foundations {
+    order: -1;
   }
-  .tableau-pile {
-    min-height: 250px;
-  }
-  .card,
-  .sol-slot,
-  .slot-empty {
-    width: 66px;
-    height: 92px;
-    border-radius: 11px;
-  }
-  .card.face {
+
+  /* tighten top row inner spacing a bit */
+  .solitaire-zone {
     padding: 8px;
   }
-  .card-rank {
-    font-size: 16px;
+
+  .solitaire-foundations {
+    padding: 8px;
   }
-  .card-suit {
-    font-size: 20px;
+
+  .solitaire-row {
+    gap: 10px;
   }
 }
 
-/* Tighten stacking on small screens (reduce vertical offset visually) */
-@media (max-width: 560px) {
-  /* the TS uses 22px offsets; visually it's OK, but keep piles shorter */
-  .tableau-pile {
-    overflow: hidden;
-  }
+.fundation-icons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  place-items: center;
+  gap: 2px;
+
+  width: calc(var(--card-w-clamped) * 0.62);
+  aspect-ratio: 1;
+
+  /* croix au milieu (2 traits) */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18)),
+    linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18));
+  background-size:
+    1px 100%,
+    /* trait vertical */ 100% 1px; /* trait horizontal */
+  background-position: center, center;
+  background-repeat: no-repeat;
+
+  opacity: 0.75;
+  box-sizing: border-box;
+}
+
+/* taille stable des icônes */
+.fundation-icons svg {
+  font-size: clamp(12px, calc(var(--card-w-clamped) * 0.18), 22px);
+  line-height: 1;
+}
+
+.sol-slot .card.face,
+.sol-slot .card.back {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Ghost layer */
+.drag-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none; /* le ghost ne bloque pas les events */
+  will-change: transform;
+}
+
+.drag-layer.snapping {
+  transition: transform 160ms ease-out;
+}
+
+.drag-ghost {
+  pointer-events: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.drag-stack {
+  position: relative;
+  width: var(--card-w-clamped);
+  /* pas obligatoire, mais évite les surprises de layout */
+  height: calc(var(--card-h) + 28px * 12);
 }
