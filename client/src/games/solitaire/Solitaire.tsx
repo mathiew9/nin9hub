@@ -58,6 +58,22 @@ type DragState = {
   pointerId: number;
 };
 
+type AutoMoveState = {
+  cards: Card[];
+  from: DragFrom;
+  phase: "snapping";
+
+  originLeft: number;
+  originTop: number;
+  left: number;
+  top: number;
+
+  destLeft: number;
+  destTop: number;
+
+  commit: () => void;
+};
+
 /* =========================================================
    UI helpers
    ========================================================= */
@@ -140,6 +156,7 @@ type CardViewProps = {
   onPointerMove?: React.PointerEventHandler<HTMLDivElement>;
   onPointerUp?: React.PointerEventHandler<HTMLDivElement>;
   onPointerCancel?: React.PointerEventHandler<HTMLDivElement>;
+  onDoubleClick?: React.MouseEventHandler<HTMLDivElement>;
 };
 
 function CardView({
@@ -150,6 +167,7 @@ function CardView({
   onPointerMove,
   onPointerUp,
   onPointerCancel,
+  onDoubleClick,
 }: CardViewProps) {
   if (!card.faceUp) {
     return (
@@ -160,6 +178,7 @@ function CardView({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
+        onDoubleClick={onDoubleClick}
       />
     );
   }
@@ -172,6 +191,7 @@ function CardView({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerCancel}
+      onDoubleClick={onDoubleClick}
     >
       <div className="card-corner card-corner--tl">
         <div className="card-rank">{rankLabel(card.rank)}</div>
@@ -316,26 +336,103 @@ export default function Solitaire() {
     });
   }, []);
 
+  /* =========================================================
+     Auto-move animation (double click)
+     ========================================================= */
+
+  const [autoMove, setAutoMove] = useState<AutoMoveState | null>(null);
+
+  const activeGhost = drag ?? autoMove;
+
+  function getFoundationSlotRect(i: number) {
+    const el = document.querySelector<HTMLElement>(
+      `[data-drop="foundation"][data-foundation-index="${i}"]`,
+    );
+    return el?.getBoundingClientRect() ?? null;
+  }
+
+  function getTableauPileRect(i: number) {
+    const el = document.querySelector<HTMLElement>(
+      `[data-drop="tableau"][data-tableau-index="${i}"]`,
+    );
+    return el?.getBoundingClientRect() ?? null;
+  }
+
+  function computeTableauInsertOffsetY(pile: Card[]) {
+    let offsetY = 0;
+    for (const c of pile) offsetY += c.faceUp ? 28 : 12;
+    return 8 + offsetY; // same base as render: top: `${8 + offsetY}px`
+  }
+
+  function getTableauCardDestPos(pileIndex: number, t: Card[][]) {
+    const pileRect = getTableauPileRect(pileIndex);
+    if (!pileRect) return null;
+    const offsetY = computeTableauInsertOffsetY(t[pileIndex] ?? []);
+    return { left: pileRect.left, top: pileRect.top + offsetY };
+  }
+
+  function getFoundationDestPos(i: number) {
+    const r = getFoundationSlotRect(i);
+    if (!r) return null;
+    return { left: r.left, top: r.top };
+  }
+
+  const startAutoMoveAnimation = useCallback(
+    (args: {
+      cards: Card[];
+      from: DragFrom;
+      originRect: DOMRect;
+      destLeft: number;
+      destTop: number;
+      commit: () => void;
+    }) => {
+      const { cards, from, originRect, destLeft, destTop, commit } = args;
+
+      // Put ghost at origin first
+      setAutoMove({
+        cards,
+        from,
+        phase: "snapping",
+        originLeft: originRect.left,
+        originTop: originRect.top,
+        left: originRect.left,
+        top: originRect.top,
+        destLeft,
+        destTop,
+        commit,
+      });
+
+      // Next frame -> move to destination (triggers CSS transition)
+      requestAnimationFrame(() => {
+        setAutoMove((s) => {
+          if (!s) return s;
+          return { ...s, left: destLeft, top: destTop };
+        });
+      });
+    },
+    [],
+  );
+
   const isDraggingWasteTop =
-    !!drag &&
-    drag.from.kind === "waste" &&
+    !!activeGhost &&
+    activeGhost.from.kind === "waste" &&
     !!wasteTop &&
-    drag.cards[0]?.id === wasteTop.id;
+    activeGhost.cards[0]?.id === wasteTop.id;
 
   // Cache toutes les cartes du packet dans la pile source du tableau
   const isDraggingTableauCard = (pileIndex: number, cardIndex: number) => {
-    if (!drag) return false;
-    if (drag.from.kind !== "tableau") return false;
-    if (drag.from.pileIndex !== pileIndex) return false;
-    return cardIndex >= drag.from.cardIndex;
+    if (!activeGhost) return false;
+    if (activeGhost.from.kind !== "tableau") return false;
+    if (activeGhost.from.pileIndex !== pileIndex) return false;
+    return cardIndex >= activeGhost.from.cardIndex;
   };
 
   const isDraggingFoundationTop = (foundationIndex: number, cardId: string) =>
-    !!drag &&
-    drag.from.kind === "foundation" &&
-    drag.from.pileIndex === foundationIndex &&
-    drag.cards.length === 1 &&
-    drag.cards[0].id === cardId;
+    !!activeGhost &&
+    activeGhost.from.kind === "foundation" &&
+    activeGhost.from.pileIndex === foundationIndex &&
+    activeGhost.cards.length === 1 &&
+    activeGhost.cards[0].id === cardId;
 
   /* =========================================================
      Moves
@@ -717,6 +814,435 @@ export default function Solitaire() {
     [drag, fundations, tableau],
   );
 
+  /* =========================================================
+     Double-click auto moves (logic + animated wrappers)
+     ========================================================= */
+
+  const canMoveToFoundation = useCallback(
+    (card: Card, foundationIndex: number) => {
+      const f = fundations[foundationIndex];
+      if (!f) return false;
+
+      const top = f.cards.length ? f.cards[f.cards.length - 1] : null;
+
+      if (f.cards.length === 0) return card.rank === 1; // only Ace
+      return f.suit === card.suit && !!top && card.rank === top.rank + 1;
+    },
+    [fundations],
+  );
+
+  const findFoundationTarget = useCallback(
+    (card: Card): number | null => {
+      // 1) prefer existing foundation of same suit
+      for (let i = 0; i < fundations.length; i++) {
+        const f = fundations[i];
+        if (f.cards.length > 0 && f.suit === card.suit) {
+          if (canMoveToFoundation(card, i)) return i;
+        }
+      }
+      // 2) else any empty foundation (for Aces)
+      for (let i = 0; i < fundations.length; i++) {
+        const f = fundations[i];
+        if (f.cards.length === 0) {
+          if (canMoveToFoundation(card, i)) return i;
+        }
+      }
+      return null;
+    },
+    [fundations, canMoveToFoundation],
+  );
+
+  const canMoveToTableau = useCallback(
+    (card: Card, pileIndex: number) => {
+      const pile = tableau[pileIndex];
+      if (!pile) return false;
+
+      const top = pile.length ? pile[pile.length - 1] : null;
+
+      if (!top) return card.rank === 13; // only King on empty
+      return (
+        colorOfSuit(card.suit) !== colorOfSuit(top.suit) &&
+        card.rank === top.rank - 1
+      );
+    },
+    [tableau],
+  );
+
+  const findTableauTarget = useCallback(
+    (card: Card, excludePileIndex?: number): number | null => {
+      for (let i = 0; i < tableau.length; i++) {
+        if (excludePileIndex != null && i === excludePileIndex) continue;
+        if (canMoveToTableau(card, i)) return i;
+      }
+      return null;
+    },
+    [tableau, canMoveToTableau],
+  );
+
+  const canMovePacketToTableau = useCallback(
+    (lead: Card, toPileIndex: number) => {
+      const toPile = tableau[toPileIndex];
+      if (!toPile) return false;
+
+      const toTop = toPile.length ? toPile[toPile.length - 1] : null;
+
+      if (!toTop) return lead.rank === 13; // King on empty
+      return (
+        colorOfSuit(lead.suit) !== colorOfSuit(toTop.suit) &&
+        lead.rank === toTop.rank - 1
+      );
+    },
+    [tableau],
+  );
+
+  const findTableauTargetForPacket = useCallback(
+    (lead: Card, excludePileIndex: number) => {
+      for (let i = 0; i < tableau.length; i++) {
+        if (i === excludePileIndex) continue;
+        if (canMovePacketToTableau(lead, i)) return i;
+      }
+      return null;
+    },
+    [tableau, canMovePacketToTableau],
+  );
+
+  // Animated: waste
+  const animateAutoMoveFromWaste = useCallback(
+    (originRect: DOMRect) => {
+      if (drag || autoMove) return;
+      if (!wasteTop) return;
+
+      // 1) waste -> foundation
+      const fTarget = findFoundationTarget(wasteTop);
+      if (fTarget != null) {
+        const dest = getFoundationDestPos(fTarget);
+        if (!dest) return;
+
+        startAutoMoveAnimation({
+          cards: [wasteTop],
+          from: { kind: "waste" },
+          originRect,
+          destLeft: dest.left,
+          destTop: dest.top,
+          commit: () => {
+            setGameState((prev) => {
+              const top = prev.waste[prev.waste.length - 1];
+              if (!top || top.id !== wasteTop.id) return prev;
+
+              const newWaste = prev.waste.slice(0, -1);
+              const newFoundations = prev.fundations.map((p, i) => {
+                if (i !== fTarget) return p;
+                return { suit: p.suit ?? top.suit, cards: [...p.cards, top] };
+              });
+
+              return { ...prev, waste: newWaste, fundations: newFoundations };
+            });
+          },
+        });
+
+        return;
+      }
+
+      // 2) waste -> tableau
+      const tTarget = findTableauTarget(wasteTop);
+      if (tTarget != null) {
+        const dest = getTableauCardDestPos(tTarget, tableau);
+        if (!dest) return;
+
+        startAutoMoveAnimation({
+          cards: [wasteTop],
+          from: { kind: "waste" },
+          originRect,
+          destLeft: dest.left,
+          destTop: dest.top,
+          commit: () => {
+            setGameState((prev) => {
+              const top = prev.waste[prev.waste.length - 1];
+              if (!top || top.id !== wasteTop.id) return prev;
+
+              const newWaste = prev.waste.slice(0, -1);
+              const newTableau = prev.tableau.map((p, i) =>
+                i === tTarget ? [...p, top] : p,
+              );
+
+              return { ...prev, waste: newWaste, tableau: newTableau };
+            });
+          },
+        });
+      }
+    },
+    [
+      drag,
+      autoMove,
+      wasteTop,
+      tableau,
+      findFoundationTarget,
+      findTableauTarget,
+      startAutoMoveAnimation,
+    ],
+  );
+
+  // Animated: tableau (top card only, like your existing autoMoveFromTableau)
+  const animateAutoMoveFromTableau = useCallback(
+    (fromPileIndex: number, originRect: DOMRect) => {
+      if (drag || autoMove) return;
+      const fromPile = tableau[fromPileIndex];
+      if (!fromPile || fromPile.length === 0) return;
+
+      const card = fromPile[fromPile.length - 1];
+      if (!card.faceUp) return;
+
+      // 1) tableau -> foundation
+      const fTarget = findFoundationTarget(card);
+      if (fTarget != null) {
+        const dest = getFoundationDestPos(fTarget);
+        if (!dest) return;
+
+        startAutoMoveAnimation({
+          cards: [card],
+          from: {
+            kind: "tableau",
+            pileIndex: fromPileIndex,
+            cardIndex: fromPile.length - 1,
+          },
+          originRect,
+          destLeft: dest.left,
+          destTop: dest.top,
+          commit: () => {
+            setGameState((prev) => {
+              const prevFromPile = prev.tableau[fromPileIndex];
+              if (!prevFromPile || prevFromPile.length === 0) return prev;
+
+              const prevCard = prevFromPile[prevFromPile.length - 1];
+              if (prevCard.id !== card.id) return prev;
+
+              const cut = prevFromPile.slice(0, -1);
+              if (cut.length > 0) {
+                const last = cut[cut.length - 1];
+                if (!last.faceUp)
+                  cut[cut.length - 1] = { ...last, faceUp: true };
+              }
+
+              const newTableau = prev.tableau.map((p, i) =>
+                i === fromPileIndex ? cut : p,
+              );
+
+              const newFoundations = prev.fundations.map((p, i) => {
+                if (i !== fTarget) return p;
+                return {
+                  suit: p.suit ?? prevCard.suit,
+                  cards: [...p.cards, prevCard],
+                };
+              });
+
+              return {
+                ...prev,
+                tableau: newTableau,
+                fundations: newFoundations,
+              };
+            });
+          },
+        });
+
+        return;
+      }
+
+      // 2) tableau -> tableau
+      const tTarget = findTableauTarget(card, fromPileIndex);
+      if (tTarget != null) {
+        const dest = getTableauCardDestPos(tTarget, tableau);
+        if (!dest) return;
+
+        startAutoMoveAnimation({
+          cards: [card],
+          from: {
+            kind: "tableau",
+            pileIndex: fromPileIndex,
+            cardIndex: fromPile.length - 1,
+          },
+          originRect,
+          destLeft: dest.left,
+          destTop: dest.top,
+          commit: () => {
+            setGameState((prev) => {
+              const prevFromPile = prev.tableau[fromPileIndex];
+              if (!prevFromPile || prevFromPile.length === 0) return prev;
+
+              const prevCard = prevFromPile[prevFromPile.length - 1];
+              if (prevCard.id !== card.id) return prev;
+
+              const cut = prevFromPile.slice(0, -1);
+              if (cut.length > 0) {
+                const last = cut[cut.length - 1];
+                if (!last.faceUp)
+                  cut[cut.length - 1] = { ...last, faceUp: true };
+              }
+
+              const newTableau = prev.tableau.map((p, i) => {
+                if (i === fromPileIndex) return cut;
+                if (i === tTarget) return [...p, prevCard];
+                return p;
+              });
+
+              return { ...prev, tableau: newTableau };
+            });
+          },
+        });
+      }
+    },
+    [
+      drag,
+      autoMove,
+      tableau,
+      findFoundationTarget,
+      findTableauTarget,
+      startAutoMoveAnimation,
+    ],
+  );
+
+  const animateAutoMovePacketFromTableau = useCallback(
+    (fromPileIndex: number, fromCardIndex: number, originRect: DOMRect) => {
+      if (drag || autoMove) return;
+
+      const fromPile = tableau[fromPileIndex];
+      if (!fromPile) return;
+      if (fromCardIndex < 0 || fromCardIndex >= fromPile.length) return;
+
+      const packet = fromPile.slice(fromCardIndex);
+      if (!packet.length) return;
+
+      // packet must be all faceUp
+      if (!packet.every((c) => c.faceUp)) return;
+
+      const lead = packet[0];
+
+      const tTarget = findTableauTargetForPacket(lead, fromPileIndex);
+      if (tTarget == null) return;
+
+      const dest = getTableauCardDestPos(tTarget, tableau);
+      if (!dest) return;
+
+      startAutoMoveAnimation({
+        cards: packet,
+        from: {
+          kind: "tableau",
+          pileIndex: fromPileIndex,
+          cardIndex: fromCardIndex,
+        },
+        originRect,
+        destLeft: dest.left,
+        destTop: dest.top,
+        commit: () => {
+          setGameState((prev) => {
+            const prevFrom = prev.tableau[fromPileIndex];
+            const prevTo = prev.tableau[tTarget];
+            if (!prevFrom || !prevTo) return prev;
+            if (fromCardIndex < 0 || fromCardIndex >= prevFrom.length)
+              return prev;
+
+            const prevPacket = prevFrom.slice(fromCardIndex);
+            if (!prevPacket.length) return prev;
+
+            // safety: ensure it's still the same packet
+            if (
+              prevPacket.length !== packet.length ||
+              prevPacket.some((c, i) => c.id !== packet[i]?.id)
+            ) {
+              return prev;
+            }
+
+            const newTableau = prev.tableau.map((p, i) => {
+              if (i === fromPileIndex) {
+                const cut = p.slice(0, fromCardIndex);
+
+                // flip new top if needed
+                if (cut.length > 0) {
+                  const last = cut[cut.length - 1];
+                  if (!last.faceUp)
+                    cut[cut.length - 1] = { ...last, faceUp: true };
+                }
+                return cut;
+              }
+
+              if (i === tTarget) {
+                return [...p, ...prevPacket];
+              }
+
+              return p;
+            });
+
+            return { ...prev, tableau: newTableau };
+          });
+        },
+      });
+    },
+    [
+      drag,
+      autoMove,
+      tableau,
+      findTableauTargetForPacket,
+      startAutoMoveAnimation,
+    ],
+  );
+
+  // Animated: foundation (to tableau only, like your existing autoMoveFromFoundation)
+  const animateAutoMoveFromFoundation = useCallback(
+    (fromFoundationIndex: number, originRect: DOMRect) => {
+      if (drag || autoMove) return;
+      const f = fundations[fromFoundationIndex];
+      if (!f || f.cards.length === 0) return;
+
+      const card = f.cards[f.cards.length - 1];
+
+      const tTarget = findTableauTarget(card);
+      if (tTarget == null) return;
+
+      const dest = getTableauCardDestPos(tTarget, tableau);
+      if (!dest) return;
+
+      startAutoMoveAnimation({
+        cards: [card],
+        from: { kind: "foundation", pileIndex: fromFoundationIndex },
+        originRect,
+        destLeft: dest.left,
+        destTop: dest.top,
+        commit: () => {
+          setGameState((prev) => {
+            const prevFrom = prev.fundations[fromFoundationIndex];
+            if (!prevFrom || prevFrom.cards.length === 0) return prev;
+
+            const prevCard = prevFrom.cards[prevFrom.cards.length - 1];
+            if (prevCard.id !== card.id) return prev;
+
+            const newFromCards = prevFrom.cards.slice(0, -1);
+
+            const newFundations = prev.fundations.map((p, i) => {
+              if (i !== fromFoundationIndex) return p;
+              return {
+                suit: newFromCards.length ? p.suit : null,
+                cards: newFromCards,
+              };
+            });
+
+            const newTableau = prev.tableau.map((p, i) =>
+              i === tTarget ? [...p, prevCard] : p,
+            );
+
+            return { ...prev, fundations: newFundations, tableau: newTableau };
+          });
+        },
+      });
+    },
+    [
+      drag,
+      autoMove,
+      fundations,
+      tableau,
+      findTableauTarget,
+      startAutoMoveAnimation,
+    ],
+  );
+
   // Transforme le DOM target -> DropTarget (strict)
   function getDropTargetFromEvent(e: React.PointerEvent): DropTarget | null {
     const elUnderPointer = document.elementFromPoint(e.clientX, e.clientY);
@@ -846,6 +1372,8 @@ export default function Solitaire() {
       tryMoveWasteToTableau,
       tryMoveTableauToFoundation,
       tryMoveTableauToTableau,
+      tryMoveFoundationToFoundation,
+      tryMoveFoundationToTableau,
     ],
   );
 
@@ -862,10 +1390,13 @@ export default function Solitaire() {
       <div className="solitaire-topbar">
         <div className="solitaire-stats">
           <span>Mouvements: {moves}</span>
-          {isWon && <span className="solitaire-win">🎉 Gagné !</span>}
+          {isWon && <span className="solitaire-win">Victoire</span>}
         </div>
 
-        <button className="solitaire-btn" onClick={resetGame}>
+        <button
+          className="solitaire-btn commonButton commonMediumButton"
+          onClick={resetGame}
+        >
           Nouvelle partie
         </button>
       </div>
@@ -902,13 +1433,21 @@ export default function Solitaire() {
                   : ""
               }
               onPointerDown={(e) =>
-                wasteCardToRender.id === wasteTop?.id
+                wasteCardToRender.id === wasteTop?.id && !autoMove
                   ? startDrag(e, [wasteTop!], { kind: "waste" })
                   : undefined
               }
               onPointerMove={onDragMove}
               onPointerUp={handleDrop}
               onPointerCancel={endDragSnapBack}
+              onDoubleClick={(e) => {
+                if (wasteCardToRender.id !== wasteTop?.id) return;
+                if (drag || autoMove) return;
+                const originRect = (
+                  e.currentTarget as HTMLElement
+                ).getBoundingClientRect();
+                animateAutoMoveFromWaste(originRect);
+              }}
             />
           ) : (
             <div className="slot-empty" />
@@ -920,9 +1459,25 @@ export default function Solitaire() {
 
         {/* col 4-7: Foundations */}
         {fundations.map((pile, i) => {
-          const top = pile.cards.length
+          const realTop = pile.cards.length
             ? pile.cards[pile.cards.length - 1]
             : null;
+
+          const draggingThisTop =
+            !!activeGhost &&
+            activeGhost.from.kind === "foundation" &&
+            activeGhost.from.pileIndex === i &&
+            activeGhost.cards.length === 1 &&
+            !!realTop &&
+            activeGhost.cards[0].id === realTop.id;
+
+          const cardToShow =
+            draggingThisTop && pile.cards.length >= 2
+              ? pile.cards[pile.cards.length - 2]
+              : realTop;
+
+          const showEmptyNoSvgPlaceholder =
+            draggingThisTop && pile.cards.length === 1;
 
           return (
             <div
@@ -932,19 +1487,41 @@ export default function Solitaire() {
               data-drop="foundation"
               data-foundation-index={i}
             >
-              {top ? (
+              {cardToShow ? (
                 <CardView
-                  card={{ ...top, faceUp: true }}
+                  card={{ ...cardToShow, faceUp: true }}
                   className={
-                    isDraggingFoundationTop(i, top.id) ? "is-hidden" : ""
+                    realTop &&
+                    cardToShow.id === realTop.id &&
+                    isDraggingFoundationTop(i, realTop.id)
+                      ? "is-hidden"
+                      : ""
                   }
-                  onPointerDown={(e) =>
-                    startDrag(e, [top], { kind: "foundation", pileIndex: i })
-                  }
+                  onPointerDown={(e) => {
+                    if (!realTop) return;
+                    if (cardToShow.id !== realTop.id) return;
+                    if (autoMove) return;
+
+                    startDrag(e, [realTop], {
+                      kind: "foundation",
+                      pileIndex: i,
+                    });
+                  }}
                   onPointerMove={onDragMove}
                   onPointerUp={handleDrop}
                   onPointerCancel={endDragSnapBack}
+                  onDoubleClick={(e) => {
+                    if (!realTop) return;
+                    if (cardToShow.id !== realTop.id) return;
+                    if (drag || autoMove) return;
+                    const originRect = (
+                      e.currentTarget as HTMLElement
+                    ).getBoundingClientRect();
+                    animateAutoMoveFromFoundation(i, originRect);
+                  }}
                 />
+              ) : showEmptyNoSvgPlaceholder ? (
+                <div className="foundation-empty" aria-hidden="true" />
               ) : (
                 <div className="slot-label">
                   {pile.suit ? (
@@ -987,6 +1564,8 @@ export default function Solitaire() {
 
                   const hidden = isDraggingTableauCard(pileIndex, cardIndex);
 
+                  const isTop = cardIndex === pile.length - 1;
+
                   return (
                     <CardView
                       key={card.id}
@@ -994,7 +1573,7 @@ export default function Solitaire() {
                       className={`tableau-card ${hidden ? "is-hidden" : ""}`}
                       style={{ top: `${8 + offsetY}px` }}
                       onPointerDown={
-                        canStartStackDrag
+                        canStartStackDrag && !autoMove
                           ? (e) =>
                               startDrag(e, pile.slice(cardIndex), {
                                 kind: "tableau",
@@ -1006,6 +1585,27 @@ export default function Solitaire() {
                       onPointerMove={onDragMove}
                       onPointerUp={handleDrop}
                       onPointerCancel={endDragSnapBack}
+                      onDoubleClick={(e) => {
+                        if (!card.faceUp) return;
+                        if (drag || autoMove) return;
+
+                        const originRect = (
+                          e.currentTarget as HTMLElement
+                        ).getBoundingClientRect();
+
+                        if (isTop) {
+                          animateAutoMoveFromTableau(pileIndex, originRect);
+                          return;
+                        }
+
+                        if (canStartStackDrag) {
+                          animateAutoMovePacketFromTableau(
+                            pileIndex,
+                            cardIndex,
+                            originRect,
+                          );
+                        }
+                      }}
                     />
                   );
                 })}
@@ -1015,17 +1615,25 @@ export default function Solitaire() {
         </div>
       </div>
 
-      {/* GHOST (follows pointer, snaps back) */}
-      {drag && (
+      {/* GHOST (drag OR auto-move) */}
+      {activeGhost && (
         <div
-          className={`drag-layer ${drag.phase === "snapping" ? "snapping" : ""}`}
-          style={{ transform: `translate3d(${drag.left}px, ${drag.top}px, 0)` }}
+          className={`drag-layer ${activeGhost.phase === "snapping" ? "snapping" : ""}`}
+          style={{
+            transform: `translate3d(${activeGhost.left}px, ${activeGhost.top}px, 0)`,
+          }}
           onTransitionEnd={() => {
-            if (drag.phase === "snapping") setDrag(null);
+            if (drag && drag.phase === "snapping") setDrag(null);
+
+            if (autoMove) {
+              autoMove.commit();
+              setAutoMove(null);
+              incrementMoves();
+            }
           }}
         >
           <div className="drag-stack">
-            {drag.cards.map((c, i) => (
+            {activeGhost.cards.map((c, i) => (
               <CardView
                 key={c.id}
                 card={{ ...c, faceUp: true }}

@@ -92,18 +92,14 @@
   gap: 12px;
 }
 
-.solitaire-btn {
+/* .solitaire-btn {
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.08);
   color: inherit;
   padding: 8px 10px;
   border-radius: 10px;
   cursor: pointer;
-}
-
-.solitaire-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
+} */
 
 .solitaire-stats {
   display: flex;
@@ -272,12 +268,12 @@
   background: rgba(255, 255, 255, 1);
   position: relative;
   padding: var(--card-pad);
-  cursor: grab;
+  cursor: default;
   box-sizing: border-box;
 }
 
 .card.face:active {
-  cursor: grabbing;
+  cursor: default;
 }
 
 .card.is-hidden {
@@ -481,4 +477,8 @@
   width: var(--card-w-clamped);
   /* pas obligatoire, mais évite les surprises de layout */
   height: calc(var(--card-h) + 28px * 12);
+}
+.foundation-empty {
+  width: 100%;
+  height: 100%;
 }
