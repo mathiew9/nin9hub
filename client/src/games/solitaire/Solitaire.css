@@ -71,10 +71,22 @@
 
 .solitaire-container {
   width: 100%;
-  max-width: 1100px;
+  max-width: fit-content;
   margin: 0 auto;
   box-sizing: border-box;
   padding-inline: var(--container-pad);
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+body[data-theme="dark"] .solitaire-container {
+  color: #f3f4f6;
+}
+
+body[data-theme="light"] .solitaire-container {
+  color: #1f2937;
 }
 
 .solitaire-topbar {
@@ -82,8 +94,15 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  margin: 16px 0;
+}
+
+.solitaire-bottombar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 12px;
-  margin: 12px;
+  margin-top: auto;
 }
 
 .solitaire-actions {
@@ -105,8 +124,20 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  opacity: 0.9;
   font-size: 14px;
+}
+
+body[data-theme="dark"] .solitaire-stats {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body[data-theme="light"] .solitaire-stats {
+  color: rgba(31, 41, 55, 0.8);
+}
+
+.solitaire_timer {
+  display: flex;
+  align-items: center;
 }
 
 .solitaire-win {
@@ -117,7 +148,7 @@
   display: grid;
   grid-template-columns: repeat(7, var(--card-w-clamped));
   gap: var(--gap);
-  justify-content: center; /* même logique que tableau */
+  justify-content: center;
   margin-bottom: 14px;
 }
 
@@ -128,12 +159,20 @@
 
 /* Generic zone */
 .solitaire-zone {
-  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius);
   padding: 10px;
-  background: rgba(255, 255, 255, 0.04);
   max-width: 100%;
   box-sizing: border-box;
+}
+
+body[data-theme="dark"] .solitaire-zone {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+body[data-theme="light"] .solitaire-zone {
+  border: 1px solid rgba(17, 24, 39, 0.14);
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .solitaire-row {
@@ -145,19 +184,27 @@
 
 /* Tableau zone: no frame */
 .solitaire-zone--tableau {
-  border: none;
-  background: transparent;
+  border: none !important;
+  background: transparent !important;
   padding: 0;
 }
 
 /* Foundations zone: fit content */
 .solitaire-zone--foundations {
-  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.04);
   padding: 0;
   max-width: 100%;
   box-sizing: border-box;
+}
+
+body[data-theme="dark"] .solitaire-zone--foundations {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+body[data-theme="light"] .solitaire-zone--foundations {
+  border: 1px solid rgba(17, 24, 39, 0.14);
+  background: rgba(255, 255, 255, 0.75);
 }
 
 /* Foundations stay inline on desktop; on small phones we stack zones (see media query) */
@@ -179,13 +226,21 @@
   width: var(--card-w-clamped);
   height: var(--card-h);
   border-radius: var(--radius);
-  border: 2px dashed rgba(255, 255, 255, 0.18);
   position: relative;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.06);
   user-select: none;
   box-sizing: border-box;
+}
+
+body[data-theme="dark"] .sol-slot {
+  border: 2px dashed rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+body[data-theme="light"] .sol-slot {
+  border: 2px dashed rgba(17, 24, 39, 0.18);
+  background: rgba(17, 24, 39, 0.04);
 }
 
 .sol-slot .card {
@@ -206,11 +261,18 @@
 
 .sol-slot .slot-label {
   font-size: clamp(14px, calc(var(--card-w-clamped) * 0.22), 22px);
-  opacity: 0.75;
   width: 100%;
   height: 100%;
   display: grid;
   place-items: center;
+}
+
+body[data-theme="dark"] .sol-slot .slot-label {
+  opacity: 0.75;
+}
+
+body[data-theme="light"] .sol-slot .slot-label {
+  opacity: 0.6;
 }
 
 .stock .slot-label svg {
@@ -223,16 +285,30 @@
   bottom: 6px;
   right: 8px;
   font-size: 12px;
+}
+
+body[data-theme="dark"] .slot-count {
   opacity: 0.75;
+}
+
+body[data-theme="light"] .slot-count {
+  opacity: 0.65;
 }
 
 .slot-empty {
   width: var(--empty-w);
   height: var(--empty-h);
   border-radius: var(--radius);
-  border: 2px dashed rgba(255, 255, 255, 0.1);
   opacity: 0.7;
   box-sizing: border-box;
+}
+
+body[data-theme="dark"] .slot-empty {
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="light"] .slot-empty {
+  border: 2px dashed rgba(17, 24, 39, 0.12);
 }
 
 .tableau-empty {
@@ -251,6 +327,7 @@
   user-select: none;
   -webkit-user-select: none;
 }
+
 .card svg {
   pointer-events: none;
 }
@@ -264,12 +341,20 @@
 }
 
 .card.face {
-  border: 1px solid rgba(0, 0, 0, 0.22);
-  background: rgba(255, 255, 255, 1);
   position: relative;
   padding: var(--card-pad);
   cursor: default;
   box-sizing: border-box;
+}
+
+body[data-theme="dark"] .card.face {
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 1);
+}
+
+body[data-theme="light"] .card.face {
+  border: 1px solid rgba(17, 24, 39, 0.18);
+  background: #ffffff;
 }
 
 .card.face:active {
@@ -281,8 +366,6 @@
 }
 
 .card.back {
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background-color: rgb(30, 64, 175);
   background-image:
     radial-gradient(
       circle at 20% 20%,
@@ -292,11 +375,30 @@
     linear-gradient(135deg, rgb(30, 64, 175), rgb(2, 132, 199));
 }
 
+body[data-theme="dark"] .card.back {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background-color: rgb(30, 64, 175);
+}
+
+body[data-theme="light"] .card.back {
+  border: 1px solid rgba(17, 24, 39, 0.14);
+  background-color: rgb(59, 130, 246);
+}
+
 /* Colors */
-.card.red {
+body[data-theme="dark"] .card.red {
   color: #b91c1c;
 }
-.card.black {
+
+body[data-theme="light"] .card.red {
+  color: #c62828;
+}
+
+body[data-theme="dark"] .card.black {
+  color: #111827;
+}
+
+body[data-theme="light"] .card.black {
   color: #111827;
 }
 
@@ -425,18 +527,27 @@
   width: calc(var(--card-w-clamped) * 0.62);
   aspect-ratio: 1;
 
-  /* croix au milieu (2 traits) */
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18)),
-    linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18));
   background-size:
     1px 100%,
-    /* trait vertical */ 100% 1px; /* trait horizontal */
+    100% 1px;
   background-position: center, center;
   background-repeat: no-repeat;
 
-  opacity: 0.75;
   box-sizing: border-box;
+}
+
+body[data-theme="dark"] .fundation-icons {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18)),
+    linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18));
+  opacity: 0.75;
+}
+
+body[data-theme="light"] .fundation-icons {
+  background-image:
+    linear-gradient(rgba(17, 24, 39, 0.16), rgba(17, 24, 39, 0.16)),
+    linear-gradient(rgba(17, 24, 39, 0.16), rgba(17, 24, 39, 0.16));
+  opacity: 0.65;
 }
 
 /* taille stable des icônes */
@@ -459,7 +570,7 @@
   top: 0;
   left: 0;
   z-index: 9999;
-  pointer-events: none; /* le ghost ne bloque pas les events */
+  pointer-events: none;
   will-change: transform;
 }
 
@@ -469,15 +580,14 @@
 
 .drag-ghost {
   pointer-events: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .drag-stack {
   position: relative;
   width: var(--card-w-clamped);
-  /* pas obligatoire, mais évite les surprises de layout */
   height: calc(var(--card-h) + 28px * 12);
 }
+
 .foundation-empty {
   width: 100%;
   height: 100%;
