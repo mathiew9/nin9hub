@@ -1,4 +1,4 @@
-# 🕹️ Ninehub — v1.2.1
+# 🕹️ Ninehub — v1.2.2
 
 **Ninehub** est une application web de mini-jeux en ligne développée avec React, TypeScript et Vite.  
 Elle a pour objectif d'aider son créateur à **garder un bon niveau en développement frontend**, tout en continuant à progresser en compétence.
