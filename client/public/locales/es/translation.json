@@ -1,0 +1,199 @@
+{
+  "common": {
+    "meta": {
+      "availableSoon": "Disponible próximamente",
+      "ofTheDay": "{{game}} del día"
+    },
+    "actions": {
+      "back": "Volver",
+      "copy": "Copiar",
+      "join": "Unirse a la sala",
+      "hostGame": "Crear partida",
+      "leave": "Salir",
+      "startGame": "Iniciar partida",
+      "playAgain": "Jugar de nuevo",
+      "requestRematch": "Solicitar revancha",
+      "rematch": "Revancha",
+      "resetScore": "Reiniciar puntuación",
+      "changeSettings": "Cambiar ajustes",
+      "toggleTheme": "Cambiar tema",
+      "newGame": "Nueva partida"
+    },
+    "labels": {
+      "score": "Puntuación",
+      "players": "Jugadores",
+      "role": "Rol",
+      "turn": "Turno",
+      "roomCode": "CÓDIGO DE SALA",
+      "settings": "Ajustes",
+      "gridSize": "Tamaño de la cuadrícula",
+      "roundsToWin": "Rondas para ganar",
+      "swapRolesOnRematch": "Intercambiar roles en la revancha",
+      "turnTime": "Tiempo por turno",
+      "waitingRoom": "Sala de espera"
+    },
+    "modes": {
+      "selectGameMode": "Seleccionar modo de juego",
+      "gameMode": "Modo de juego",
+      "changeGameMode": "Cambiar modo",
+      "playWithFriend": "Jugar con un amigo",
+      "playWithAi": "Jugar contra IA",
+      "withfriend": "Con un amigo",
+      "playOnline": "Jugar en línea",
+      "withai": "Contra IA",
+      "online": "En línea"
+    },
+    "difficulty": {
+      "selectDifficulty": "Seleccionar dificultad",
+      "changeDifficulty": "Cambiar dificultad",
+      "difficulty": "dificultad",
+      "easy": "Fácil",
+      "medium": "Media",
+      "hard": "Difícil",
+      "daily": "Diario"
+    },
+    "status": {
+      "waiting": "Esperando",
+      "copied": "¡Copiado!",
+      "unlimited": "Ilimitado",
+      "waitingForHostToStart": "Esperando a que el anfitrión inicie",
+      "waitingForOpponent": "Esperando al oponente"
+    },
+    "results": {
+      "victory": "Victoria",
+      "defeat": "Derrota",
+      "draw": "Empate"
+    },
+    "messages": {
+      "shareThisCode": "Comparte este código con un amigo",
+      "yourOpponentHasLeftTheGame": "Tu oponente ha abandonado la partida",
+      "youAre": "Eres"
+    },
+    "players": {
+      "host": "Anfitrión",
+      "guest": "Invitado",
+      "you": "Tú",
+      "opponent": "Oponente",
+      "player1": "Jugador 1",
+      "player2": "Jugador 2",
+      "computer": "Ordenador"
+    },
+    "turn": {
+      "yourTurn": "Tu turno"
+    }
+  },
+  "header": {
+    "menu": "Juegos"
+  },
+  "games": {
+    "2048": {
+      "name": "2048"
+    },
+    "tictactoe": {
+      "name": "Tres en raya",
+      "onlineTitle": "Tres en raya - En línea",
+      "settings": {
+        "gridSize": "Tamaño de la cuadrícula"
+      },
+      "results": {
+        "won": "ganó"
+      },
+      "inGame": {
+        "toPlayShort": "Turno"
+      },
+      "plural": {
+        "firstToRounds_one": "Primero en {{count}} ronda",
+        "firstToRounds_other": "Primero en {{count}} rondas"
+      },
+      "hints": {
+        "XAlwaysGoesFirst": "X siempre empieza"
+      },
+      "actions": {
+        "swapRoles": "Intercambiar roles"
+      }
+    },
+    "connect4": {
+      "name": "Conecta 4",
+      "colors": {
+        "red": "Rojo",
+        "yellow": "Amarillo"
+      },
+      "inGame": {
+        "turn": " turno de",
+        "wins": "gana"
+      },
+      "hints": {
+        "redAlwaysGoesFirst": "El rojo siempre empieza"
+      },
+      "actions": {
+        "swapColors": "Intercambiar colores"
+      }
+    },
+    "snake": {
+      "name": "Snake",
+      "labels": {
+        "time": "Tiempo"
+      }
+    },
+    "hangman": {
+      "name": "Ahorcado",
+      "modes": {
+        "infiniteMode": "Modo infinito"
+      }
+    },
+    "minesweeper": {
+      "name": "Buscaminas",
+      "levels": {
+        "beginner": "Principiante",
+        "intermediate": "Intermedio",
+        "expert": "Experto",
+        "custom": "Personalizado"
+      },
+      "labels": {
+        "rows": "Filas",
+        "cols": "Columnas",
+        "mines": "Minas",
+        "grid": "Cuadrícula"
+      },
+      "actions": {
+        "changeSize": "Cambiar tamaño"
+      }
+    },
+    "sudoku": {
+      "name": "Sudoku",
+      "actions": {
+        "newGrid": "Nueva cuadrícula",
+        "cancel": "Cancelar",
+        "continue": "Continuar",
+        "erase": "Borrar"
+      },
+      "messages": {
+        "completed": "Sudoku completado",
+        "popupWarning1": "Ya hay una partida en curso.",
+        "popupWarning2": "Iniciar una nueva cuadrícula la sobrescribirá.",
+        "popupWarning3": "¿Continuar?"
+      },
+      "labels": {
+        "noteMode": "Modo de notas"
+      }
+    },
+    "chess": {
+      "name": "Ajedrez"
+    },
+    "solitaire": {
+      "name": "Solitario",
+      "congrats": "¡Felicidades! ¡Has ganado!",
+      "labels": {
+        "moves": "Movimientos"
+      },
+      "actions": {
+        "undo": "Deshacer",
+        "drawCard": "Robar carta",
+        "recycleWaste": "Reciclar descarte"
+      }
+    },
+    "ultimatetictactoe": {
+      "name": "Tres en raya definitivo"
+    }
+  }
+}

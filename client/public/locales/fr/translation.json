@@ -16,7 +16,8 @@
       "rematch": "Nouveau match",
       "resetScore": "Réinitialiser le score",
       "changeSettings": "Changer les paramètres",
-      "toggleTheme": "Changer de thème"
+      "toggleTheme": "Changer de thème",
+      "newGame": "Nouvelle partie"
     },
     "labels": {
       "score": "Score",
@@ -180,13 +181,19 @@
       "name": "Échecs"
     },
     "solitaire": {
-      "name": "Solitaire"
+      "name": "Solitaire",
+      "congrats": "Félicitations ! Vous avez gagné !",
+      "labels": {
+        "moves": "Mouvements"
+      },
+      "actions": {
+        "undo": "Annuler",
+        "drawCard": "Piocher une carte",
+        "recycleWaste": "Recycler la défausse"
+      }
     },
     "ultimatetictactoe": {
       "name": "Morpion Ultime"
-    },
-    "pacxon": {
-      "name": "PacXon"
     }
   }
 }

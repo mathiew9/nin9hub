@@ -16,7 +16,8 @@
       "rematch": "Rematch",
       "resetScore": "Reset score",
       "changeSettings": "Change settings",
-      "toggleTheme": "Toggle theme"
+      "toggleTheme": "Toggle theme",
+      "newGame": "New game"
     },
     "labels": {
       "score": "Score",
@@ -180,13 +181,19 @@
       "name": "Chess"
     },
     "solitaire": {
-      "name": "Solitaire"
+      "name": "Solitaire",
+      "congrats": "Congratulations! You won!",
+      "labels": {
+        "moves": "Moves"
+      },
+      "actions": {
+        "undo": "Undo",
+        "drawCard": "Draw card",
+        "recycleWaste": "Recycle waste"
+      }
     },
     "ultimatetictactoe": {
       "name": "Ultimate Tic-Tac-Toe"
-    },
-    "pacxon": {
-      "name": "PacXon"
     }
   }
 }

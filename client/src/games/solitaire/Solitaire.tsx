@@ -1,6 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import { GiClubs, GiDiamonds, GiHearts, GiSpades } from "react-icons/gi";
 import { FaArrowRotateRight, FaStopwatch } from "react-icons/fa6";
+
+import { useTranslation } from "react-i18next";
+
 import "./Solitaire.css";
 
 /* =========================================================
@@ -316,6 +325,7 @@ function CardView({
    ========================================================= */
 
 export default function Solitaire() {
+  const { t } = useTranslation();
   const [gameState, setGameState] = useState<GameState>(() => newGameState());
   const [moves, setMoves] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -328,6 +338,13 @@ export default function Solitaire() {
   const { tableau, stock, waste, fundations } = gameState;
   const wasteTop = waste.length ? waste[waste.length - 1] : null;
   const wasteSecond = waste.length > 1 ? waste[waste.length - 2] : null;
+
+  const autoMoveRef = useRef<AutoMoveState | null>(null);
+  const autoMoveFallbackRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    autoMoveRef.current = autoMove;
+  }, [autoMove]);
 
   const isWon = useMemo(
     () => fundations.every((p) => p.cards.length === 13),
@@ -373,6 +390,33 @@ export default function Solitaire() {
 
     return () => window.clearInterval(interval);
   }, [timerStarted, isWon]);
+
+  useEffect(() => {
+    return () => {
+      if (autoMoveFallbackRef.current != null) {
+        window.clearTimeout(autoMoveFallbackRef.current);
+      }
+    };
+  }, []);
+
+  const finalizeAutoMove = useCallback(() => {
+    const current = autoMoveRef.current;
+    if (!current) return;
+
+    if (autoMoveFallbackRef.current != null) {
+      window.clearTimeout(autoMoveFallbackRef.current);
+      autoMoveFallbackRef.current = null;
+    }
+
+    current.commit();
+
+    if (current.countMove !== false) {
+      incrementMoves();
+    }
+
+    autoMoveRef.current = null;
+    setAutoMove(null);
+  }, [incrementMoves]);
 
   /* =========================================================
      Drag
@@ -564,6 +608,11 @@ export default function Solitaire() {
       const { cards, from, originRect, destLeft, destTop, commit, countMove } =
         args;
 
+      if (autoMoveFallbackRef.current != null) {
+        window.clearTimeout(autoMoveFallbackRef.current);
+        autoMoveFallbackRef.current = null;
+      }
+
       setAutoMove({
         cards,
         from,
@@ -583,9 +632,13 @@ export default function Solitaire() {
           if (!s) return s;
           return { ...s, left: destLeft, top: destTop };
         });
+
+        autoMoveFallbackRef.current = window.setTimeout(() => {
+          finalizeAutoMove();
+        }, 250);
       });
     },
-    [],
+    [finalizeAutoMove],
   );
 
   const isDraggingWasteTop =
@@ -1076,8 +1129,13 @@ export default function Solitaire() {
   );
 
   const drawCardFromStock = useCallback(
-    (options?: { record?: boolean; countedMove?: boolean }) => {
-      if (drag || autoMove || isAutoFinishing) return false;
+    (options?: {
+      record?: boolean;
+      countedMove?: boolean;
+      allowDuringAutoFinish?: boolean;
+    }) => {
+      if (drag || autoMove) return false;
+      if (isAutoFinishing && !options?.allowDuringAutoFinish) return false;
 
       const before = gameState;
 
@@ -1089,7 +1147,6 @@ export default function Solitaire() {
         if (options?.record !== false) {
           pushHistoryEntry({
             before: cloneGameState(before),
-
             countedMove: options?.countedMove !== false,
             move: {
               type: "draw-stock",
@@ -1103,6 +1160,7 @@ export default function Solitaire() {
           stock: newStock,
           waste: newWaste,
         });
+
         if (options?.countedMove !== false) incrementMoves();
         return true;
       }
@@ -1115,7 +1173,6 @@ export default function Solitaire() {
         if (options?.record !== false) {
           pushHistoryEntry({
             before: cloneGameState(before),
-
             countedMove: options?.countedMove !== false,
             move: {
               type: "recycle-stock",
@@ -1128,6 +1185,7 @@ export default function Solitaire() {
           stock: recycledStock,
           waste: [],
         });
+
         if (options?.countedMove !== false) incrementMoves();
         return true;
       }
@@ -1139,9 +1197,6 @@ export default function Solitaire() {
       autoMove,
       isAutoFinishing,
       gameState,
-      moves,
-      elapsedSeconds,
-      timerStarted,
       pushHistoryEntry,
       incrementMoves,
     ],
@@ -1502,11 +1557,19 @@ export default function Solitaire() {
     }
 
     if (nextMove.source === "draw-stock") {
-      return drawCardFromStock({ record: true, countedMove: false });
+      return drawCardFromStock({
+        record: true,
+        countedMove: false,
+        allowDuringAutoFinish: true,
+      });
     }
 
     if (nextMove.source === "recycle-stock") {
-      return drawCardFromStock({ record: true, countedMove: false });
+      return drawCardFromStock({
+        record: true,
+        countedMove: false,
+        allowDuringAutoFinish: true,
+      });
     }
 
     return false;
@@ -2066,9 +2129,11 @@ export default function Solitaire() {
   return (
     <div className="solitaire-container">
       <div className="solitaire-topbar">
-        <span>Mouvements: {moves}</span>
+        <span>
+          {t("games.solitaire.labels.moves")} : {moves}
+        </span>
         {isWon && (
-          <span className="solitaire-win">Félicitations! Vous avez gagné</span>
+          <span className="solitaire-win">{t("games.solitaire.congrats")}</span>
         )}
         <span className="statusBar__timer statusBar__timer--infinite solitaire_timer">
           <FaStopwatch className="timerIcon" /> {formatTime(elapsedSeconds)}
@@ -2080,7 +2145,11 @@ export default function Solitaire() {
           className={`sol-slot top-slot stock ${stock.length ? "is-clickable" : ""}`}
           role="button"
           aria-label="Pioche"
-          title={stock.length ? "Piocher 1 carte" : "Recycler la défausse"}
+          title={
+            stock.length
+              ? t("games.solitaire.actions.drawCard")
+              : t("games.solitaire.actions.recycleWaste")
+          }
           onClick={() => drawCardFromStock({ record: true, countedMove: true })}
           data-drop="stock"
         >
@@ -2152,7 +2221,6 @@ export default function Solitaire() {
             <div
               key={i}
               className="sol-slot top-slot foundation"
-              title="Fondation"
               data-drop="foundation"
               data-foundation-index={i}
             >
@@ -2290,7 +2358,9 @@ export default function Solitaire() {
           style={{
             transform: `translate3d(${activeGhost.left}px, ${activeGhost.top}px, 0)`,
           }}
-          onTransitionEnd={() => {
+          onTransitionEnd={(e) => {
+            if (e.target !== e.currentTarget) return;
+
             if (drag && drag.phase === "snapping") {
               if (drag.commit) {
                 drag.commit();
@@ -2300,13 +2370,7 @@ export default function Solitaire() {
               return;
             }
 
-            if (autoMove) {
-              autoMove.commit();
-              if (autoMove.countMove !== false) {
-                incrementMoves();
-              }
-              setAutoMove(null);
-            }
+            finalizeAutoMove();
           }}
         >
           <div className="drag-stack">
@@ -2331,13 +2395,13 @@ export default function Solitaire() {
           className="solitaire-btn commonButton commonMediumButton"
           onClick={undoLastMove}
         >
-          Annuler
+          {t("games.solitaire.actions.undo")}
         </button>
         <button
           className="solitaire-btn commonButton commonMediumButton"
           onClick={resetGame}
         >
-          Nouvelle partie
+          {t("common.actions.newGame")}
         </button>
       </div>
     </div>

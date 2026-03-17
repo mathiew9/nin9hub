@@ -47,8 +47,6 @@ Le projet propose une sélection de **jeux simples, amusants et accessibles**, j
 Ce projet est en cours de développement actif.  
 Il est conçu comme un **bac à sable évolutif**, pour tester des mécaniques de jeu (solo ou multijoueur), des interfaces et des patterns de code frontend/backend.
 
-Le système multijoueur a été mis en place avec succès sur un premier jeu (le morpion), et sera progressivement adapté à d'autres jeux du hub.
-
 ---
 
 ## Objectif personnel

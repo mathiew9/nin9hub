@@ -1,0 +1,8 @@
+{
+  "name": "ninehub",
+  "version": "1.0.1",
+  "private": true,
+  "scripts": {
+    "version": "node scripts/update-readme-version.js"
+  }
+}
