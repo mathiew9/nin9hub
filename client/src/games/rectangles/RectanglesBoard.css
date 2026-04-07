@@ -1,0 +1,96 @@
+.rectanglesBoard {
+  display: grid;
+  width: fit-content;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+  user-select: none;
+}
+
+.rectanglesBoard--cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-right: 1px dashed rgba(255, 255, 255, 0.22);
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.01);
+  cursor: pointer;
+}
+
+.rectanglesBoard--cell::after,
+.rectanglesBoard--cell::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.rectanglesBoard--cell::after {
+  inset: 2px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  z-index: 0;
+}
+
+.rectanglesBoard--cell:hover::after {
+  border-color: rgba(255, 255, 255, 0.38);
+}
+
+.rectanglesBoard--cellSaved::before,
+.rectanglesBoard--cellPreview::after {
+  inset: 0;
+  border-radius: 0;
+}
+
+.rectanglesBoard--cellSaved::before {
+  z-index: 0;
+}
+
+.rectanglesBoard--cellPreview::after {
+  z-index: 1;
+}
+
+.rectanglesBoard--cellSavedTop::before {
+  border-top: 2px solid rgba(255, 255, 255, 0.72);
+}
+
+.rectanglesBoard--cellSavedBottom::before {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.72);
+}
+
+.rectanglesBoard--cellSavedLeft::before {
+  border-left: 2px solid rgba(255, 255, 255, 0.72);
+}
+
+.rectanglesBoard--cellSavedRight::before {
+  border-right: 2px solid rgba(255, 255, 255, 0.72);
+}
+
+.rectanglesBoard--cellPreviewTop::after {
+  border-top: 2px solid rgba(167, 139, 250, 0.95);
+}
+
+.rectanglesBoard--cellPreviewBottom::after {
+  border-bottom: 2px solid rgba(167, 139, 250, 0.95);
+}
+
+.rectanglesBoard--cellPreviewLeft::after {
+  border-left: 2px solid rgba(167, 139, 250, 0.95);
+}
+
+.rectanglesBoard--cellPreviewRight::after {
+  border-right: 2px solid rgba(167, 139, 250, 0.95);
+}
+
+.rectanglesBoard--clue {
+  position: relative;
+  z-index: 2;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}

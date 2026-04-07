@@ -192,6 +192,9 @@
         "recycleWaste": "Recycler la défausse"
       }
     },
+    "rectangles": {
+      "name": "Rectangles"
+    },
     "ultimatetictactoe": {
       "name": "Morpion Ultime"
     }

@@ -8,6 +8,7 @@ import _2048 from "../games/2048/2048";
 import Hangman from "../games/hangman/HangmanWrapper";
 import SudokuWrapper from "../games/sudoku/SudokuWrapper";
 import Solitaire from "../games/solitaire/Solitaire";
+import Rectangles from "../games/rectangles/Rectangles";
 
 export interface GameInfo {
   id: string;
@@ -71,6 +72,13 @@ export const games: GameInfo[] = [
     id: "solitaire",
     name: "Solitaire",
     component: <Solitaire />,
+    available: true,
+    online: false,
+  },
+  {
+    id: "rectangles",
+    name: "Rectangles",
+    component: <Rectangles />,
     available: true,
     online: false,
   },

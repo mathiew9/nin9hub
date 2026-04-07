@@ -192,6 +192,9 @@
         "recycleWaste": "Reciclar descarte"
       }
     },
+    "rectangles": {
+      "name": "Rectángulos"
+    },
     "ultimatetictactoe": {
       "name": "Tres en raya definitivo"
     }

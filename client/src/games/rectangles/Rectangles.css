@@ -1,0 +1,201 @@
+.rectangles {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.rectangles--boardArea {
+  flex: 1;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 24px 120px;
+  box-sizing: border-box;
+}
+
+.rectangles--boardShell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(17, 20, 29, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+}
+
+.rectangles--zoomWrapper {
+  position: fixed;
+  left: 20px;
+  bottom: 70px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.rectangles--zoomPanel {
+  min-width: 250px;
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  background: rgba(20, 20, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  color: #f8fafc;
+  animation: rectanglesZoomFadeIn 0.18s ease;
+}
+
+.rectangles--zoomLabel {
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
+.rectangles--zoomControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rectangles--zoomAction {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+  flex-shrink: 0;
+}
+
+.rectangles--zoomAction:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: scale(1.05);
+}
+
+.rectangles--zoomRange {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 150px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+  cursor: pointer;
+}
+
+.rectangles--zoomRange::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.rectangles--zoomRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -5px;
+  width: 15px;
+  height: 15px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.rectangles--zoomRange::-moz-range-track {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.rectangles--zoomRange::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.rectangles--zoomToggle {
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(20, 20, 20, 0.9);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.rectangles--zoomToggle:hover {
+  transform: translateY(-2px);
+  background: rgba(35, 35, 35, 0.95);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+
+.rectangles--zoomToggle--active {
+  background: rgba(50, 50, 50, 0.95);
+}
+
+.rectangles--zoomToggle svg {
+  font-size: 1.55rem;
+}
+
+@keyframes rectanglesZoomFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .rectangles--boardArea {
+    padding: 16px 12px 120px;
+  }
+
+  .rectangles--boardShell {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .rectangles--zoomWrapper {
+    left: 12px;
+    bottom: 100px;
+  }
+
+  .rectangles--zoomPanel {
+    min-width: 220px;
+  }
+
+  .rectangles--zoomRange {
+    width: 120px;
+  }
+}

@@ -192,6 +192,9 @@
         "recycleWaste": "Recycle waste"
       }
     },
+    "rectangles": {
+      "name": "Rectangles"
+    },
     "ultimatetictactoe": {
       "name": "Ultimate Tic-Tac-Toe"
     }
