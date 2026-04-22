@@ -173,3 +173,6 @@ body[data-theme="light"] .select_game_button:hover {
 .solitaire_button {
   background-image: url("/images/solitaire-v2.png");
 }
+.rectangles_button {
+  background-image: url("/images/rectangles.png");
+}

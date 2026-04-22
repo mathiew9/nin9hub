@@ -12,7 +12,12 @@ type RectanglesBoardProps = {
   zoom: number;
   rectangles: RectangleShape[];
   previewRectangle: RectangleShape | null;
-  onCellMouseDown: (position: Position) => void;
+  invalidRectangleKeys: Set<string>;
+  showRuleErrors: boolean;
+  onCellMouseDown: (
+    position: Position,
+    event: React.MouseEvent<HTMLDivElement>,
+  ) => void;
   onCellMouseEnter: (position: Position) => void;
   onCellMouseUp: (position: Position) => void;
   onBoardMouseLeave: () => void;
@@ -29,6 +34,10 @@ function isCellInsideRectangle(
     col >= rectangle.col &&
     col < rectangle.col + rectangle.width
   );
+}
+
+function getRectangleKey(rectangle: RectangleShape) {
+  return `${rectangle.row}-${rectangle.col}-${rectangle.width}-${rectangle.height}`;
 }
 
 function getRectangleClasses(
@@ -68,6 +77,8 @@ export default function RectanglesBoard({
   zoom,
   rectangles,
   previewRectangle,
+  invalidRectangleKeys,
+  showRuleErrors,
   onCellMouseDown,
   onCellMouseEnter,
   onCellMouseUp,
@@ -112,15 +123,27 @@ export default function RectanglesBoard({
           "rectanglesBoard--cellPreview",
         );
 
+        const invalidClasses =
+          showRuleErrors &&
+          savedRectangle &&
+          invalidRectangleKeys.has(getRectangleKey(savedRectangle))
+            ? getRectangleClasses(
+                row,
+                col,
+                savedRectangle,
+                "rectanglesBoard--cellInvalid",
+              )
+            : "";
+
         return (
           <div
             key={index}
-            className={`rectanglesBoard--cell ${savedRectangleClasses} ${previewClasses}`}
+            className={`rectanglesBoard--cell ${savedRectangleClasses} ${previewClasses} ${invalidClasses}`}
             style={{
               width: `${cellSize}px`,
               height: `${cellSize}px`,
             }}
-            onMouseDown={() => onCellMouseDown({ row, col })}
+            onMouseDown={(event) => onCellMouseDown({ row, col }, event)}
             onMouseEnter={() => onCellMouseEnter({ row, col })}
             onMouseUp={() => onCellMouseUp({ row, col })}
           >

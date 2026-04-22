@@ -22,21 +22,17 @@
 }
 
 .rectanglesBoard--cell::after,
-.rectanglesBoard--cell::before {
+.rectanglesBoard--cell::before,
+.rectanglesBoard--cell .rectanglesBoard--cellErrorLayer {
   content: "";
   position: absolute;
   pointer-events: none;
 }
 
 .rectanglesBoard--cell::after {
-  inset: 2px;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  z-index: 0;
-}
-
-.rectanglesBoard--cell:hover::after {
-  border-color: rgba(255, 255, 255, 0.38);
+  inset: 0;
+  border-radius: 0;
+  z-index: 2;
 }
 
 .rectanglesBoard--cellSaved::before,
@@ -83,6 +79,22 @@
 
 .rectanglesBoard--cellPreviewRight::after {
   border-right: 2px solid rgba(167, 139, 250, 0.95);
+}
+
+.rectanglesBoard--cellInvalidTop::after {
+  border-top: 3px solid rgba(255, 92, 92, 0.98);
+}
+
+.rectanglesBoard--cellInvalidBottom::after {
+  border-bottom: 3px solid rgba(255, 92, 92, 0.98);
+}
+
+.rectanglesBoard--cellInvalidLeft::after {
+  border-left: 3px solid rgba(255, 92, 92, 0.98);
+}
+
+.rectanglesBoard--cellInvalidRight::after {
+  border-right: 3px solid rgba(255, 92, 92, 0.98);
 }
 
 .rectanglesBoard--clue {
