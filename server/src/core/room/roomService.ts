@@ -359,10 +359,14 @@ export class RoomService<TState, TGameSettings, TMove> {
     if (!roomId) return ok(ack, {});
 
     const room = getRoom(roomId) as Room<TState, TGameSettings> | undefined;
-    unmapSocket(socket.id);
 
     if (!room) return ok(ack, {});
-    if (room.gameKey !== this.adapter.gameKey) return ok(ack, {});
+
+    if (room.gameKey !== this.adapter.gameKey) {
+      return ok(ack, {});
+    }
+
+    unmapSocket(socket.id);
 
     socket.leave(this.messaging.roomChannel(room.id));
 
