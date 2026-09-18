@@ -1,39 +1,59 @@
+/* =========================================================
+   LAYOUT PRINCIPAL
+   ========================================================= */
+
 .rectangles {
   min-height: 100%;
+
   display: flex;
   flex-direction: column;
 }
 
 .rectangles--boardArea {
+  position: relative;
+
   flex: 1;
   min-height: calc(100vh - 120px);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 120px 24px 120px;
+
   box-sizing: border-box;
-  position: relative;
+
+  padding: 24px 120px;
 }
 
 .rectangles--boardShell {
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 16px;
-  border-radius: 24px;
-  background: rgba(17, 20, 29, 0.78);
+
   border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+
+  background: rgb(17, 20, 29);
+
   box-shadow:
     0 20px 45px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(8px);
+
+  /* backdrop-filter supprimé */
 }
+
+/* =========================================================
+   PANNEAUX LATÉRAUX
+   ========================================================= */
 
 .rectangles--sideWrapper {
   position: fixed;
-  left: 20px;
   top: 90px;
+  left: 20px;
+
   z-index: 1000;
+
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -41,21 +61,32 @@
 
 .rectangles--sidePanel {
   min-width: 170px;
+
   padding: 14px 12px 12px;
-  border-radius: 18px;
-  background: rgba(20, 20, 20, 0.92);
+
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  border-radius: 18px;
+
+  background: rgba(20, 20, 20, 0.92);
   color: #f8fafc;
+
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+
+  backdrop-filter: blur(10px);
 }
 
 .rectangles--sideLabel {
   margin-bottom: 10px;
+
   font-size: 0.9rem;
   font-weight: 700;
+
   color: #e5e7eb;
 }
+
+/* =========================================================
+   ACTIONS / TAILLES
+   ========================================================= */
 
 .rectangles--actionButtons,
 .rectangles--sizeButtons {
@@ -68,13 +99,19 @@
 .rectangles--sizeButton {
   width: 100%;
   min-height: 34px;
+
   padding: 8px 10px;
+
   border: none;
   border-radius: 10px;
+
   background: rgba(255, 255, 255, 0.08);
   color: #f8fafc;
-  cursor: pointer;
+
   font-weight: 600;
+
+  cursor: pointer;
+
   transition:
     transform 0.18s ease,
     background 0.18s ease,
@@ -84,246 +121,450 @@
 .rectangles--sideButton:hover,
 .rectangles--sizeButton:hover {
   background: rgba(255, 255, 255, 0.16);
+
   transform: translateY(-1px);
+
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
 }
 
 .rectangles--sizeButtonActive {
   background: rgba(167, 139, 250, 0.28);
+
   box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.7);
 }
 
-.rectangles--toggleRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 32px;
-  color: rgba(248, 250, 252, 0.92);
-  cursor: pointer;
+/* =========================================================
+   ID DU PUZZLE
+   ========================================================= */
+
+.rectangles--puzzleId {
+  position: fixed;
+  bottom: 55px;
+  left: 15px;
+  font-family: monospace;
+  font-size: 11px;
+  text-align: center;
+
+  opacity: 0.35;
+
+  user-select: text;
 }
 
-.rectangles--toggleRow + .rectangles--toggleRow {
-  margin-top: 8px;
-}
-
-.rectangles--toggleRow input {
-  width: 16px;
-  height: 16px;
-  accent-color: #8b5cf6;
-}
+/* =========================================================
+   COMPTEUR DE PREVIEW
+   ========================================================= */
 
 .rectangles--previewBadge {
   position: fixed;
+  top: 0;
+  left: 0;
+
   z-index: 2000;
+
   min-width: 28px;
   height: 28px;
-  padding: 0 8px;
-  border-radius: 999px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  padding: 0 8px;
+
+  border-radius: 999px;
+
   background: rgba(167, 139, 250, 0.96);
-  color: white;
+  color: #ffffff;
+
   font-weight: 700;
   line-height: 1;
+
   pointer-events: none;
+
+  will-change: transform;
+
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
 }
 
-.rectangles--zoomWrapper {
+/* =========================================================
+   CONTRÔLES FLOTTANTS
+   ========================================================= */
+
+.rectangles--floatingControls {
   position: fixed;
+
   left: 20px;
-  bottom: 70px;
+  bottom: 80px;
+
   z-index: 1000;
+
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
-}
 
-.rectangles--zoomPanel {
-  min-width: 250px;
-  padding: 14px 14px 12px;
-  border-radius: 18px;
-  background: rgba(20, 20, 20, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  color: #f8fafc;
-  animation: rectanglesZoomFadeIn 0.18s ease;
-}
-
-.rectangles--zoomLabel {
-  margin-bottom: 10px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #e5e7eb;
-}
-
-.rectangles--zoomControls {
-  display: flex;
-  align-items: center;
   gap: 10px;
 }
 
-.rectangles--zoomAction {
-  width: 34px;
-  height: 34px;
-  border: none;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #f8fafc;
+.rectangles--floatingButtons {
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition:
-    transform 0.18s ease,
-    background 0.18s ease,
-    box-shadow 0.18s ease;
-  flex-shrink: 0;
+
+  gap: 10px;
 }
 
-.rectangles--zoomAction:hover {
-  background: rgba(255, 255, 255, 0.16);
-  transform: scale(1.05);
-}
-
-.rectangles--zoomRange {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 150px;
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
-  outline: none;
-  cursor: pointer;
-}
-
-.rectangles--zoomRange::-webkit-slider-runnable-track {
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.rectangles--zoomRange::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  margin-top: -5px;
-  width: 15px;
-  height: 15px;
-  border: none;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
-}
-
-.rectangles--zoomRange::-moz-range-track {
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.rectangles--zoomRange::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
-  border: none;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
-}
-
-.rectangles--zoomToggle {
+.rectangles--floatingToggle {
   width: 52px;
   height: 52px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(20, 20, 20, 0.9);
-  color: white;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(20, 20, 20, 0.9);
+  color: #ffffff;
+
+  font-size: 1.35rem;
+
   cursor: pointer;
+
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+
   backdrop-filter: blur(6px);
+
   transition:
     transform 0.2s ease,
     background 0.2s ease,
     box-shadow 0.2s ease;
 }
 
-.rectangles--zoomToggle:hover {
-  transform: translateY(-2px);
+.rectangles--floatingToggle:hover {
   background: rgba(35, 35, 35, 0.95);
+
+  transform: translateY(-2px);
+
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
 }
 
-.rectangles--zoomToggle--active {
+.rectangles--floatingToggle:active {
+  transform: translateY(0);
+}
+
+.rectangles--floatingToggleActive {
   background: rgba(50, 50, 50, 0.95);
 }
 
-.rectangles--zoomToggle svg {
+.rectangles--floatingToggle svg {
   font-size: 1.55rem;
 }
+
+/* =========================================================
+   PANNEAUX FLOTTANTS COMMUNS
+   ========================================================= */
+
+.rectangles--settingsPanel,
+.rectangles--zoomPanel {
+  box-sizing: border-box;
+
+  width: 280px;
+
+  padding: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+
+  background: rgba(20, 20, 20, 0.92);
+  color: #f8fafc;
+
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+
+  backdrop-filter: blur(10px);
+
+  animation: rectanglesPanelFadeIn 0.18s ease;
+}
+
+.rectangles--settingsLabel,
+.rectangles--zoomLabel {
+  margin-bottom: 10px;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  color: #e5e7eb;
+}
+
+/* =========================================================
+   PARAMÈTRES
+   ========================================================= */
+
+.rectangles--settingsContent {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.rectangles--toggleRow {
+  min-height: 32px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: rgba(248, 250, 252, 0.92);
+
+  cursor: pointer;
+}
+
+.rectangles--toggleRow input {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+
+  accent-color: #8b5cf6;
+
+  cursor: pointer;
+}
+
+/* =========================================================
+   ZOOM
+   ========================================================= */
+
+.rectangles--zoomControls {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.rectangles--zoomAction {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: none;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.rectangles--zoomAction:hover {
+  background: rgba(255, 255, 255, 0.16);
+
+  transform: scale(1.05);
+}
+
+.rectangles--zoomRange {
+  appearance: none;
+  -webkit-appearance: none;
+
+  flex: 1;
+  min-width: 0;
+  height: 5px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.2);
+
+  outline: none;
+
+  cursor: pointer;
+}
+
+.rectangles--zoomRange::-webkit-slider-runnable-track {
+  height: 5px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.rectangles--zoomRange::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 15px;
+  height: 15px;
+
+  margin-top: -5px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.rectangles--zoomRange::-moz-range-track {
+  height: 5px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.rectangles--zoomRange::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+/* =========================================================
+   VICTOIRE
+   ========================================================= */
 
 .rectangles--winOverlay {
   position: absolute;
   inset: 0;
+
   z-index: 1200;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 24px;
+
   background: rgba(8, 10, 16, 0.42);
+
   backdrop-filter: blur(3px);
 }
 
 .rectangles--winPanel {
+  position: relative;
+
   width: min(360px, calc(100vw - 48px));
+
   padding: 24px 22px 20px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 22px;
+
   background: linear-gradient(
     180deg,
     rgba(18, 22, 34, 0.96),
     rgba(11, 14, 24, 0.96)
   );
-  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: #f8fafc;
+
+  text-align: center;
+
   box-shadow:
     0 24px 50px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  text-align: center;
-  color: #f8fafc;
+}
+
+.rectangles--winClose {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 8px;
+
+  background: transparent;
+  color: rgba(248, 250, 252, 0.55);
+
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.rectangles--winClose:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+
+  transform: scale(1.05);
+}
+
+.rectangles--winClose:active {
+  transform: scale(0.95);
 }
 
 .rectangles--winTitle {
   margin: 0 0 10px;
+
   font-size: 1.45rem;
   font-weight: 800;
   line-height: 1.2;
+
   color: #ffffff;
 }
 
 .rectangles--winText {
   margin: 0 0 18px;
+
   font-size: 0.98rem;
   line-height: 1.45;
+
   color: rgba(248, 250, 252, 0.82);
 }
 
 .rectangles--winButton {
   min-width: 140px;
   min-height: 42px;
+
   padding: 10px 18px;
+
   border: none;
   border-radius: 12px;
+
   background: linear-gradient(145deg, #7c5cff, #6d4df2);
   color: #ffffff;
+
   font-size: 0.95rem;
   font-weight: 700;
+
   cursor: pointer;
+
   box-shadow:
     0 10px 24px rgba(109, 77, 242, 0.32),
     inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
@@ -332,7 +573,9 @@
 
 .rectangles--winButton:hover {
   transform: translateY(-1px);
+
   filter: brightness(1.05);
+
   box-shadow:
     0 14px 30px rgba(109, 77, 242, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.16);
@@ -342,32 +585,43 @@
   transform: translateY(0);
 }
 
-@keyframes rectanglesZoomFadeIn {
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes rectanglesPanelFadeIn {
   from {
     opacity: 0;
+
     transform: translateY(8px);
   }
 
   to {
     opacity: 1;
+
     transform: translateY(0);
   }
 }
 
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 @media (max-width: 768px) {
   .rectangles--boardArea {
-    padding: 270px 12px 120px;
+    padding: 270px 12px 140px;
   }
 
   .rectangles--boardShell {
     padding: 18px;
+
     border-radius: 18px;
   }
 
   .rectangles--sideWrapper {
-    left: 12px;
     top: 12px;
     right: 12px;
+    left: 12px;
   }
 
   .rectangles--sidePanel {
@@ -383,19 +637,17 @@
   .rectangles--sideButton,
   .rectangles--sizeButton {
     width: auto;
+
     flex: 1 1 calc(33.333% - 8px);
   }
 
-  .rectangles--zoomWrapper {
+  .rectangles--floatingControls {
     left: 12px;
-    bottom: 100px;
+    bottom: 80px;
   }
 
+  .rectangles--settingsPanel,
   .rectangles--zoomPanel {
-    min-width: 220px;
-  }
-
-  .rectangles--zoomRange {
-    width: 120px;
+    width: min(280px, calc(100vw - 24px));
   }
 }

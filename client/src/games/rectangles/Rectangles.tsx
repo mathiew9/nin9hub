@@ -1,24 +1,91 @@
-import { useEffect, useMemo, useState } from "react";
-import { FaMinus, FaPlus } from "react-icons/fa";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FaCog, FaMinus, FaPlus } from "react-icons/fa";
 import { TiZoomIn } from "react-icons/ti";
 import RectanglesBoard from "./RectanglesBoard";
+import {
+  getRandomRectanglesPuzzle,
+  getRectanglesPuzzleById,
+} from "./rectanglesLibrary";
 import type {
   Clue,
   GridSize,
   Position,
   RectangleShape,
+  RectanglesPuzzle,
+  RectanglesStorageState,
 } from "./rectanglesTypes";
 import "./Rectangles.css";
 
-import { generateRectanglesPuzzle } from "./rectanglesGenerator";
+import { loadGame, saveGame, STORAGE_KEYS } from "../../utils/storage";
 
 const AVAILABLE_SIZES: GridSize[] = [
   { rows: 5, cols: 5 },
-  { rows: 7, cols: 7 },
   { rows: 10, cols: 10 },
-  { rows: 12, cols: 12 },
   { rows: 15, cols: 15 },
+  { rows: 20, cols: 20 },
+  { rows: 25, cols: 25 },
 ];
+
+const RECTANGLES_STORAGE_VERSION = 1;
+
+function getSizeStorageKey(size: GridSize) {
+  return `${size.rows}x${size.cols}`;
+}
+
+function loadRectanglesStorage(): RectanglesStorageState {
+  const saved = loadGame<RectanglesStorageState>(STORAGE_KEYS.rectangles);
+
+  if (!saved || saved.version !== RECTANGLES_STORAGE_VERSION) {
+    return {
+      version: RECTANGLES_STORAGE_VERSION,
+      sizes: {},
+    };
+  }
+
+  return saved;
+}
+
+function loadSavedGameForSize(size: GridSize): {
+  puzzle: RectanglesPuzzle;
+  rectangles: RectangleShape[];
+} {
+  const storage = loadRectanglesStorage();
+  const sizeKey = getSizeStorageKey(size);
+
+  const savedGame = storage.sizes[sizeKey];
+
+  if (savedGame) {
+    const savedPuzzle = getRectanglesPuzzleById(size, savedGame.puzzleId);
+
+    if (savedPuzzle) {
+      return {
+        puzzle: savedPuzzle,
+        rectangles: savedGame.rectangles,
+      };
+    }
+  }
+
+  return {
+    puzzle: getRandomRectanglesPuzzle(size),
+    rectangles: [],
+  };
+}
+
+function saveCurrentGame(
+  size: GridSize,
+  puzzleId: string,
+  rectangles: RectangleShape[],
+) {
+  const storage = loadRectanglesStorage();
+  const sizeKey = getSizeStorageKey(size);
+
+  storage.sizes[sizeKey] = {
+    puzzleId,
+    rectangles,
+  };
+
+  saveGame(STORAGE_KEYS.rectangles, storage);
+}
 
 function getRectangleFromPositions(
   start: Position,
@@ -114,27 +181,83 @@ function isRectangleRuleValid(rectangle: RectangleShape, clues: Clue[]) {
 
 export default function Rectangles() {
   const [showZoomControls, setShowZoomControls] = useState(false);
+  const [showSettingsControls, setShowSettingsControls] = useState(false);
   const [zoom, setZoom] = useState(150);
+
+  const initialGame = useMemo(
+    () =>
+      loadSavedGameForSize({
+        rows: 5,
+        cols: 5,
+      }),
+    [],
+  );
+
   const [selectedSize, setSelectedSize] = useState<GridSize>({
     rows: 5,
     cols: 5,
   });
-  const [puzzleSeed, setPuzzleSeed] = useState(0);
+
+  const [puzzle, setPuzzle] = useState<RectanglesPuzzle>(initialGame.puzzle);
+
   const [dragStart, setDragStart] = useState<Position | null>(null);
   const [dragCurrent, setDragCurrent] = useState<Position | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [rectangles, setRectangles] = useState<RectangleShape[]>([]);
-  const [pointerPosition, setPointerPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
+  const [rectangles, setRectangles] = useState<RectangleShape[]>(
+    initialGame.rectangles,
+  );
+  const [showWinPanel, setShowWinPanel] = useState(true);
+
+  const previewBadgeRef = useRef<HTMLDivElement | null>(null);
+
+  const pointerPositionRef = useRef({
+    x: 0,
+    y: 0,
+  });
+
+  const pointerAnimationFrameRef = useRef<number | null>(null);
+
+  const updatePreviewBadgePosition = useCallback((x: number, y: number) => {
+    pointerPositionRef.current = {
+      x,
+      y,
+    };
+
+    if (pointerAnimationFrameRef.current !== null) {
+      return;
+    }
+
+    pointerAnimationFrameRef.current = requestAnimationFrame(() => {
+      pointerAnimationFrameRef.current = null;
+
+      const badge = previewBadgeRef.current;
+
+      if (!badge) {
+        return;
+      }
+
+      const { x: pointerX, y: pointerY } = pointerPositionRef.current;
+
+      badge.style.transform = `translate3d(
+      ${pointerX + 16}px,
+      ${pointerY + 16}px,
+      0
+    )`;
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (pointerAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(pointerAnimationFrameRef.current);
+      }
+    };
+  }, []);
+
   const [showRuleErrors, setShowRuleErrors] = useState(true);
   const [showPreviewArea, setShowPreviewArea] = useState(true);
-
-  const puzzle = useMemo(
-    () => generateRectanglesPuzzle(selectedSize),
-    [selectedSize, puzzleSeed],
-  );
+  const [toggleColoredRectangles, setToggleColoredRectangles] = useState(true);
+  const [toggleFilledRectangles, setToggleFilledRectangles] = useState(true);
 
   const invalidRectangleKeys = useMemo(() => {
     return new Set(
@@ -163,12 +286,15 @@ export default function Rectangles() {
   }, [dragStart, dragCurrent, gameWon]);
 
   useEffect(() => {
-    setRectangles([]);
+    saveCurrentGame(selectedSize, puzzle.id, rectangles);
+  }, [selectedSize, puzzle.id, rectangles]);
+
+  const resetInteractionState = () => {
     setIsDragging(false);
     setDragStart(null);
     setDragCurrent(null);
-    setPointerPosition(null);
-  }, [selectedSize, puzzleSeed]);
+    setShowWinPanel(true);
+  };
 
   useEffect(() => {
     if (!isDragging || gameWon) {
@@ -179,14 +305,10 @@ export default function Rectangles() {
       setIsDragging(false);
       setDragStart(null);
       setDragCurrent(null);
-      setPointerPosition(null);
     };
 
     const handleWindowMouseMove = (event: MouseEvent) => {
-      setPointerPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
+      updatePreviewBadgePosition(event.clientX, event.clientY);
     };
 
     window.addEventListener("mouseup", handleWindowMouseUp);
@@ -196,7 +318,7 @@ export default function Rectangles() {
       window.removeEventListener("mouseup", handleWindowMouseUp);
       window.removeEventListener("mousemove", handleWindowMouseMove);
     };
-  }, [isDragging, gameWon]);
+  }, [isDragging, gameWon, updatePreviewBadgePosition]);
 
   const handleCellMouseDown = (
     position: Position,
@@ -209,10 +331,8 @@ export default function Rectangles() {
     setIsDragging(true);
     setDragStart(position);
     setDragCurrent(position);
-    setPointerPosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
+
+    updatePreviewBadgePosition(event.clientX, event.clientY);
   };
 
   const handleCellMouseEnter = (position: Position) => {
@@ -229,6 +349,7 @@ export default function Rectangles() {
     }
 
     const rectangle = getRectangleFromPositions(dragStart, position);
+
     const isClickWithoutDrag =
       dragStart.row === position.row && dragStart.col === position.col;
 
@@ -248,7 +369,7 @@ export default function Rectangles() {
       setIsDragging(false);
       setDragStart(null);
       setDragCurrent(null);
-      setPointerPosition(null);
+
       return;
     }
 
@@ -266,7 +387,6 @@ export default function Rectangles() {
     setIsDragging(false);
     setDragStart(null);
     setDragCurrent(null);
-    setPointerPosition(null);
   };
 
   const handleBoardMouseLeave = () => {
@@ -278,19 +398,31 @@ export default function Rectangles() {
   };
 
   const handleSizeChange = (size: GridSize) => {
+    if (size.rows === selectedSize.rows && size.cols === selectedSize.cols) {
+      return;
+    }
+
+    const savedGame = loadSavedGameForSize(size);
+
     setSelectedSize(size);
+    setPuzzle(savedGame.puzzle);
+    setRectangles(savedGame.rectangles);
+
+    resetInteractionState();
   };
 
   const handleNewGrid = () => {
-    setPuzzleSeed((prev) => prev + 1);
+    const nextPuzzle = getRandomRectanglesPuzzle(selectedSize, puzzle.id);
+
+    setPuzzle(nextPuzzle);
+    setRectangles([]);
+
+    resetInteractionState();
   };
 
   const handleClearRectangles = () => {
     setRectangles([]);
-    setIsDragging(false);
-    setDragStart(null);
-    setDragCurrent(null);
-    setPointerPosition(null);
+    resetInteractionState();
   };
 
   return (
@@ -342,28 +474,6 @@ export default function Rectangles() {
             })}
           </div>
         </div>
-
-        <div className="rectangles--sidePanel">
-          <div className="rectangles--sideLabel">Options</div>
-
-          <label className="rectangles--toggleRow">
-            <input
-              type="checkbox"
-              checked={showRuleErrors}
-              onChange={(e) => setShowRuleErrors(e.target.checked)}
-            />
-            <span>Afficher les erreurs</span>
-          </label>
-
-          <label className="rectangles--toggleRow">
-            <input
-              type="checkbox"
-              checked={showPreviewArea}
-              onChange={(e) => setShowPreviewArea(e.target.checked)}
-            />
-            <span>Compteur de preview</span>
-          </label>
-        </div>
       </div>
 
       <div className="rectangles--boardArea">
@@ -376,6 +486,8 @@ export default function Rectangles() {
             previewRectangle={previewRectangle}
             invalidRectangleKeys={invalidRectangleKeys}
             showRuleErrors={showRuleErrors}
+            toggleColoredRectangles={toggleColoredRectangles}
+            toggleFilledRectangles={toggleFilledRectangles}
             onCellMouseDown={handleCellMouseDown}
             onCellMouseEnter={handleCellMouseEnter}
             onCellMouseUp={handleCellMouseUp}
@@ -383,38 +495,101 @@ export default function Rectangles() {
           />
         </div>
 
-        {gameWon && (
-          <div className="rectangles--winOverlay">
-            <div className="rectangles--winPanel">
+        {gameWon && showWinPanel && (
+          <div
+            className="rectangles--winOverlay"
+            onClick={() => setShowWinPanel(false)}
+          >
+            <div
+              className="rectangles--winPanel"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="rectangles--winClose"
+                onClick={() => setShowWinPanel(false)}
+                aria-label="Fermer"
+                title="Fermer"
+              >
+                ×
+              </button>
+
               <div className="rectangles--winTitle">Puzzle terminé</div>
+
               <div className="rectangles--winText">
                 Bien joué, tu as trouvé tous les bons rectangles.
               </div>
+
               <button
                 type="button"
                 className="rectangles--winButton"
                 onClick={handleNewGrid}
               >
-                Rejouer
+                Nouvelle grille
               </button>
             </div>
           </div>
         )}
       </div>
+      <div className="rectangles--puzzleId">Puzzle ID: {puzzle.id}</div>
 
-      {previewRectangle && pointerPosition && !gameWon && showPreviewArea && (
-        <div
-          className="rectangles--previewBadge"
-          style={{
-            left: `${pointerPosition.x + 16}px`,
-            top: `${pointerPosition.y + 16}px`,
-          }}
-        >
+      {previewRectangle && !gameWon && showPreviewArea && (
+        <div ref={previewBadgeRef} className="rectangles--previewBadge">
           {previewRectangle.width * previewRectangle.height}
         </div>
       )}
 
-      <div className="rectangles--zoomWrapper">
+      <div className="rectangles--floatingControls">
+        {showSettingsControls && (
+          <div className="rectangles--settingsPanel">
+            <div className="rectangles--settingsLabel">Paramètres</div>
+
+            <div className="rectangles--settingsContent">
+              <label className="rectangles--toggleRow">
+                <input
+                  type="checkbox"
+                  checked={showRuleErrors}
+                  onChange={(event) => setShowRuleErrors(event.target.checked)}
+                />
+
+                <span>Afficher les erreurs</span>
+              </label>
+
+              <label className="rectangles--toggleRow">
+                <input
+                  type="checkbox"
+                  checked={showPreviewArea}
+                  onChange={(event) => setShowPreviewArea(event.target.checked)}
+                />
+
+                <span>Compteur de preview</span>
+              </label>
+
+              <label className="rectangles--toggleRow">
+                <input
+                  type="checkbox"
+                  checked={toggleColoredRectangles}
+                  onChange={(event) =>
+                    setToggleColoredRectangles(event.target.checked)
+                  }
+                />
+                <span>Rectangles colorés</span>
+              </label>
+
+              <label className="rectangles--toggleRow">
+                <input
+                  type="checkbox"
+                  checked={toggleFilledRectangles}
+                  onChange={(event) =>
+                    setToggleFilledRectangles(event.target.checked)
+                  }
+                />
+                <span>Remplir les rectangles</span>
+              </label>
+            </div>
+          </div>
+        )}
+
         {showZoomControls && (
           <div className="rectangles--zoomPanel">
             <div className="rectangles--zoomLabel">Zoom</div>
@@ -438,7 +613,7 @@ export default function Rectangles() {
                 max="200"
                 step="10"
                 value={zoom}
-                onChange={(e) => setZoom(Number(e.target.value))}
+                onChange={(event) => setZoom(Number(event.target.value))}
               />
 
               <button
@@ -453,17 +628,31 @@ export default function Rectangles() {
           </div>
         )}
 
-        <button
-          type="button"
-          title="Zoom"
-          className={`rectangles--zoomToggle ${
-            showZoomControls ? "rectangles--zoomToggle--active" : ""
-          }`}
-          onClick={() => setShowZoomControls((prev) => !prev)}
-          aria-label="Afficher les contrôles de zoom"
-        >
-          <TiZoomIn />
-        </button>
+        <div className="rectangles--floatingButtons">
+          <button
+            type="button"
+            title="Paramètres"
+            className={`rectangles--floatingToggle ${
+              showSettingsControls ? "rectangles--floatingToggleActive" : ""
+            }`}
+            onClick={() => setShowSettingsControls((prev) => !prev)}
+            aria-label="Afficher les paramètres"
+          >
+            <FaCog />
+          </button>
+
+          <button
+            type="button"
+            title="Zoom"
+            className={`rectangles--floatingToggle ${
+              showZoomControls ? "rectangles--floatingToggleActive" : ""
+            }`}
+            onClick={() => setShowZoomControls((prev) => !prev)}
+            aria-label="Afficher les contrôles de zoom"
+          >
+            <TiZoomIn />
+          </button>
+        </div>
       </div>
     </div>
   );

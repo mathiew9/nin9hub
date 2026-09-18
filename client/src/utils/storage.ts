@@ -1,4 +1,10 @@
+//Format : ninehub.games.<gameName>.<key>
+
 const PREFIX = "ninehub.";
+
+export const STORAGE_KEYS = {
+  rectangles: "games.rectangles",
+} as const;
 
 export function saveGame<T>(key: string, data: T): void {
   try {
@@ -11,6 +17,7 @@ export function saveGame<T>(key: string, data: T): void {
 export function loadGame<T>(key: string): T | null {
   try {
     const raw = localStorage.getItem(PREFIX + key);
+
     return raw ? JSON.parse(raw) : null;
   } catch (e) {
     console.error(`Failed to load ${key} from localStorage`, e);

@@ -1,108 +1,286 @@
+/* =========================================================
+   BOARD
+   ========================================================= */
+
 .rectanglesBoard {
-  display: grid;
-  width: fit-content;
+  position: relative;
+
+  flex: 0 0 auto;
+
+  overflow: hidden;
+
+  box-sizing: content-box;
+
   border: 2px solid rgba(255, 255, 255, 0.75);
   border-radius: 8px;
-  overflow: hidden;
+
   background: rgba(255, 255, 255, 0.02);
+
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+
   user-select: none;
+
+  /*
+   * Le navigateur sait que ce composant est une zone
+   * graphique indépendante du reste de la page.
+   */
+  contain: layout paint;
 }
 
-.rectanglesBoard--cell {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  border-right: 1px dashed rgba(255, 255, 255, 0.22);
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.01);
-  cursor: pointer;
-}
+/* =========================================================
+   GRILLE
+   ========================================================= */
 
-.rectanglesBoard--cell::after,
-.rectanglesBoard--cell::before,
-.rectanglesBoard--cell .rectanglesBoard--cellErrorLayer {
-  content: "";
+.rectanglesBoard--grid {
   position: absolute;
+  inset: 0;
+
+  z-index: 1;
+
+  display: block;
+
   pointer-events: none;
 }
 
-.rectanglesBoard--cell::after {
+.rectanglesBoard--gridLines {
+  fill: none;
+
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 1;
+
+  stroke-dasharray: 4 4;
+
+  shape-rendering: crispEdges;
+}
+
+/* =========================================================
+   COUCHE DES RECTANGLES POSÉS
+   ========================================================= */
+
+.rectanglesBoard--savedRectanglesLayer {
+  position: absolute;
   inset: 0;
-  border-radius: 0;
+
   z-index: 2;
+
+  pointer-events: none;
 }
 
-.rectanglesBoard--cellSaved::before,
-.rectanglesBoard--cellPreview::after {
-  inset: 0;
-  border-radius: 0;
+/* =========================================================
+   RECTANGLES POSÉS
+   ========================================================= */
+
+.rectanglesBoard--savedRectangle {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  box-sizing: border-box;
+
+  pointer-events: none;
 }
 
-.rectanglesBoard--cellSaved::before {
+/*
+ * Le parent conserve la taille logique exacte du rectangle.
+ * Le rendu visuel réel est légèrement rentré à l'intérieur.
+ */
+.rectanglesBoard--savedRectangle::before {
+  content: "";
+
+  position: absolute;
+  inset: 3px;
+
   z-index: 0;
+
+  box-sizing: border-box;
+
+  border: 2px solid var(--rectangle-border, rgba(255, 255, 255, 0.72));
+
+  border-radius: 11px;
+
+  background: var(--rectangle-fill, transparent);
+
+  pointer-events: none;
 }
 
-.rectanglesBoard--cellPreview::after {
+/* =========================================================
+   RECTANGLES REMPLIS
+   ========================================================= */
+
+.rectanglesBoard--savedRectangleFilled {
+  --rectangle-fill: rgb(42, 44, 52);
+}
+
+/* =========================================================
+   RECTANGLES COLORÉS
+   ========================================================= */
+
+.rectanglesBoard--savedRectangleColored {
+  --rectangle-border: var(--rectangle-color);
+}
+
+/* Violet */
+
+.rectanglesBoard--rectangleColor0 {
+  --rectangle-color: rgb(139, 110, 235);
+  --rectangle-fill-color: rgb(78, 61, 132);
+}
+
+/* Bleu */
+
+.rectanglesBoard--rectangleColor1 {
+  --rectangle-color: rgb(82, 145, 230);
+  --rectangle-fill-color: rgb(46, 82, 131);
+}
+
+/* Vert */
+
+.rectanglesBoard--rectangleColor2 {
+  --rectangle-color: rgb(73, 190, 119);
+  --rectangle-fill-color: rgb(41, 105, 67);
+}
+
+/* Orange */
+
+.rectanglesBoard--rectangleColor3 {
+  --rectangle-color: rgb(230, 132, 65);
+  --rectangle-fill-color: rgb(128, 74, 37);
+}
+
+/* Rose */
+
+.rectanglesBoard--rectangleColor4 {
+  --rectangle-color: rgb(213, 98, 157);
+  --rectangle-fill-color: rgb(119, 55, 88);
+}
+
+/* Cyan */
+
+.rectanglesBoard--rectangleColor5 {
+  --rectangle-color: rgb(48, 181, 198);
+  --rectangle-fill-color: rgb(27, 100, 110);
+}
+
+/* Jaune */
+
+.rectanglesBoard--rectangleColor6 {
+  --rectangle-color: rgb(218, 180, 52);
+  --rectangle-fill-color: rgb(120, 99, 29);
+}
+
+/* Indigo */
+
+.rectanglesBoard--rectangleColor7 {
+  --rectangle-color: rgb(112, 122, 235);
+  --rectangle-fill-color: rgb(62, 68, 131);
+}
+
+/*
+ * Rempli + coloré :
+ * le fond utilise la couleur associée au contour.
+ */
+.rectanglesBoard--savedRectangleFilled.rectanglesBoard--savedRectangleColored {
+  --rectangle-fill: var(--rectangle-fill-color);
+}
+
+/* =========================================================
+   RECTANGLES INVALIDES
+   ========================================================= */
+
+/*
+ * Tous les rectangles invalides utilisent la même
+ * couleur d'erreur.
+ */
+.rectanglesBoard--savedRectangleInvalid {
+  --rectangle-border: rgb(255, 92, 92);
+  --rectangle-fill-color: rgb(125, 45, 45);
+}
+
+/*
+ * Si le rectangle invalide est rempli,
+ * son remplissage utilise également la couleur d'erreur.
+ */
+.rectanglesBoard--savedRectangleInvalid.rectanglesBoard--savedRectangleFilled {
+  --rectangle-fill: rgb(125, 45, 45);
+}
+
+/*
+ * Les dashs intérieurs apparaissent uniquement
+ * pour les rectangles invalides remplis.
+ */
+.rectanglesBoard--savedRectangleInvalid.rectanglesBoard--savedRectangleFilled::after {
+  content: "";
+
+  position: absolute;
+  inset: 8px;
+
   z-index: 1;
+
+  border-radius: 7px;
+
+  background: repeating-linear-gradient(
+    135deg,
+    rgb(255, 92, 92) 0,
+    rgb(255, 92, 92) 2px,
+    transparent 2px,
+    transparent 9px
+  );
+
+  pointer-events: none;
 }
 
-.rectanglesBoard--cellSavedTop::before {
-  border-top: 2px solid rgba(255, 255, 255, 0.72);
+/* =========================================================
+   PREVIEW
+   ========================================================= */
+
+.rectanglesBoard--previewRectangle {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  z-index: 6;
+
+  box-sizing: border-box;
+
+  border: 2px solid rgba(167, 139, 250, 0.95);
+  border-radius: 11px;
+
+  background: rgba(124, 92, 255, 0.12);
+
+  pointer-events: none;
+
+  will-change: transform, width, height;
 }
 
-.rectanglesBoard--cellSavedBottom::before {
-  border-bottom: 2px solid rgba(255, 255, 255, 0.72);
-}
+/* =========================================================
+   INDICES
+   ========================================================= */
 
-.rectanglesBoard--cellSavedLeft::before {
-  border-left: 2px solid rgba(255, 255, 255, 0.72);
-}
+.rectanglesBoard--cluesLayer {
+  position: absolute;
+  inset: 0;
 
-.rectanglesBoard--cellSavedRight::before {
-  border-right: 2px solid rgba(255, 255, 255, 0.72);
-}
+  z-index: 10;
 
-.rectanglesBoard--cellPreviewTop::after {
-  border-top: 2px solid rgba(167, 139, 250, 0.95);
-}
-
-.rectanglesBoard--cellPreviewBottom::after {
-  border-bottom: 2px solid rgba(167, 139, 250, 0.95);
-}
-
-.rectanglesBoard--cellPreviewLeft::after {
-  border-left: 2px solid rgba(167, 139, 250, 0.95);
-}
-
-.rectanglesBoard--cellPreviewRight::after {
-  border-right: 2px solid rgba(167, 139, 250, 0.95);
-}
-
-.rectanglesBoard--cellInvalidTop::after {
-  border-top: 3px solid rgba(255, 92, 92, 0.98);
-}
-
-.rectanglesBoard--cellInvalidBottom::after {
-  border-bottom: 3px solid rgba(255, 92, 92, 0.98);
-}
-
-.rectanglesBoard--cellInvalidLeft::after {
-  border-left: 3px solid rgba(255, 92, 92, 0.98);
-}
-
-.rectanglesBoard--cellInvalidRight::after {
-  border-right: 3px solid rgba(255, 92, 92, 0.98);
+  pointer-events: none;
 }
 
 .rectanglesBoard--clue {
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.92);
   line-height: 1;
+
+  color: rgba(255, 255, 255, 0.92);
+
   user-select: none;
   pointer-events: none;
 }

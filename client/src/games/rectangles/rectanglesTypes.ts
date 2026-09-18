@@ -17,7 +17,26 @@ export type RectangleShape = Position & {
   height: number;
 };
 
+export type RectangleLibraryRegion = RectangleShape & {
+  id: number;
+};
+
+export type RectangleLibraryGrid = {
+  id: string;
+  clues: Clue[];
+  regions: RectangleLibraryRegion[];
+};
+
+export type RectangleLibrary = {
+  format: "nin9hub-rectangle-library";
+  version: number;
+  uniquenessVerified: boolean;
+  gridSize: number;
+  grids: RectangleLibraryGrid[];
+};
+
 export type RectanglesPuzzle = {
+  id: string;
   size: GridSize;
   clues: Clue[];
   solution: RectangleShape[];
@@ -25,4 +44,14 @@ export type RectanglesPuzzle = {
 
 export type RectanglesGameState = {
   rectangles: RectangleShape[];
+};
+
+export type RectanglesSavedSizeState = {
+  puzzleId: string;
+  rectangles: RectangleShape[];
+};
+
+export type RectanglesStorageState = {
+  version: 1;
+  sizes: Record<string, RectanglesSavedSizeState>;
 };
