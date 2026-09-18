@@ -17,7 +17,9 @@
       "resetScore": "Réinitialiser le score",
       "changeSettings": "Changer les paramètres",
       "toggleTheme": "Changer de thème",
-      "newGame": "Nouvelle partie"
+      "newGame": "Nouvelle partie",
+      "newGrid": "Nouvelle grille",
+      "erase": "Effacer"
     },
     "labels": {
       "score": "Score",
@@ -26,6 +28,7 @@
       "turn": "Tour",
       "roomCode": "CODE DE SALLE",
       "settings": "Paramètres",
+      "zoom": "Zoom",
       "gridSize": "Taille de la grille",
       "roundsToWin": "Manches pour gagner",
       "swapRolesOnRematch": "Inverser les rôles au rematch",
@@ -193,7 +196,19 @@
       }
     },
     "rectangles": {
-      "name": "Rectangles"
+      "name": "Rectangles",
+      "puzzleCompleted": "Puzzle terminé",
+      "puzzleCompletedMessage": "Bien joué, tu as trouvé tous les bons rectangles.",
+      "labels": {
+        "actions": "Actions",
+        "sizes": "Tailles"
+      },
+      "settings": {
+        "showErrors": "Afficher les erreurs",
+        "previewCounter": "Compteur de preview",
+        "coloredRectangles": "Rectangles colorés",
+        "fillRectangles": "Remplir les rectangles"
+      }
     },
     "ultimatetictactoe": {
       "name": "Morpion Ultime"

@@ -17,7 +17,9 @@
       "resetScore": "Reiniciar puntuación",
       "changeSettings": "Cambiar ajustes",
       "toggleTheme": "Cambiar tema",
-      "newGame": "Nueva partida"
+      "newGame": "Nueva partida",
+      "newGrid": "Nueva cuadrícula",
+      "erase": "Borrar"
     },
     "labels": {
       "score": "Puntuación",
@@ -26,6 +28,7 @@
       "turn": "Turno",
       "roomCode": "CÓDIGO DE SALA",
       "settings": "Ajustes",
+      "zoom": "Zoom",
       "gridSize": "Tamaño de la cuadrícula",
       "roundsToWin": "Rondas para ganar",
       "swapRolesOnRematch": "Intercambiar roles en la revancha",
@@ -193,7 +196,19 @@
       }
     },
     "rectangles": {
-      "name": "Rectángulos"
+      "name": "Rectángulos",
+      "puzzleCompleted": "Puzzle completado",
+      "puzzleCompletedMessage": "¡Bien hecho! Has encontrado todos los rectángulos correctos.",
+      "labels": {
+        "actions": "Acciones",
+        "sizes": "Tamaños"
+      },
+      "settings": {
+        "showErrors": "Mostrar errores",
+        "previewCounter": "Contador de vista previa",
+        "coloredRectangles": "Rectángulos coloreados",
+        "fillRectangles": "Rellenar rectángulos"
+      }
     },
     "ultimatetictactoe": {
       "name": "Tres en raya definitivo"
