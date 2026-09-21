@@ -17,7 +17,9 @@
       "resetScore": "Reset score",
       "changeSettings": "Change settings",
       "toggleTheme": "Toggle theme",
-      "newGame": "New game"
+      "newGame": "New game",
+      "newGrid": "New grid",
+      "erase": "Erase"
     },
     "labels": {
       "score": "Score",
@@ -26,6 +28,7 @@
       "turn": "Turn",
       "roomCode": "ROOM CODE",
       "settings": "Settings",
+      "zoom": "Zoom",
       "gridSize": "Grid Size",
       "roundsToWin": "Rounds to Win",
       "swapRolesOnRematch": "Swap roles on rematch",
@@ -193,7 +196,19 @@
       }
     },
     "rectangles": {
-      "name": "Rectangles"
+      "name": "Rectangles",
+      "puzzleCompleted": "Puzzle completed",
+      "puzzleCompletedMessage": "Well done, you found all the correct rectangles.",
+      "labels": {
+        "actions": "Actions",
+        "sizes": "Sizes"
+      },
+      "settings": {
+        "showErrors": "Show errors",
+        "previewCounter": "Preview counter",
+        "coloredRectangles": "Colored rectangles",
+        "fillRectangles": "Fill rectangles"
+      }
     },
     "ultimatetictactoe": {
       "name": "Ultimate Tic-Tac-Toe"

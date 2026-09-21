@@ -16,6 +16,8 @@ import type {
 } from "./rectanglesTypes";
 import "./Rectangles.css";
 
+import { useTranslation } from "react-i18next";
+
 import { loadGame, saveGame, STORAGE_KEYS } from "../../utils/storage";
 
 const AVAILABLE_SIZES: GridSize[] = [
@@ -201,6 +203,7 @@ function formatTime(totalSeconds: number) {
 }
 
 export default function Rectangles() {
+  const { t } = useTranslation();
   const [showZoomControls, setShowZoomControls] = useState(false);
   const [showSettingsControls, setShowSettingsControls] = useState(false);
   const [zoom, setZoom] = useState(150);
@@ -470,7 +473,9 @@ export default function Rectangles() {
     <div className="rectangles">
       <div className="rectangles--sideWrapper">
         <div className="rectangles--sidePanel">
-          <div className="rectangles--sideLabel">Actions</div>
+          <div className="rectangles--sideLabel">
+            {t("games.rectangles.labels.actions")}
+          </div>
 
           <div className="rectangles--actionButtons">
             <button
@@ -478,7 +483,7 @@ export default function Rectangles() {
               className="rectangles--sideButton"
               onClick={handleNewGrid}
             >
-              Nouvelle grille
+              {t("common.actions.newGrid")}
             </button>
 
             <button
@@ -486,13 +491,15 @@ export default function Rectangles() {
               className="rectangles--sideButton"
               onClick={handleClearRectangles}
             >
-              Effacer
+              {t("common.actions.erase")}
             </button>
           </div>
         </div>
 
         <div className="rectangles--sidePanel">
-          <div className="rectangles--sideLabel">Tailles</div>
+          <div className="rectangles--sideLabel">
+            {t("games.rectangles.labels.sizes")}
+          </div>
 
           <div className="rectangles--sizeButtons">
             {AVAILABLE_SIZES.map((size) => {
@@ -561,10 +568,12 @@ export default function Rectangles() {
                 ×
               </button>
 
-              <div className="rectangles--winTitle">Puzzle terminé</div>
+              <div className="rectangles--winTitle">
+                {t("games.rectangles.puzzleCompleted")}
+              </div>
 
               <div className="rectangles--winText">
-                Bien joué, tu as trouvé tous les bons rectangles.
+                {t("games.rectangles.puzzleCompletedMessage")}
                 {showTimer && (
                   <div className="rectangles--winTime">
                     Temps : {formatTime(elapsedSeconds)}
@@ -577,7 +586,7 @@ export default function Rectangles() {
                 className="rectangles--winButton"
                 onClick={handleNewGrid}
               >
-                Nouvelle grille
+                {t("common.actions.newGrid")}
               </button>
             </div>
           </div>
@@ -594,7 +603,9 @@ export default function Rectangles() {
       <div className="rectangles--floatingControls">
         {showSettingsControls && (
           <div className="rectangles--settingsPanel">
-            <div className="rectangles--settingsLabel">Paramètres</div>
+            <div className="rectangles--settingsLabel">
+              {t("common.labels.settings")}
+            </div>
 
             <div className="rectangles--settingsContent">
               <label className="rectangles--toggleRow">
@@ -604,7 +615,7 @@ export default function Rectangles() {
                   onChange={(event) => setShowRuleErrors(event.target.checked)}
                 />
 
-                <span>Afficher les erreurs</span>
+                <span>{t("games.rectangles.settings.showErrors")}</span>
               </label>
 
               <label className="rectangles--toggleRow">
@@ -614,7 +625,7 @@ export default function Rectangles() {
                   onChange={(event) => setShowPreviewArea(event.target.checked)}
                 />
 
-                <span>Compteur de preview</span>
+                <span>{t("games.rectangles.settings.previewCounter")}</span>
               </label>
 
               <label className="rectangles--toggleRow">
@@ -625,7 +636,7 @@ export default function Rectangles() {
                     setToggleColoredRectangles(event.target.checked)
                   }
                 />
-                <span>Rectangles colorés</span>
+                <span>{t("games.rectangles.settings.coloredRectangles")}</span>
               </label>
 
               <label className="rectangles--toggleRow">
@@ -636,7 +647,17 @@ export default function Rectangles() {
                     setToggleFilledRectangles(event.target.checked)
                   }
                 />
-                <span>Remplir les rectangles</span>
+                <span>{t("games.rectangles.settings.fillRectangles")}</span>
+              </label>
+
+              <label className="rectangles--toggleRow">
+                <input
+                  type="checkbox"
+                  checked={showTimer}
+                  onChange={(event) => setShowTimer(event.target.checked)}
+                />
+
+                <span>Afficher le timer</span>
               </label>
 
               <label className="rectangles--toggleRow">
@@ -654,7 +675,9 @@ export default function Rectangles() {
 
         {showZoomControls && (
           <div className="rectangles--zoomPanel">
-            <div className="rectangles--zoomLabel">Zoom</div>
+            <div className="rectangles--zoomLabel">
+              {t("common.labels.zoom")}
+            </div>
 
             <div className="rectangles--zoomControls">
               <button
