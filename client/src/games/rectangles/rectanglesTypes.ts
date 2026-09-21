@@ -49,6 +49,7 @@ export type RectanglesGameState = {
 export type RectanglesSavedSizeState = {
   puzzleId: string;
   rectangles: RectangleShape[];
+  elapsedSeconds?: number;
 };
 
 export type RectanglesStorageState = {

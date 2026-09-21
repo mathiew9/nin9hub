@@ -48,6 +48,7 @@ function loadRectanglesStorage(): RectanglesStorageState {
 function loadSavedGameForSize(size: GridSize): {
   puzzle: RectanglesPuzzle;
   rectangles: RectangleShape[];
+  elapsedSeconds: number;
 } {
   const storage = loadRectanglesStorage();
   const sizeKey = getSizeStorageKey(size);
@@ -61,6 +62,7 @@ function loadSavedGameForSize(size: GridSize): {
       return {
         puzzle: savedPuzzle,
         rectangles: savedGame.rectangles,
+        elapsedSeconds: savedGame.elapsedSeconds ?? 0,
       };
     }
   }
@@ -68,6 +70,7 @@ function loadSavedGameForSize(size: GridSize): {
   return {
     puzzle: getRandomRectanglesPuzzle(size),
     rectangles: [],
+    elapsedSeconds: 0,
   };
 }
 
@@ -75,6 +78,7 @@ function saveCurrentGame(
   size: GridSize,
   puzzleId: string,
   rectangles: RectangleShape[],
+  elapsedSeconds: number,
 ) {
   const storage = loadRectanglesStorage();
   const sizeKey = getSizeStorageKey(size);
@@ -82,6 +86,7 @@ function saveCurrentGame(
   storage.sizes[sizeKey] = {
     puzzleId,
     rectangles,
+    elapsedSeconds,
   };
 
   saveGame(STORAGE_KEYS.rectangles, storage);
@@ -179,6 +184,22 @@ function isRectangleRuleValid(rectangle: RectangleShape, clues: Clue[]) {
   return rectangle.width * rectangle.height === containedClues[0].value;
 }
 
+function formatTime(totalSeconds: number) {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  }
+
+  return `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
+}
+
 export default function Rectangles() {
   const [showZoomControls, setShowZoomControls] = useState(false);
   const [showSettingsControls, setShowSettingsControls] = useState(false);
@@ -258,6 +279,10 @@ export default function Rectangles() {
   const [showPreviewArea, setShowPreviewArea] = useState(true);
   const [toggleColoredRectangles, setToggleColoredRectangles] = useState(true);
   const [toggleFilledRectangles, setToggleFilledRectangles] = useState(true);
+  const [showTimer, setShowTimer] = useState(true);
+  const [elapsedSeconds, setElapsedSeconds] = useState(
+    initialGame.elapsedSeconds,
+  );
 
   const invalidRectangleKeys = useMemo(() => {
     return new Set(
@@ -270,6 +295,20 @@ export default function Rectangles() {
   const gameWon = useMemo(() => {
     return areRectanglesSetsEqual(rectangles, puzzle.solution);
   }, [rectangles, puzzle.solution]);
+
+  useEffect(() => {
+    if (gameWon) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      setElapsedSeconds((prev) => prev + 1);
+    }, 1000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [gameWon]);
 
   const previewRectangle = useMemo(() => {
     if (!dragStart || !dragCurrent || gameWon) {
@@ -286,8 +325,8 @@ export default function Rectangles() {
   }, [dragStart, dragCurrent, gameWon]);
 
   useEffect(() => {
-    saveCurrentGame(selectedSize, puzzle.id, rectangles);
-  }, [selectedSize, puzzle.id, rectangles]);
+    saveCurrentGame(selectedSize, puzzle.id, rectangles, elapsedSeconds);
+  }, [selectedSize, puzzle.id, rectangles, elapsedSeconds]);
 
   const resetInteractionState = () => {
     setIsDragging(false);
@@ -407,6 +446,7 @@ export default function Rectangles() {
     setSelectedSize(size);
     setPuzzle(savedGame.puzzle);
     setRectangles(savedGame.rectangles);
+    setElapsedSeconds(savedGame.elapsedSeconds);
 
     resetInteractionState();
   };
@@ -416,6 +456,7 @@ export default function Rectangles() {
 
     setPuzzle(nextPuzzle);
     setRectangles([]);
+    setElapsedSeconds(0);
 
     resetInteractionState();
   };
@@ -476,6 +517,12 @@ export default function Rectangles() {
         </div>
       </div>
 
+      <div className="rectangles--timerArea">
+        {showTimer && (
+          <div className="rectangles--timer">{formatTime(elapsedSeconds)}</div>
+        )}
+      </div>
+
       <div className="rectangles--boardArea">
         <div className="rectangles--boardShell">
           <RectanglesBoard
@@ -518,6 +565,11 @@ export default function Rectangles() {
 
               <div className="rectangles--winText">
                 Bien joué, tu as trouvé tous les bons rectangles.
+                {showTimer && (
+                  <div className="rectangles--winTime">
+                    Temps : {formatTime(elapsedSeconds)}
+                  </div>
+                )}
               </div>
 
               <button
@@ -585,6 +637,16 @@ export default function Rectangles() {
                   }
                 />
                 <span>Remplir les rectangles</span>
+              </label>
+
+              <label className="rectangles--toggleRow">
+                <input
+                  type="checkbox"
+                  checked={showTimer}
+                  onChange={(event) => setShowTimer(event.target.checked)}
+                />
+
+                <span>Afficher le timer</span>
               </label>
             </div>
           </div>
