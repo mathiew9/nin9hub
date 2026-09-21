@@ -659,16 +659,6 @@ export default function Rectangles() {
 
                 <span>Afficher le timer</span>
               </label>
-
-              <label className="rectangles--toggleRow">
-                <input
-                  type="checkbox"
-                  checked={showTimer}
-                  onChange={(event) => setShowTimer(event.target.checked)}
-                />
-
-                <span>Afficher le timer</span>
-              </label>
             </div>
           </div>
         )}
