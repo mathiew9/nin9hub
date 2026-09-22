@@ -1,5 +1,6 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import "./RectanglesBoard.css";
+
 import type {
   Clue,
   GridSize,
@@ -10,19 +11,28 @@ import type {
 type RectanglesBoardProps = {
   size: GridSize;
   clues: Clue[];
+
   zoom: number;
+
   rectangles: RectangleShape[];
   previewRectangle: RectangleShape | null;
+
   invalidRectangleKeys: Set<string>;
+
   showRuleErrors: boolean;
+
   toggleFilledRectangles: boolean;
   toggleColoredRectangles: boolean;
+
   onCellMouseDown: (
     position: Position,
-    event: React.MouseEvent<HTMLDivElement>,
+    event: React.PointerEvent<HTMLDivElement>,
   ) => void;
+
   onCellMouseEnter: (position: Position) => void;
+
   onCellMouseUp: (position: Position) => void;
+
   onBoardMouseLeave: () => void;
 };
 
@@ -55,28 +65,38 @@ export default function RectanglesBoard({
   const boardWidth = cols * cellSize;
   const boardHeight = rows * cellSize;
 
+  const activePointerIdRef = useRef<number | null>(null);
+
   const lastHoveredCellRef = useRef<number | null>(null);
 
-  /* =========================================================
-     GRILLE
-     ========================================================= */
+  const lastValidPositionRef = useRef<Position | null>(null);
+
+  const previewBadgeElementRef = useRef<HTMLElement | null>(null);
+
+  const previewBadgeAnimationFrameRef = useRef<number | null>(null);
+
+  const latestPointerPositionRef = useRef({
+    x: 0,
+    y: 0,
+  });
+
+  useEffect(() => {
+    return () => {
+      if (previewBadgeAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(previewBadgeAnimationFrameRef.current);
+      }
+    };
+  }, []);
 
   const gridPath = useMemo(() => {
     const lines: string[] = [];
 
-    /*
-     * Lignes verticales internes.
-     * Le contour extérieur est déjà dessiné par le board.
-     */
     for (let col = 1; col < cols; col++) {
       const x = col * cellSize + 0.5;
 
       lines.push(`M ${x} 0 V ${boardHeight}`);
     }
 
-    /*
-     * Lignes horizontales internes.
-     */
     for (let row = 1; row < rows; row++) {
       const y = row * cellSize + 0.5;
 
@@ -85,10 +105,6 @@ export default function RectanglesBoard({
 
     return lines.join(" ");
   }, [rows, cols, cellSize, boardWidth, boardHeight]);
-
-  /* =========================================================
-     INDICES
-     ========================================================= */
 
   const renderedClues = useMemo(() => {
     return clues.map((clue) => {
@@ -102,6 +118,7 @@ export default function RectanglesBoard({
             width: `${cellSize}px`,
             height: `${cellSize}px`,
             fontSize: `${fontSize}px`,
+
             transform: `translate3d(
               ${clue.col * cellSize}px,
               ${clue.row * cellSize}px,
@@ -114,10 +131,6 @@ export default function RectanglesBoard({
       );
     });
   }, [clues, cellSize, fontSize]);
-
-  /* =========================================================
-     RECTANGLES POSÉS
-     ========================================================= */
 
   const renderedRectangles = useMemo(() => {
     return rectangles.map((rectangle, index) => {
@@ -149,6 +162,7 @@ export default function RectanglesBoard({
           style={{
             width: `${rectangle.width * cellSize}px`,
             height: `${rectangle.height * cellSize}px`,
+
             transform: `translate3d(
               ${rectangle.col * cellSize}px,
               ${rectangle.row * cellSize}px,
@@ -167,14 +181,11 @@ export default function RectanglesBoard({
     toggleColoredRectangles,
   ]);
 
-  /* =========================================================
-     POSITION SOURIS
-     ========================================================= */
-
-  const getPositionFromMouseEvent = (
-    event: React.MouseEvent<HTMLDivElement>,
+  const getPositionFromPointerEvent = (
+    event: React.PointerEvent<HTMLDivElement>,
   ): Position | null => {
     const board = event.currentTarget;
+
     const bounds = board.getBoundingClientRect();
 
     const x = event.clientX - bounds.left - board.clientLeft;
@@ -198,28 +209,115 @@ export default function RectanglesBoard({
     };
   };
 
-  /* =========================================================
-     ÉVÉNEMENTS SOURIS
-     ========================================================= */
+  const updatePreviewBadgePosition = (clientX: number, clientY: number) => {
+    latestPointerPositionRef.current = {
+      x: clientX,
+      y: clientY,
+    };
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    const position = getPositionFromMouseEvent(event);
+    if (previewBadgeAnimationFrameRef.current !== null) {
+      return;
+    }
+
+    previewBadgeAnimationFrameRef.current = requestAnimationFrame(() => {
+      previewBadgeAnimationFrameRef.current = null;
+
+      let badge = previewBadgeElementRef.current;
+
+      if (!badge || !badge.isConnected) {
+        badge = document.querySelector<HTMLElement>(
+          ".rectangles--previewBadge",
+        );
+
+        previewBadgeElementRef.current = badge;
+      }
+
+      if (!badge) {
+        return;
+      }
+
+      const { x: pointerX, y: pointerY } = latestPointerPositionRef.current;
+
+      const offset = 16;
+      const screenMargin = 8;
+
+      const badgeWidth = badge.offsetWidth || 40;
+      const badgeHeight = badge.offsetHeight || 28;
+
+      let badgeX = pointerX + offset;
+
+      let badgeY = pointerY + offset;
+
+      if (badgeX + badgeWidth > window.innerWidth - screenMargin) {
+        badgeX = pointerX - offset - badgeWidth;
+      }
+
+      if (badgeY + badgeHeight > window.innerHeight - screenMargin) {
+        badgeY = pointerY - offset - badgeHeight;
+      }
+
+      badgeX = Math.max(
+        screenMargin,
+        Math.min(badgeX, window.innerWidth - badgeWidth - screenMargin),
+      );
+
+      badgeY = Math.max(
+        screenMargin,
+        Math.min(badgeY, window.innerHeight - badgeHeight - screenMargin),
+      );
+
+      badge.style.transform = `translate3d(${Math.round(
+        badgeX,
+      )}px, ${Math.round(badgeY)}px, 0)`;
+    });
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    if (activePointerIdRef.current !== null) {
+      return;
+    }
+
+    const position = getPositionFromPointerEvent(event);
 
     if (!position) {
       return;
     }
 
+    event.preventDefault();
+
+    activePointerIdRef.current = event.pointerId;
+
     lastHoveredCellRef.current = position.row * cols + position.col;
+
+    lastValidPositionRef.current = position;
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    updatePreviewBadgePosition(event.clientX, event.clientY);
 
     onCellMouseDown(position, event);
   };
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const position = getPositionFromMouseEvent(event);
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointerIdRef.current !== event.pointerId) {
+      return;
+    }
+
+    event.preventDefault();
+
+    updatePreviewBadgePosition(event.clientX, event.clientY);
+
+    const position = getPositionFromPointerEvent(event);
 
     if (!position) {
       return;
     }
+
+    lastValidPositionRef.current = position;
 
     const index = position.row * cols + position.col;
 
@@ -232,25 +330,78 @@ export default function RectanglesBoard({
     onCellMouseEnter(position);
   };
 
-  const handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
-    const position = getPositionFromMouseEvent(event);
-
-    if (!position) {
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointerIdRef.current !== event.pointerId) {
       return;
     }
 
-    onCellMouseUp(position);
+    event.preventDefault();
+
+    updatePreviewBadgePosition(event.clientX, event.clientY);
+
+    const position =
+      getPositionFromPointerEvent(event) ?? lastValidPositionRef.current;
+
+    if (position) {
+      onCellMouseUp(position);
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    activePointerIdRef.current = null;
+
+    lastHoveredCellRef.current = null;
+
+    lastValidPositionRef.current = null;
   };
 
-  const handleMouseLeave = () => {
+  const handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointerIdRef.current !== event.pointerId) {
+      return;
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    activePointerIdRef.current = null;
+
     lastHoveredCellRef.current = null;
+
+    lastValidPositionRef.current = null;
 
     onBoardMouseLeave();
   };
 
-  /* =========================================================
-     RENDU
-     ========================================================= */
+  const handlePointerLeave = () => {
+    if (activePointerIdRef.current !== null) {
+      return;
+    }
+
+    lastHoveredCellRef.current = null;
+
+    lastValidPositionRef.current = null;
+
+    onBoardMouseLeave();
+  };
+
+  const handleLostPointerCapture = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    if (activePointerIdRef.current !== event.pointerId) {
+      return;
+    }
+
+    activePointerIdRef.current = null;
+
+    lastHoveredCellRef.current = null;
+
+    lastValidPositionRef.current = null;
+
+    onBoardMouseLeave();
+  };
 
   return (
     <div
@@ -259,12 +410,14 @@ export default function RectanglesBoard({
         width: `${boardWidth}px`,
         height: `${boardHeight}px`,
       }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      onPointerLeave={handlePointerLeave}
+      onLostPointerCapture={handleLostPointerCapture}
+      onContextMenu={(event) => event.preventDefault()}
     >
-      {/* Grille complète en un seul élément SVG */}
       <svg
         className="rectanglesBoard--grid"
         width={boardWidth}
@@ -275,28 +428,37 @@ export default function RectanglesBoard({
         <path d={gridPath} className="rectanglesBoard--gridLines" />
       </svg>
 
-      {/* Rectangles posés */}
       <div className="rectanglesBoard--savedRectanglesLayer">
         {renderedRectangles}
       </div>
 
-      {/* Preview */}
       {previewRectangle && (
         <div
-          className="rectanglesBoard--previewRectangle"
+          className={[
+            "rectanglesBoard--previewRectangle",
+
+            toggleFilledRectangles
+              ? "rectanglesBoard--previewRectangleFilled"
+              : "",
+
+            toggleColoredRectangles
+              ? "rectanglesBoard--previewRectangleColored"
+              : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
           style={{
             width: `${previewRectangle.width * cellSize}px`,
             height: `${previewRectangle.height * cellSize}px`,
             transform: `translate3d(
-              ${previewRectangle.col * cellSize}px,
-              ${previewRectangle.row * cellSize}px,
-              0
-            )`,
+        ${previewRectangle.col * cellSize}px,
+        ${previewRectangle.row * cellSize}px,
+        0
+      )`,
           }}
         />
       )}
 
-      {/* Les indices restent toujours au-dessus */}
       <div className="rectanglesBoard--cluesLayer">{renderedClues}</div>
     </div>
   );

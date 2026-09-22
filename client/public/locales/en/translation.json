@@ -33,7 +33,8 @@
       "roundsToWin": "Rounds to Win",
       "swapRolesOnRematch": "Swap roles on rematch",
       "turnTime": "Turn Time",
-      "waitingRoom": "Waiting Room"
+      "waitingRoom": "Waiting Room",
+      "time": "Time"
     },
     "modes": {
       "selectGameMode": "Select game mode",
@@ -207,7 +208,8 @@
         "showErrors": "Show errors",
         "previewCounter": "Preview counter",
         "coloredRectangles": "Colored rectangles",
-        "fillRectangles": "Fill rectangles"
+        "fillRectangles": "Fill rectangles",
+        "showTimer": "Show timer"
       }
     },
     "ultimatetictactoe": {

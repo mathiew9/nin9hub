@@ -33,7 +33,8 @@
       "roundsToWin": "Rondas para ganar",
       "swapRolesOnRematch": "Intercambiar roles en la revancha",
       "turnTime": "Tiempo por turno",
-      "waitingRoom": "Sala de espera"
+      "waitingRoom": "Sala de espera",
+      "time": "Tiempo"
     },
     "modes": {
       "selectGameMode": "Seleccionar modo de juego",
@@ -207,7 +208,8 @@
         "showErrors": "Mostrar errores",
         "previewCounter": "Contador de vista previa",
         "coloredRectangles": "Rectángulos coloreados",
-        "fillRectangles": "Rellenar rectángulos"
+        "fillRectangles": "Rellenar rectángulos",
+        "showTimer": "Mostrar cronometro"
       }
     },
     "ultimatetictactoe": {

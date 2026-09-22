@@ -12,6 +12,7 @@ import type {
   Position,
   RectangleShape,
   RectanglesPuzzle,
+  RectanglesSettingsState,
   RectanglesStorageState,
 } from "./rectanglesTypes";
 import "./Rectangles.css";
@@ -45,6 +46,26 @@ function loadRectanglesStorage(): RectanglesStorageState {
   }
 
   return saved;
+}
+
+const DEFAULT_RECTANGLES_SETTINGS: RectanglesSettingsState = {
+  showRuleErrors: true,
+  showPreviewArea: true,
+  coloredRectangles: true,
+  filledRectangles: true,
+  showTimer: true,
+  zoom: 150,
+};
+
+function loadRectanglesSettings(): RectanglesSettingsState {
+  const saved = loadGame<Partial<RectanglesSettingsState>>(
+    STORAGE_KEYS.rectanglesSettings,
+  );
+
+  return {
+    ...DEFAULT_RECTANGLES_SETTINGS,
+    ...saved,
+  };
 }
 
 function loadSavedGameForSize(size: GridSize): {
@@ -203,10 +224,16 @@ function formatTime(totalSeconds: number) {
 }
 
 export default function Rectangles() {
+  const initialSettings = useMemo(() => loadRectanglesSettings(), []);
+
   const { t } = useTranslation();
+
   const [showZoomControls, setShowZoomControls] = useState(false);
   const [showSettingsControls, setShowSettingsControls] = useState(false);
-  const [zoom, setZoom] = useState(150);
+  const [zoom, setZoom] = useState(initialSettings.zoom);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<
+    "actions" | "sizes" | null
+  >(null);
 
   const initialGame = useMemo(
     () =>
@@ -233,6 +260,7 @@ export default function Rectangles() {
   const [showWinPanel, setShowWinPanel] = useState(true);
 
   const previewBadgeRef = useRef<HTMLDivElement | null>(null);
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
 
   const pointerPositionRef = useRef({
     x: 0,
@@ -278,11 +306,19 @@ export default function Rectangles() {
     };
   }, []);
 
-  const [showRuleErrors, setShowRuleErrors] = useState(true);
-  const [showPreviewArea, setShowPreviewArea] = useState(true);
-  const [toggleColoredRectangles, setToggleColoredRectangles] = useState(true);
-  const [toggleFilledRectangles, setToggleFilledRectangles] = useState(true);
-  const [showTimer, setShowTimer] = useState(true);
+  const [showRuleErrors, setShowRuleErrors] = useState(
+    initialSettings.showRuleErrors,
+  );
+  const [showPreviewArea, setShowPreviewArea] = useState(
+    initialSettings.showPreviewArea,
+  );
+  const [toggleColoredRectangles, setToggleColoredRectangles] = useState(
+    initialSettings.coloredRectangles,
+  );
+  const [toggleFilledRectangles, setToggleFilledRectangles] = useState(
+    initialSettings.filledRectangles,
+  );
+  const [showTimer, setShowTimer] = useState(initialSettings.showTimer);
   const [elapsedSeconds, setElapsedSeconds] = useState(
     initialGame.elapsedSeconds,
   );
@@ -298,6 +334,45 @@ export default function Rectangles() {
   const gameWon = useMemo(() => {
     return areRectanglesSetsEqual(rectangles, puzzle.solution);
   }, [rectangles, puzzle.solution]);
+
+  useEffect(() => {
+    const settings: RectanglesSettingsState = {
+      showRuleErrors,
+      showPreviewArea,
+      coloredRectangles: toggleColoredRectangles,
+      filledRectangles: toggleFilledRectangles,
+      showTimer,
+      zoom,
+    };
+
+    saveGame(STORAGE_KEYS.rectanglesSettings, settings);
+  }, [
+    showRuleErrors,
+    showPreviewArea,
+    toggleColoredRectangles,
+    toggleFilledRectangles,
+    showTimer,
+    zoom,
+  ]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
+        setMobileMenuOpen(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     if (gameWon) {
@@ -471,8 +546,108 @@ export default function Rectangles() {
 
   return (
     <div className="rectangles">
+      <div ref={mobileMenuRef} className="rectangles--mobileTopBar">
+        <div className="rectangles--mobileMenuSlot">
+          <button
+            type="button"
+            className={`rectangles--mobileTopButton ${
+              mobileMenuOpen === "actions"
+                ? "rectangles--mobileTopButtonActive"
+                : ""
+            }`}
+            onClick={() =>
+              setMobileMenuOpen((prev) =>
+                prev === "actions" ? null : "actions",
+              )
+            }
+          >
+            {t("games.rectangles.labels.actions")}
+          </button>
+
+          {mobileMenuOpen === "actions" && (
+            <div className="rectangles--mobileDropdown">
+              <div className="rectangles--actionButtons">
+                <button
+                  type="button"
+                  className="rectangles--sideButton"
+                  onClick={() => {
+                    handleNewGrid();
+                    setMobileMenuOpen(null);
+                  }}
+                >
+                  {t("common.actions.newGrid")}
+                </button>
+
+                <button
+                  type="button"
+                  className="rectangles--sideButton"
+                  onClick={() => {
+                    handleClearRectangles();
+                    setMobileMenuOpen(null);
+                  }}
+                >
+                  {t("common.actions.erase")}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="rectangles--mobileTimerSlot">
+          {showTimer && (
+            <div className="rectangles--timer">
+              {formatTime(elapsedSeconds)}
+            </div>
+          )}
+        </div>
+
+        <div className="rectangles--mobileMenuSlot">
+          <button
+            type="button"
+            className={`rectangles--mobileTopButton ${
+              mobileMenuOpen === "sizes"
+                ? "rectangles--mobileTopButtonActive"
+                : ""
+            }`}
+            onClick={() =>
+              setMobileMenuOpen((prev) => (prev === "sizes" ? null : "sizes"))
+            }
+          >
+            {t("games.rectangles.labels.sizes")}
+          </button>
+
+          {mobileMenuOpen === "sizes" && (
+            <div className="rectangles--mobileDropdown rectangles--mobileDropdownRight">
+              <div className="rectangles--sizeButtons">
+                {AVAILABLE_SIZES.map((size) => {
+                  const isActive =
+                    size.rows === selectedSize.rows &&
+                    size.cols === selectedSize.cols;
+
+                  return (
+                    <button
+                      key={`${size.rows}x${size.cols}`}
+                      type="button"
+                      className={`rectangles--sizeButton ${
+                        isActive ? "rectangles--sizeButtonActive" : ""
+                      }`}
+                      onClick={() => {
+                        handleSizeChange(size);
+                        setMobileMenuOpen(null);
+                      }}
+                    >
+                      {size.rows} x {size.cols}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="rectangles--sideWrapper">
-        <div className="rectangles--sidePanel">
+        <div className="rectangles--sidePanel rectangles--actionsPanel">
           <div className="rectangles--sideLabel">
             {t("games.rectangles.labels.actions")}
           </div>
@@ -496,7 +671,7 @@ export default function Rectangles() {
           </div>
         </div>
 
-        <div className="rectangles--sidePanel">
+        <div className="rectangles--sidePanel rectangles--sizesPanel">
           <div className="rectangles--sideLabel">
             {t("games.rectangles.labels.sizes")}
           </div>
@@ -576,7 +751,7 @@ export default function Rectangles() {
                 {t("games.rectangles.puzzleCompletedMessage")}
                 {showTimer && (
                   <div className="rectangles--winTime">
-                    Temps : {formatTime(elapsedSeconds)}
+                    {t("common.labels.time")} : {formatTime(elapsedSeconds)}
                   </div>
                 )}
               </div>
@@ -657,7 +832,7 @@ export default function Rectangles() {
                   onChange={(event) => setShowTimer(event.target.checked)}
                 />
 
-                <span>Afficher le timer</span>
+                <span>{t("games.rectangles.settings.showTimer")}</span>
               </label>
             </div>
           </div>

@@ -3,6 +3,37 @@
    ========================================================= */
 
 .rectanglesBoard {
+  /* -------------------------------------------------------
+     VARIABLES DU THÈME
+     ------------------------------------------------------- */
+
+  --board-border: rgba(255, 255, 255, 0.75);
+  --board-background: rgba(255, 255, 255, 0.02);
+
+  --board-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+
+  --grid-line: rgba(255, 255, 255, 0.22);
+
+  --clue-color: rgba(255, 255, 255, 0.92);
+
+  --rectangle-default-border: rgba(255, 255, 255, 0.72);
+
+  --rectangle-neutral-fill: rgb(42, 44, 52);
+
+  --preview-border: rgba(167, 139, 250, 0.95);
+
+  --preview-fill: rgba(124, 92, 255, 0.12);
+
+  --error-border: rgb(255, 92, 92);
+
+  --error-fill: rgb(125, 45, 45);
+
+  --error-stripe: rgb(255, 92, 92);
+
+  /* -------------------------------------------------------
+     STRUCTURE
+     ------------------------------------------------------- */
+
   position: relative;
 
   flex: 0 0 auto;
@@ -11,14 +42,28 @@
 
   box-sizing: content-box;
 
-  border: 2px solid rgba(255, 255, 255, 0.75);
+  border: 2px solid var(--board-border);
   border-radius: 8px;
 
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--board-background);
 
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--board-shadow);
 
   user-select: none;
+  -webkit-user-select: none;
+
+  /*
+   * Important sur téléphone :
+   * le navigateur ne transforme pas le drag
+   * sur la grille en scroll / pinch / gesture.
+   */
+  touch-action: none;
+
+  /*
+   * Évite notamment le menu contextuel tactile
+   * sur certains navigateurs mobiles.
+   */
+  -webkit-touch-callout: none;
 
   /*
    * Le navigateur sait que ce composant est une zone
@@ -45,7 +90,7 @@
 .rectanglesBoard--gridLines {
   fill: none;
 
-  stroke: rgba(255, 255, 255, 0.22);
+  stroke: var(--grid-line);
   stroke-width: 1;
 
   stroke-dasharray: 4 4;
@@ -72,6 +117,7 @@
 
 .rectanglesBoard--savedRectangle {
   position: absolute;
+
   top: 0;
   left: 0;
 
@@ -84,17 +130,19 @@
  * Le parent conserve la taille logique exacte du rectangle.
  * Le rendu visuel réel est légèrement rentré à l'intérieur.
  */
+
 .rectanglesBoard--savedRectangle::before {
   content: "";
 
   position: absolute;
+
   inset: 3px;
 
   z-index: 0;
 
   box-sizing: border-box;
 
-  border: 2px solid var(--rectangle-border, rgba(255, 255, 255, 0.72));
+  border: 2px solid var(--rectangle-border, var(--rectangle-default-border));
 
   border-radius: 11px;
 
@@ -108,7 +156,7 @@
    ========================================================= */
 
 .rectanglesBoard--savedRectangleFilled {
-  --rectangle-fill: rgb(42, 44, 52);
+  --rectangle-fill: var(--rectangle-neutral-fill);
 }
 
 /* =========================================================
@@ -119,59 +167,83 @@
   --rectangle-border: var(--rectangle-color);
 }
 
-/* Violet */
+/* ---------------------------------------------------------
+   VIOLET
+   --------------------------------------------------------- */
 
 .rectanglesBoard--rectangleColor0 {
   --rectangle-color: rgb(139, 110, 235);
+
   --rectangle-fill-color: rgb(78, 61, 132);
 }
 
-/* Bleu */
+/* ---------------------------------------------------------
+   BLEU
+   --------------------------------------------------------- */
 
 .rectanglesBoard--rectangleColor1 {
   --rectangle-color: rgb(82, 145, 230);
+
   --rectangle-fill-color: rgb(46, 82, 131);
 }
 
-/* Vert */
+/* ---------------------------------------------------------
+   VERT
+   --------------------------------------------------------- */
 
 .rectanglesBoard--rectangleColor2 {
   --rectangle-color: rgb(73, 190, 119);
+
   --rectangle-fill-color: rgb(41, 105, 67);
 }
 
-/* Orange */
+/* ---------------------------------------------------------
+   ORANGE
+   --------------------------------------------------------- */
 
 .rectanglesBoard--rectangleColor3 {
   --rectangle-color: rgb(230, 132, 65);
+
   --rectangle-fill-color: rgb(128, 74, 37);
 }
 
-/* Rose */
+/* ---------------------------------------------------------
+   ROSE
+   --------------------------------------------------------- */
 
 .rectanglesBoard--rectangleColor4 {
   --rectangle-color: rgb(213, 98, 157);
+
   --rectangle-fill-color: rgb(119, 55, 88);
 }
 
-/* Cyan */
+/* ---------------------------------------------------------
+   CYAN
+   --------------------------------------------------------- */
 
 .rectanglesBoard--rectangleColor5 {
   --rectangle-color: rgb(48, 181, 198);
+
   --rectangle-fill-color: rgb(27, 100, 110);
 }
 
-/* Jaune */
+/* ---------------------------------------------------------
+   JAUNE
+   --------------------------------------------------------- */
 
 .rectanglesBoard--rectangleColor6 {
   --rectangle-color: rgb(218, 180, 52);
+
   --rectangle-fill-color: rgb(120, 99, 29);
 }
 
-/* Indigo */
+/* ---------------------------------------------------------
+   INDIGO
+   --------------------------------------------------------- */
 
 .rectanglesBoard--rectangleColor7 {
   --rectangle-color: rgb(112, 122, 235);
+
   --rectangle-fill-color: rgb(62, 68, 131);
 }
 
@@ -179,6 +251,7 @@
  * Rempli + coloré :
  * le fond utilise la couleur associée au contour.
  */
+
 .rectanglesBoard--savedRectangleFilled.rectanglesBoard--savedRectangleColored {
   --rectangle-fill: var(--rectangle-fill-color);
 }
@@ -188,30 +261,34 @@
    ========================================================= */
 
 /*
- * Tous les rectangles invalides utilisent la même
- * couleur d'erreur.
+ * Tous les rectangles invalides utilisent
+ * la même couleur d'erreur.
  */
+
 .rectanglesBoard--savedRectangleInvalid {
-  --rectangle-border: rgb(255, 92, 92);
-  --rectangle-fill-color: rgb(125, 45, 45);
+  --rectangle-border: var(--error-border);
+
+  --rectangle-fill-color: var(--error-fill);
 }
 
 /*
- * Si le rectangle invalide est rempli,
- * son remplissage utilise également la couleur d'erreur.
+ * Rectangle invalide rempli.
  */
+
 .rectanglesBoard--savedRectangleInvalid.rectanglesBoard--savedRectangleFilled {
-  --rectangle-fill: rgb(125, 45, 45);
+  --rectangle-fill: var(--error-fill);
 }
 
 /*
- * Les dashs intérieurs apparaissent uniquement
+ * Les rayures intérieures apparaissent uniquement
  * pour les rectangles invalides remplis.
  */
+
 .rectanglesBoard--savedRectangleInvalid.rectanglesBoard--savedRectangleFilled::after {
   content: "";
 
   position: absolute;
+
   inset: 8px;
 
   z-index: 1;
@@ -220,8 +297,8 @@
 
   background: repeating-linear-gradient(
     135deg,
-    rgb(255, 92, 92) 0,
-    rgb(255, 92, 92) 2px,
+    var(--error-stripe) 0,
+    var(--error-stripe) 2px,
     transparent 2px,
     transparent 9px
   );
@@ -235,6 +312,7 @@
 
 .rectanglesBoard--previewRectangle {
   position: absolute;
+
   top: 0;
   left: 0;
 
@@ -242,14 +320,42 @@
 
   box-sizing: border-box;
 
-  border: 2px solid rgba(167, 139, 250, 0.95);
+  /*
+   * Par défaut :
+   * pas coloré + pas rempli.
+   */
+  border: 2px solid var(--rectangle-default-border);
   border-radius: 11px;
 
-  background: rgba(124, 92, 255, 0.12);
+  background: transparent;
 
   pointer-events: none;
 
   will-change: transform, width, height;
+}
+
+/* =========================================================
+   PREVIEW REMPLI
+   ========================================================= */
+
+.rectanglesBoard--previewRectangleFilled {
+  background: var(--rectangle-neutral-fill);
+}
+
+/* =========================================================
+   PREVIEW COLORÉ
+   ========================================================= */
+
+.rectanglesBoard--previewRectangleColored {
+  border-color: var(--preview-border);
+}
+
+/* =========================================================
+   PREVIEW REMPLI + COLORÉ
+   ========================================================= */
+
+.rectanglesBoard--previewRectangleFilled.rectanglesBoard--previewRectangleColored {
+  background: var(--preview-fill);
 }
 
 /* =========================================================
@@ -258,6 +364,7 @@
 
 .rectanglesBoard--cluesLayer {
   position: absolute;
+
   inset: 0;
 
   z-index: 10;
@@ -267,6 +374,7 @@
 
 .rectanglesBoard--clue {
   position: absolute;
+
   top: 0;
   left: 0;
 
@@ -279,8 +387,151 @@
   font-weight: 700;
   line-height: 1;
 
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--clue-color);
 
   user-select: none;
+  -webkit-user-select: none;
+
   pointer-events: none;
+}
+
+/* =========================================================
+   LIGHT THEME
+   ========================================================= */
+
+:root[data-theme="light"] .rectanglesBoard,
+[data-theme="light"] .rectanglesBoard,
+.light .rectanglesBoard,
+.theme-light .rectanglesBoard {
+  --board-border: rgba(15, 23, 42, 0.48);
+
+  --board-background: rgba(255, 255, 255, 0.82);
+
+  --board-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+
+  --grid-line: rgba(15, 23, 42, 0.22);
+
+  --clue-color: rgba(15, 23, 42, 0.92);
+
+  --rectangle-default-border: rgba(15, 23, 42, 0.65);
+
+  --rectangle-neutral-fill: rgb(226, 232, 240);
+
+  --preview-border: rgb(124, 92, 255);
+
+  --preview-fill: rgba(124, 92, 255, 0.11);
+
+  --error-border: rgb(220, 38, 38);
+
+  --error-fill: rgb(254, 226, 226);
+
+  --error-stripe: rgba(220, 38, 38, 0.7);
+}
+
+/* =========================================================
+   LIGHT THEME - COULEURS DES RECTANGLES
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   VIOLET
+   --------------------------------------------------------- */
+
+:root[data-theme="light"] .rectanglesBoard--rectangleColor0,
+[data-theme="light"] .rectanglesBoard--rectangleColor0,
+.light .rectanglesBoard--rectangleColor0,
+.theme-light .rectanglesBoard--rectangleColor0 {
+  --rectangle-color: rgb(124, 92, 255);
+
+  --rectangle-fill-color: rgb(237, 233, 254);
+}
+
+/* ---------------------------------------------------------
+   BLEU
+   --------------------------------------------------------- */
+
+:root[data-theme="light"] .rectanglesBoard--rectangleColor1,
+[data-theme="light"] .rectanglesBoard--rectangleColor1,
+.light .rectanglesBoard--rectangleColor1,
+.theme-light .rectanglesBoard--rectangleColor1 {
+  --rectangle-color: rgb(59, 130, 246);
+
+  --rectangle-fill-color: rgb(219, 234, 254);
+}
+
+/* ---------------------------------------------------------
+   VERT
+   --------------------------------------------------------- */
+
+:root[data-theme="light"] .rectanglesBoard--rectangleColor2,
+[data-theme="light"] .rectanglesBoard--rectangleColor2,
+.light .rectanglesBoard--rectangleColor2,
+.theme-light .rectanglesBoard--rectangleColor2 {
+  --rectangle-color: rgb(34, 197, 94);
+
+  --rectangle-fill-color: rgb(220, 252, 231);
+}
+
+/* ---------------------------------------------------------
+   ORANGE
+   --------------------------------------------------------- */
+
+:root[data-theme="light"] .rectanglesBoard--rectangleColor3,
+[data-theme="light"] .rectanglesBoard--rectangleColor3,
+.light .rectanglesBoard--rectangleColor3,
+.theme-light .rectanglesBoard--rectangleColor3 {
+  --rectangle-color: rgb(234, 88, 12);
+
+  --rectangle-fill-color: rgb(255, 237, 213);
+}
+
+/* ---------------------------------------------------------
+   ROSE
+   --------------------------------------------------------- */
+
+:root[data-theme="light"] .rectanglesBoard--rectangleColor4,
+[data-theme="light"] .rectanglesBoard--rectangleColor4,
+.light .rectanglesBoard--rectangleColor4,
+.theme-light .rectanglesBoard--rectangleColor4 {
+  --rectangle-color: rgb(219, 39, 119);
+
+  --rectangle-fill-color: rgb(252, 231, 243);
+}
+
+/* ---------------------------------------------------------
+   CYAN
+   --------------------------------------------------------- */
+
+:root[data-theme="light"] .rectanglesBoard--rectangleColor5,
+[data-theme="light"] .rectanglesBoard--rectangleColor5,
+.light .rectanglesBoard--rectangleColor5,
+.theme-light .rectanglesBoard--rectangleColor5 {
+  --rectangle-color: rgb(8, 145, 178);
+
+  --rectangle-fill-color: rgb(207, 250, 254);
+}
+
+/* ---------------------------------------------------------
+   JAUNE
+   --------------------------------------------------------- */
+
+:root[data-theme="light"] .rectanglesBoard--rectangleColor6,
+[data-theme="light"] .rectanglesBoard--rectangleColor6,
+.light .rectanglesBoard--rectangleColor6,
+.theme-light .rectanglesBoard--rectangleColor6 {
+  --rectangle-color: rgb(202, 138, 4);
+
+  --rectangle-fill-color: rgb(254, 249, 195);
+}
+
+/* ---------------------------------------------------------
+   INDIGO
+   --------------------------------------------------------- */
+
+:root[data-theme="light"] .rectanglesBoard--rectangleColor7,
+[data-theme="light"] .rectanglesBoard--rectangleColor7,
+.light .rectanglesBoard--rectangleColor7,
+.theme-light .rectanglesBoard--rectangleColor7 {
+  --rectangle-color: rgb(79, 70, 229);
+
+  --rectangle-fill-color: rgb(224, 231, 255);
 }

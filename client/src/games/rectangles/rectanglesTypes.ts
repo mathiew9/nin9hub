@@ -56,3 +56,12 @@ export type RectanglesStorageState = {
   version: 1;
   sizes: Record<string, RectanglesSavedSizeState>;
 };
+
+export type RectanglesSettingsState = {
+  showRuleErrors: boolean;
+  showPreviewArea: boolean;
+  coloredRectangles: boolean;
+  filledRectangles: boolean;
+  showTimer: boolean;
+  zoom: number;
+};

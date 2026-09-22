@@ -4,6 +4,7 @@ const PREFIX = "ninehub.";
 
 export const STORAGE_KEYS = {
   rectangles: "games.rectangles",
+  rectanglesSettings: "games.rectangles.settings",
 } as const;
 
 export function saveGame<T>(key: string, data: T): void {

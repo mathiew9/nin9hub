@@ -13,7 +13,7 @@
   position: relative;
 
   flex: 1;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 172px);
 
   display: flex;
   align-items: center;
@@ -39,8 +39,50 @@
   box-shadow:
     0 20px 45px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
 
-  /* backdrop-filter supprimé */
+/* =========================================================
+   TIMER
+   ========================================================= */
+
+.rectangles--timerArea {
+  position: sticky;
+  top: 0;
+
+  z-index: 100;
+
+  flex-shrink: 0;
+
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rectangles--timer {
+  min-width: 88px;
+
+  padding: 8px 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+
+  background: rgb(24, 27, 37);
+  color: rgba(255, 255, 255, 0.92);
+
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+
+  text-align: center;
+
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  user-select: none;
 }
 
 /* =========================================================
@@ -49,6 +91,7 @@
 
 .rectangles--sideWrapper {
   position: fixed;
+
   top: 90px;
   left: 20px;
 
@@ -56,6 +99,7 @@
 
   display: flex;
   flex-direction: column;
+
   gap: 12px;
 }
 
@@ -71,8 +115,6 @@
   color: #f8fafc;
 
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
-
-  backdrop-filter: blur(10px);
 }
 
 .rectangles--sideLabel {
@@ -92,6 +134,7 @@
 .rectangles--sizeButtons {
   display: flex;
   flex-direction: column;
+
   gap: 8px;
 }
 
@@ -134,55 +177,44 @@
 }
 
 /* =========================================================
-   ID DU PUZZLE
+   BOUTONS ACTIONS / TAILLES MOBILE
    ========================================================= */
 
-.rectangles--puzzleId {
-  position: fixed;
-  bottom: 55px;
-  left: 15px;
-  font-family: monospace;
-  font-size: 11px;
-  text-align: center;
-
-  opacity: 0.35;
-
-  user-select: text;
+.rectangles--mobileTopBar {
+  display: none;
 }
 
-/* =========================================================
-   COMPTEUR DE PREVIEW
-   ========================================================= */
+.rectangles--mobileSideToggle {
+  min-width: 86px;
+  min-height: 38px;
 
-.rectangles--previewBadge {
-  position: fixed;
-  top: 0;
-  left: 0;
+  padding: 8px 12px;
 
-  z-index: 2000;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
 
-  min-width: 28px;
-  height: 28px;
+  background: rgb(24, 27, 37);
+  color: #f8fafc;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0 8px;
-
-  border-radius: 999px;
-
-  background: rgba(167, 139, 250, 0.96);
-  color: #ffffff;
-
+  font-size: 0.85rem;
   font-weight: 700;
-  line-height: 1;
 
-  pointer-events: none;
+  cursor: pointer;
 
-  will-change: transform;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.rectangles--mobileSideToggle:hover {
+  background: rgb(37, 40, 52);
+}
+
+.rectangles--mobileSideToggleActive {
+  background: rgb(48, 51, 65);
 }
 
 /* =========================================================
@@ -235,8 +267,6 @@
 
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 
-  backdrop-filter: blur(6px);
-
   transition:
     transform 0.2s ease,
     background 0.2s ease,
@@ -264,7 +294,7 @@
 }
 
 /* =========================================================
-   PANNEAUX FLOTTANTS COMMUNS
+   PANNEAUX FLOTTANTS
    ========================================================= */
 
 .rectangles--settingsPanel,
@@ -282,8 +312,6 @@
   color: #f8fafc;
 
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
-
-  backdrop-filter: blur(10px);
 
   animation: rectanglesPanelFadeIn 0.18s ease;
 }
@@ -437,14 +465,69 @@
 }
 
 /* =========================================================
+   ID DU PUZZLE
+   ========================================================= */
+
+.rectangles--puzzleId {
+  position: fixed;
+
+  bottom: 55px;
+  left: 15px;
+
+  font-family: monospace;
+  font-size: 11px;
+  text-align: center;
+
+  opacity: 0.35;
+
+  user-select: text;
+}
+
+/* =========================================================
+   COMPTEUR DE PREVIEW
+   ========================================================= */
+
+.rectangles--previewBadge {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  z-index: 2000;
+
+  min-width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 8px;
+
+  border-radius: 999px;
+
+  background: rgba(167, 139, 250, 0.96);
+  color: #ffffff;
+
+  font-weight: 700;
+  line-height: 1;
+
+  pointer-events: none;
+
+  will-change: transform;
+
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+/* =========================================================
    VICTOIRE
    ========================================================= */
 
 .rectangles--winOverlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
 
-  z-index: 1200;
+  z-index: 3000;
 
   display: flex;
   align-items: center;
@@ -452,13 +535,13 @@
 
   padding: 24px;
 
-  background: rgba(8, 10, 16, 0.42);
-
-  backdrop-filter: blur(3px);
+  background: rgba(5, 7, 12, 0.72);
 }
 
 .rectangles--winPanel {
   position: relative;
+
+  z-index: 1;
 
   width: min(360px, calc(100vw - 48px));
 
@@ -467,11 +550,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 22px;
 
-  background: linear-gradient(
-    180deg,
-    rgba(18, 22, 34, 0.96),
-    rgba(11, 14, 24, 0.96)
-  );
+  background: linear-gradient(180deg, rgb(18, 22, 34), rgb(11, 14, 24));
 
   color: #f8fafc;
 
@@ -484,6 +563,7 @@
 
 .rectangles--winClose {
   position: absolute;
+
   top: 10px;
   right: 10px;
 
@@ -544,6 +624,16 @@
   color: rgba(248, 250, 252, 0.82);
 }
 
+.rectangles--winTime {
+  margin-top: 12px;
+
+  font-family: monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+
+  color: #ffffff;
+}
+
 .rectangles--winButton {
   min-width: 140px;
   min-height: 42px;
@@ -586,6 +676,255 @@
 }
 
 /* =========================================================
+   LIGHT THEME
+   ========================================================= */
+
+:root[data-theme="light"] .rectangles--boardShell,
+[data-theme="light"] .rectangles--boardShell,
+.light .rectangles--boardShell,
+.theme-light .rectangles--boardShell {
+  background: rgb(248, 249, 252);
+
+  border-color: rgba(15, 23, 42, 0.1);
+
+  box-shadow:
+    0 20px 45px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme="light"] .rectangles--timer,
+[data-theme="light"] .rectangles--timer,
+.light .rectangles--timer,
+.theme-light .rectangles--timer {
+  background: rgb(255, 255, 255);
+  color: #1f2937;
+
+  border-color: rgba(15, 23, 42, 0.1);
+
+  box-shadow:
+    0 6px 16px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+:root[data-theme="light"] .rectangles--sidePanel,
+[data-theme="light"] .rectangles--sidePanel,
+.light .rectangles--sidePanel,
+.theme-light .rectangles--sidePanel,
+:root[data-theme="light"] .rectangles--settingsPanel,
+[data-theme="light"] .rectangles--settingsPanel,
+.light .rectangles--settingsPanel,
+.theme-light .rectangles--settingsPanel,
+:root[data-theme="light"] .rectangles--zoomPanel,
+[data-theme="light"] .rectangles--zoomPanel,
+.light .rectangles--zoomPanel,
+.theme-light .rectangles--zoomPanel {
+  background: rgb(255, 255, 255);
+  color: #1f2937;
+
+  border-color: rgba(15, 23, 42, 0.1);
+
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+
+:root[data-theme="light"] .rectangles--sideLabel,
+[data-theme="light"] .rectangles--sideLabel,
+.light .rectangles--sideLabel,
+.theme-light .rectangles--sideLabel,
+:root[data-theme="light"] .rectangles--settingsLabel,
+[data-theme="light"] .rectangles--settingsLabel,
+.light .rectangles--settingsLabel,
+.theme-light .rectangles--settingsLabel,
+:root[data-theme="light"] .rectangles--zoomLabel,
+[data-theme="light"] .rectangles--zoomLabel,
+.light .rectangles--zoomLabel,
+.theme-light .rectangles--zoomLabel {
+  color: #1f2937;
+}
+
+:root[data-theme="light"] .rectangles--sideButton,
+[data-theme="light"] .rectangles--sideButton,
+.light .rectangles--sideButton,
+.theme-light .rectangles--sideButton,
+:root[data-theme="light"] .rectangles--sizeButton,
+[data-theme="light"] .rectangles--sizeButton,
+.light .rectangles--sizeButton,
+.theme-light .rectangles--sizeButton,
+:root[data-theme="light"] .rectangles--zoomAction,
+[data-theme="light"] .rectangles--zoomAction,
+.light .rectangles--zoomAction,
+.theme-light .rectangles--zoomAction {
+  background: rgba(15, 23, 42, 0.06);
+  color: #1f2937;
+}
+
+:root[data-theme="light"] .rectangles--sideButton:hover,
+[data-theme="light"] .rectangles--sideButton:hover,
+.light .rectangles--sideButton:hover,
+.theme-light .rectangles--sideButton:hover,
+:root[data-theme="light"] .rectangles--sizeButton:hover,
+[data-theme="light"] .rectangles--sizeButton:hover,
+.light .rectangles--sizeButton:hover,
+.theme-light .rectangles--sizeButton:hover,
+:root[data-theme="light"] .rectangles--zoomAction:hover,
+[data-theme="light"] .rectangles--zoomAction:hover,
+.light .rectangles--zoomAction:hover,
+.theme-light .rectangles--zoomAction:hover {
+  background: rgba(15, 23, 42, 0.11);
+}
+
+:root[data-theme="light"] .rectangles--sizeButtonActive,
+[data-theme="light"] .rectangles--sizeButtonActive,
+.light .rectangles--sizeButtonActive,
+.theme-light .rectangles--sizeButtonActive {
+  background: rgba(124, 92, 255, 0.14);
+
+  box-shadow: inset 0 0 0 1px rgba(124, 92, 255, 0.45);
+}
+
+:root[data-theme="light"] .rectangles--toggleRow,
+[data-theme="light"] .rectangles--toggleRow,
+.light .rectangles--toggleRow,
+.theme-light .rectangles--toggleRow {
+  color: rgba(31, 41, 55, 0.92);
+}
+
+:root[data-theme="light"] .rectangles--floatingToggle,
+[data-theme="light"] .rectangles--floatingToggle,
+.light .rectangles--floatingToggle,
+.theme-light .rectangles--floatingToggle {
+  background: rgb(255, 255, 255);
+  color: #1f2937;
+
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16);
+}
+
+:root[data-theme="light"] .rectangles--floatingToggle:hover,
+[data-theme="light"] .rectangles--floatingToggle:hover,
+.light .rectangles--floatingToggle:hover,
+.theme-light .rectangles--floatingToggle:hover {
+  background: rgb(242, 244, 248);
+}
+
+:root[data-theme="light"] .rectangles--floatingToggleActive,
+[data-theme="light"] .rectangles--floatingToggleActive,
+.light .rectangles--floatingToggleActive,
+.theme-light .rectangles--floatingToggleActive {
+  background: rgb(229, 231, 235);
+}
+
+:root[data-theme="light"] .rectangles--mobileSideToggle,
+[data-theme="light"] .rectangles--mobileSideToggle,
+.light .rectangles--mobileSideToggle,
+.theme-light .rectangles--mobileSideToggle {
+  background: rgb(255, 255, 255);
+  color: #1f2937;
+
+  border-color: rgba(15, 23, 42, 0.1);
+
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.14);
+}
+
+:root[data-theme="light"] .rectangles--mobileSideToggle:hover,
+[data-theme="light"] .rectangles--mobileSideToggle:hover,
+.light .rectangles--mobileSideToggle:hover,
+.theme-light .rectangles--mobileSideToggle:hover {
+  background: rgb(242, 244, 248);
+}
+
+:root[data-theme="light"] .rectangles--mobileSideToggleActive,
+[data-theme="light"] .rectangles--mobileSideToggleActive,
+.light .rectangles--mobileSideToggleActive,
+.theme-light .rectangles--mobileSideToggleActive {
+  background: rgb(229, 231, 235);
+}
+
+:root[data-theme="light"] .rectangles--zoomRange,
+[data-theme="light"] .rectangles--zoomRange,
+.light .rectangles--zoomRange,
+.theme-light .rectangles--zoomRange,
+:root[data-theme="light"] .rectangles--zoomRange::-webkit-slider-runnable-track,
+[data-theme="light"] .rectangles--zoomRange::-webkit-slider-runnable-track,
+.light .rectangles--zoomRange::-webkit-slider-runnable-track,
+.theme-light .rectangles--zoomRange::-webkit-slider-runnable-track {
+  background: rgba(15, 23, 42, 0.18);
+}
+
+:root[data-theme="light"] .rectangles--zoomRange::-webkit-slider-thumb,
+[data-theme="light"] .rectangles--zoomRange::-webkit-slider-thumb,
+.light .rectangles--zoomRange::-webkit-slider-thumb,
+.theme-light .rectangles--zoomRange::-webkit-slider-thumb,
+:root[data-theme="light"] .rectangles--zoomRange::-moz-range-thumb,
+[data-theme="light"] .rectangles--zoomRange::-moz-range-thumb,
+.light .rectangles--zoomRange::-moz-range-thumb,
+.theme-light .rectangles--zoomRange::-moz-range-thumb {
+  background: #374151;
+
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+}
+
+:root[data-theme="light"] .rectangles--zoomRange::-moz-range-track,
+[data-theme="light"] .rectangles--zoomRange::-moz-range-track,
+.light .rectangles--zoomRange::-moz-range-track,
+.theme-light .rectangles--zoomRange::-moz-range-track {
+  background: rgba(15, 23, 42, 0.18);
+}
+
+:root[data-theme="light"] .rectangles--winOverlay,
+[data-theme="light"] .rectangles--winOverlay,
+.light .rectangles--winOverlay,
+.theme-light .rectangles--winOverlay {
+  background: rgba(30, 41, 59, 0.55);
+}
+
+:root[data-theme="light"] .rectangles--winPanel,
+[data-theme="light"] .rectangles--winPanel,
+.light .rectangles--winPanel,
+.theme-light .rectangles--winPanel {
+  background: linear-gradient(180deg, rgb(255, 255, 255), rgb(244, 246, 250));
+
+  color: #1f2937;
+
+  border-color: rgba(15, 23, 42, 0.1);
+
+  box-shadow:
+    0 24px 50px rgba(15, 23, 42, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+:root[data-theme="light"] .rectangles--winTitle,
+[data-theme="light"] .rectangles--winTitle,
+.light .rectangles--winTitle,
+.theme-light .rectangles--winTitle,
+:root[data-theme="light"] .rectangles--winTime,
+[data-theme="light"] .rectangles--winTime,
+.light .rectangles--winTime,
+.theme-light .rectangles--winTime {
+  color: #111827;
+}
+
+:root[data-theme="light"] .rectangles--winText,
+[data-theme="light"] .rectangles--winText,
+.light .rectangles--winText,
+.theme-light .rectangles--winText {
+  color: rgba(31, 41, 55, 0.78);
+}
+
+:root[data-theme="light"] .rectangles--winClose,
+[data-theme="light"] .rectangles--winClose,
+.light .rectangles--winClose,
+.theme-light .rectangles--winClose {
+  color: rgba(31, 41, 55, 0.55);
+}
+
+:root[data-theme="light"] .rectangles--winClose:hover,
+[data-theme="light"] .rectangles--winClose:hover,
+.light .rectangles--winClose:hover,
+.theme-light .rectangles--winClose:hover {
+  background: rgba(15, 23, 42, 0.07);
+  color: #111827;
+}
+
+/* =========================================================
    ANIMATIONS
    ========================================================= */
 
@@ -604,12 +943,18 @@
 }
 
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE MOBILE
    ========================================================= */
 
 @media (max-width: 768px) {
+  /* =======================================================
+     LAYOUT
+     ======================================================= */
+
   .rectangles--boardArea {
-    padding: 270px 12px 140px;
+    min-height: calc(100vh - 172px);
+
+    padding: 24px 12px 140px;
   }
 
   .rectangles--boardShell {
@@ -618,28 +963,152 @@
     border-radius: 18px;
   }
 
+  /* =======================================================
+     ANCIENNE INTERFACE DESKTOP
+     ======================================================= */
+
   .rectangles--sideWrapper {
-    top: 12px;
-    right: 12px;
-    left: 12px;
+    display: none;
   }
 
-  .rectangles--sidePanel {
-    min-width: unset;
+  .rectangles--timerArea {
+    display: none;
+  }
+
+  /* =======================================================
+     BARRE MOBILE : ACTIONS / TIMER / TAILLES
+     ======================================================= */
+
+  .rectangles--mobileTopBar {
+    position: sticky;
+    top: 0;
+
+    z-index: 100;
+
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 8px;
+
+    box-sizing: border-box;
+
+    padding: 8px 12px;
+  }
+
+  .rectangles--mobileMenuSlot,
+  .rectangles--mobileTimerSlot {
+    position: relative;
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* =======================================================
+     3 BLOCS DU HAUT
+     ======================================================= */
+
+  .rectangles--mobileTopButton,
+  .rectangles--mobileTimerSlot .rectangles--timer {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+
+    padding: 0 8px;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+
+    background: rgb(24, 27, 37);
+    color: rgba(255, 255, 255, 0.92);
+
+    box-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .rectangles--mobileTopButton {
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    cursor: pointer;
+  }
+
+  .rectangles--mobileTopButtonActive {
+    background: rgb(48, 51, 65);
+  }
+
+  .rectangles--mobileTimerSlot .rectangles--timer {
+    font-family: monospace;
+    font-size: 1rem;
+    font-weight: 700;
+
+    user-select: none;
+  }
+
+  /* =======================================================
+     MENUS DÉPLIANTS
+     ======================================================= */
+
+  .rectangles--mobileDropdown {
+    position: absolute;
+
+    top: calc(100% + 8px);
+    left: 0;
+
+    z-index: 110;
+
+    width: 180px;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+
+    background: rgb(20, 20, 20);
+
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+
+    animation: rectanglesPanelFadeIn 0.18s ease;
+  }
+
+  .rectangles--mobileDropdownRight {
+    right: 0;
+    left: auto;
   }
 
   .rectangles--actionButtons,
   .rectangles--sizeButtons {
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
   }
 
   .rectangles--sideButton,
   .rectangles--sizeButton {
-    width: auto;
+    width: 100%;
 
-    flex: 1 1 calc(33.333% - 8px);
+    flex: none;
   }
+
+  /* =======================================================
+     CONTRÔLES FLOTTANTS
+     ======================================================= */
 
   .rectangles--floatingControls {
     left: 12px;
@@ -650,59 +1119,28 @@
   .rectangles--zoomPanel {
     width: min(280px, calc(100vw - 24px));
   }
+
+  /* =======================================================
+     ID PUZZLE
+     ======================================================= */
+
+  .rectangles--puzzleId {
+    left: 12px;
+    bottom: 52px;
+
+    font-size: 10px;
+  }
 }
 
 /* =========================================================
-   TIMER
+   LIGHT THEME - CORRECTIONS MOBILE
    ========================================================= */
 
-.rectangles--timerArea {
-  position: sticky;
-  top: 0;
-
-  z-index: 100;
-
-  flex-shrink: 0;
-
-  height: 52px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rectangles--timer {
-  min-width: 88px;
-
-  padding: 8px 14px;
-
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-
-  background: rgb(24, 27, 37);
-
-  color: rgba(255, 255, 255, 0.92);
-
-  font-family: monospace;
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1;
-
-  text-align: center;
-
-  box-shadow:
-    0 6px 16px rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-
-  user-select: none;
-}
-
-.rectangles--winTime {
-  margin-top: 12px;
-
-  font-family: monospace;
-  font-size: 1.05rem;
-  font-weight: 700;
-
-  color: #ffffff;
+@media (max-width: 768px) {
+  :root[data-theme="light"] .rectangles--sidePanel,
+  [data-theme="light"] .rectangles--sidePanel,
+  .light .rectangles--sidePanel,
+  .theme-light .rectangles--sidePanel {
+    background: rgb(255, 255, 255);
+  }
 }
