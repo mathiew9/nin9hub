@@ -60,6 +60,7 @@ export type RectanglesStorageState = {
 export type RectanglesSettingsState = {
   showRuleErrors: boolean;
   showPreviewArea: boolean;
+  previewCounterRight: boolean;
   coloredRectangles: boolean;
   filledRectangles: boolean;
   showTimer: boolean;

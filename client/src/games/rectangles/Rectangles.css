@@ -176,6 +176,23 @@
   box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.7);
 }
 
+.rectangles--sideButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rectangles--sideButtonHighlight {
+  border-color: rgba(167, 139, 250, 0.8);
+  background: rgba(167, 139, 250, 0.2);
+}
+
+[data-theme="light"] .rectangles--sideButton.rectangles--sideButtonHighlight,
+[data-theme="light"]
+  .rectangles--sideButton.rectangles--sideButtonHighlight:hover {
+  border-color: rgba(124, 92, 255, 0.75);
+  background: rgba(124, 92, 255, 0.12);
+}
+
 /* =========================================================
    BOUTONS ACTIONS / TAILLES MOBILE
    ========================================================= */
@@ -359,6 +376,10 @@
   accent-color: #8b5cf6;
 
   cursor: pointer;
+}
+
+.rectangles--toggleRowSub {
+  margin-left: 20px;
 }
 
 /* =========================================================

@@ -136,7 +136,7 @@
 
   position: absolute;
 
-  inset: 3px;
+  inset: 2px;
 
   z-index: 0;
 
@@ -144,7 +144,7 @@
 
   border: 2px solid var(--rectangle-border, var(--rectangle-default-border));
 
-  border-radius: 11px;
+  border-radius: 8px;
 
   background: var(--rectangle-fill, transparent);
 
@@ -320,25 +320,33 @@
 
   box-sizing: border-box;
 
-  /*
-   * Par défaut :
-   * pas coloré + pas rempli.
-   */
+  pointer-events: none;
+
+  will-change: transform, width, height;
+}
+
+.rectanglesBoard--previewRectangle::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 2px;
+
+  box-sizing: border-box;
+
   border: 2px solid var(--rectangle-default-border);
-  border-radius: 11px;
+  border-radius: 8px;
 
   background: transparent;
 
   pointer-events: none;
-
-  will-change: transform, width, height;
 }
 
 /* =========================================================
    PREVIEW REMPLI
    ========================================================= */
 
-.rectanglesBoard--previewRectangleFilled {
+.rectanglesBoard--previewRectangleFilled::before {
   background: var(--rectangle-neutral-fill);
 }
 
@@ -346,7 +354,7 @@
    PREVIEW COLORÉ
    ========================================================= */
 
-.rectanglesBoard--previewRectangleColored {
+.rectanglesBoard--previewRectangleColored::before {
   border-color: var(--preview-border);
 }
 
@@ -354,7 +362,7 @@
    PREVIEW REMPLI + COLORÉ
    ========================================================= */
 
-.rectanglesBoard--previewRectangleFilled.rectanglesBoard--previewRectangleColored {
+.rectanglesBoard--previewRectangleFilled.rectanglesBoard--previewRectangleColored::before {
   background: var(--preview-fill);
 }
 

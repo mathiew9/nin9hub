@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
+
 import "./RectanglesBoard.css";
 
 import type {
@@ -11,16 +12,13 @@ import type {
 type RectanglesBoardProps = {
   size: GridSize;
   clues: Clue[];
-
   zoom: number;
-
+  onZoomChange: (zoom: number) => void;
   rectangles: RectangleShape[];
   previewRectangle: RectangleShape | null;
-
   invalidRectangleKeys: Set<string>;
-
   showRuleErrors: boolean;
-
+  previewCounterRight: boolean;
   toggleFilledRectangles: boolean;
   toggleColoredRectangles: boolean;
 
@@ -30,26 +28,68 @@ type RectanglesBoardProps = {
   ) => void;
 
   onCellMouseEnter: (position: Position) => void;
-
   onCellMouseUp: (position: Position) => void;
-
   onBoardMouseLeave: () => void;
 };
 
 const RECTANGLE_COLOR_COUNT = 8;
 
+const MIN_TOUCH_ZOOM = 50;
+const MAX_TOUCH_ZOOM = 250;
+
+const PAN_ACTIVATION_DISTANCE = 7;
+const PINCH_ACTIVATION_DISTANCE = 12;
+const PINCH_PRIORITY_RATIO = 1.15;
+
+type PointerCoordinates = {
+  x: number;
+  y: number;
+};
+
+type GestureMode = "pending" | "pan" | "pinch";
+
+type GestureState = {
+  mode: GestureMode;
+
+  startDistance: number;
+  startZoom: number;
+
+  startMidpointX: number;
+  startMidpointY: number;
+
+  startPanX: number;
+  startPanY: number;
+};
+
 function getRectangleKey(rectangle: RectangleShape) {
   return `${rectangle.row}-${rectangle.col}-${rectangle.width}-${rectangle.height}`;
+}
+
+function getDistance(first: PointerCoordinates, second: PointerCoordinates) {
+  return Math.hypot(second.x - first.x, second.y - first.y);
+}
+
+function getMidpoint(first: PointerCoordinates, second: PointerCoordinates) {
+  return {
+    x: (first.x + second.x) / 2,
+    y: (first.y + second.y) / 2,
+  };
+}
+
+function clamp(value: number, minimum: number, maximum: number) {
+  return Math.max(minimum, Math.min(maximum, value));
 }
 
 export default function RectanglesBoard({
   size,
   clues,
   zoom,
+  onZoomChange,
   rectangles,
   previewRectangle,
   invalidRectangleKeys,
   showRuleErrors,
+  previewCounterRight,
   toggleFilledRectangles,
   toggleColoredRectangles,
   onCellMouseDown,
@@ -60,16 +100,33 @@ export default function RectanglesBoard({
   const { rows, cols } = size;
 
   const cellSize = Math.round((32 * zoom) / 100);
+
   const fontSize = Math.round(cellSize * 0.4);
 
   const boardWidth = cols * cellSize;
+
   const boardHeight = rows * cellSize;
 
-  const activePointerIdRef = useRef<number | null>(null);
+  const boardRef = useRef<HTMLDivElement | null>(null);
 
   const lastHoveredCellRef = useRef<number | null>(null);
 
   const lastValidPositionRef = useRef<Position | null>(null);
+
+  const drawingPointerIdRef = useRef<number | null>(null);
+
+  const touchPointersRef = useRef<Map<number, PointerCoordinates>>(new Map());
+
+  const navigationLockedRef = useRef(false);
+
+  const gestureStateRef = useRef<GestureState | null>(null);
+
+  const panRef = useRef({
+    x: 0,
+    y: 0,
+  });
+
+  const lastTouchZoomRef = useRef(zoom);
 
   const previewBadgeElementRef = useRef<HTMLElement | null>(null);
 
@@ -79,6 +136,30 @@ export default function RectanglesBoard({
     x: 0,
     y: 0,
   });
+
+  useEffect(() => {
+    lastTouchZoomRef.current = zoom;
+  }, [zoom]);
+
+  useEffect(() => {
+    panRef.current = {
+      x: 0,
+      y: 0,
+    };
+
+    gestureStateRef.current = null;
+    navigationLockedRef.current = false;
+
+    touchPointersRef.current.clear();
+
+    const board = boardRef.current;
+
+    const surface = board?.closest<HTMLElement>(".rectangles--boardShell");
+
+    if (surface) {
+      surface.style.translate = "";
+    }
+  }, [rows, cols]);
 
   useEffect(() => {
     return () => {
@@ -118,7 +199,6 @@ export default function RectanglesBoard({
             width: `${cellSize}px`,
             height: `${cellSize}px`,
             fontSize: `${fontSize}px`,
-
             transform: `translate3d(
               ${clue.col * cellSize}px,
               ${clue.row * cellSize}px,
@@ -161,13 +241,14 @@ export default function RectanglesBoard({
           className={classes}
           style={{
             width: `${rectangle.width * cellSize}px`,
+
             height: `${rectangle.height * cellSize}px`,
 
             transform: `translate3d(
-              ${rectangle.col * cellSize}px,
-              ${rectangle.row * cellSize}px,
-              0
-            )`,
+                    ${rectangle.col * cellSize}px,
+                    ${rectangle.row * cellSize}px,
+                    0
+                  )`,
           }}
         />
       );
@@ -197,6 +278,7 @@ export default function RectanglesBoard({
     }
 
     const col = Math.floor(x / cellSize);
+
     const row = Math.floor(y / cellSize);
 
     if (row < 0 || row >= rows || col < 0 || col >= cols) {
@@ -239,37 +321,178 @@ export default function RectanglesBoard({
       const { x: pointerX, y: pointerY } = latestPointerPositionRef.current;
 
       const offset = 16;
-      const screenMargin = 8;
+      const margin = 8;
 
       const badgeWidth = badge.offsetWidth || 40;
+
       const badgeHeight = badge.offsetHeight || 28;
 
-      let badgeX = pointerX + offset;
+      let badgeX = previewCounterRight
+        ? pointerX + offset
+        : pointerX - offset - badgeWidth;
 
       let badgeY = pointerY + offset;
 
-      if (badgeX + badgeWidth > window.innerWidth - screenMargin) {
+      if (badgeX + badgeWidth > window.innerWidth - margin) {
         badgeX = pointerX - offset - badgeWidth;
       }
 
-      if (badgeY + badgeHeight > window.innerHeight - screenMargin) {
+      if (badgeX < margin) {
+        badgeX = pointerX + offset;
+      }
+
+      if (badgeY + badgeHeight > window.innerHeight - margin) {
         badgeY = pointerY - offset - badgeHeight;
       }
 
-      badgeX = Math.max(
-        screenMargin,
-        Math.min(badgeX, window.innerWidth - badgeWidth - screenMargin),
-      );
+      badgeX = clamp(badgeX, margin, window.innerWidth - badgeWidth - margin);
 
-      badgeY = Math.max(
-        screenMargin,
-        Math.min(badgeY, window.innerHeight - badgeHeight - screenMargin),
-      );
+      badgeY = clamp(badgeY, margin, window.innerHeight - badgeHeight - margin);
 
-      badge.style.transform = `translate3d(${Math.round(
-        badgeX,
-      )}px, ${Math.round(badgeY)}px, 0)`;
+      badge.style.transform = `translate3d(
+            ${Math.round(badgeX)}px,
+            ${Math.round(badgeY)}px,
+            0
+          )`;
     });
+  };
+
+  const getMovableSurface = () => {
+    const board = boardRef.current;
+
+    if (!board) {
+      return null;
+    }
+
+    return board.closest<HTMLElement>(".rectangles--boardShell") ?? board;
+  };
+
+  const applyPan = (x: number, y: number) => {
+    panRef.current = {
+      x,
+      y,
+    };
+
+    const surface = getMovableSurface();
+
+    if (!surface) {
+      return;
+    }
+
+    surface.style.translate = `${x}px ${y}px`;
+  };
+
+  const startNavigationGesture = () => {
+    const pointers = Array.from(touchPointersRef.current.values());
+
+    if (pointers.length < 2) {
+      return;
+    }
+
+    const first = pointers[0];
+
+    const second = pointers[1];
+
+    const midpoint = getMidpoint(first, second);
+
+    gestureStateRef.current = {
+      mode: "pending",
+
+      startDistance: Math.max(getDistance(first, second), 1),
+
+      startZoom: zoom,
+
+      startMidpointX: midpoint.x,
+
+      startMidpointY: midpoint.y,
+
+      startPanX: panRef.current.x,
+
+      startPanY: panRef.current.y,
+    };
+
+    lastTouchZoomRef.current = zoom;
+
+    drawingPointerIdRef.current = null;
+
+    lastHoveredCellRef.current = null;
+
+    lastValidPositionRef.current = null;
+
+    navigationLockedRef.current = true;
+
+    onBoardMouseLeave();
+  };
+
+  const updateNavigationGesture = () => {
+    const gesture = gestureStateRef.current;
+
+    if (!gesture) {
+      return;
+    }
+
+    const pointers = Array.from(touchPointersRef.current.values());
+
+    if (pointers.length < 2) {
+      return;
+    }
+
+    const first = pointers[0];
+
+    const second = pointers[1];
+
+    const midpoint = getMidpoint(first, second);
+
+    const distance = getDistance(first, second);
+
+    const deltaX = midpoint.x - gesture.startMidpointX;
+
+    const deltaY = midpoint.y - gesture.startMidpointY;
+
+    const panDistance = Math.hypot(deltaX, deltaY);
+
+    const pinchDistance = Math.abs(distance - gesture.startDistance);
+
+    if (gesture.mode === "pending") {
+      const panScore = panDistance / PAN_ACTIVATION_DISTANCE;
+
+      const pinchScore = pinchDistance / PINCH_ACTIVATION_DISTANCE;
+
+      if (panScore < 1 && pinchScore < 1) {
+        return;
+      }
+
+      if (pinchScore > panScore * PINCH_PRIORITY_RATIO) {
+        gesture.mode = "pinch";
+      } else {
+        gesture.mode = "pan";
+      }
+    }
+
+    if (gesture.mode === "pan") {
+      applyPan(
+        gesture.startPanX + deltaX,
+
+        gesture.startPanY + deltaY,
+      );
+
+      return;
+    }
+
+    const scale = distance / gesture.startDistance;
+
+    const newZoom = clamp(
+      Math.round(gesture.startZoom * scale),
+
+      MIN_TOUCH_ZOOM,
+      MAX_TOUCH_ZOOM,
+    );
+
+    if (newZoom !== lastTouchZoomRef.current) {
+      lastTouchZoomRef.current = newZoom;
+
+      onZoomChange(newZoom);
+    }
   };
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -277,8 +500,25 @@ export default function RectanglesBoard({
       return;
     }
 
-    if (activePointerIdRef.current !== null) {
-      return;
+    event.preventDefault();
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    if (event.pointerType === "touch") {
+      touchPointersRef.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      if (touchPointersRef.current.size >= 2) {
+        startNavigationGesture();
+
+        return;
+      }
+
+      if (navigationLockedRef.current) {
+        return;
+      }
     }
 
     const position = getPositionFromPointerEvent(event);
@@ -287,15 +527,11 @@ export default function RectanglesBoard({
       return;
     }
 
-    event.preventDefault();
-
-    activePointerIdRef.current = event.pointerId;
+    drawingPointerIdRef.current = event.pointerId;
 
     lastHoveredCellRef.current = position.row * cols + position.col;
 
     lastValidPositionRef.current = position;
-
-    event.currentTarget.setPointerCapture(event.pointerId);
 
     updatePreviewBadgePosition(event.clientX, event.clientY);
 
@@ -303,7 +539,28 @@ export default function RectanglesBoard({
   };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (activePointerIdRef.current !== event.pointerId) {
+    if (event.pointerType === "touch") {
+      if (touchPointersRef.current.has(event.pointerId)) {
+        touchPointersRef.current.set(event.pointerId, {
+          x: event.clientX,
+          y: event.clientY,
+        });
+      }
+
+      if (navigationLockedRef.current && touchPointersRef.current.size >= 2) {
+        event.preventDefault();
+
+        updateNavigationGesture();
+
+        return;
+      }
+
+      if (navigationLockedRef.current) {
+        return;
+      }
+    }
+
+    if (drawingPointerIdRef.current !== event.pointerId) {
       return;
     }
 
@@ -330,71 +587,72 @@ export default function RectanglesBoard({
     onCellMouseEnter(position);
   };
 
-  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (activePointerIdRef.current !== event.pointerId) {
+  const finishPointer = (
+    event: React.PointerEvent<HTMLDivElement>,
+    cancelled: boolean,
+  ) => {
+    if (event.pointerType === "touch") {
+      touchPointersRef.current.delete(event.pointerId);
+    }
+
+    if (navigationLockedRef.current) {
+      if (touchPointersRef.current.size === 0) {
+        navigationLockedRef.current = false;
+
+        gestureStateRef.current = null;
+
+        lastHoveredCellRef.current = null;
+
+        lastValidPositionRef.current = null;
+      }
+
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+
       return;
     }
 
-    event.preventDefault();
-
-    updatePreviewBadgePosition(event.clientX, event.clientY);
-
-    const position =
-      getPositionFromPointerEvent(event) ?? lastValidPositionRef.current;
-
-    if (position) {
-      onCellMouseUp(position);
+    if (drawingPointerIdRef.current !== event.pointerId) {
+      return;
     }
 
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
+    if (!cancelled) {
+      const position =
+        getPositionFromPointerEvent(event) ?? lastValidPositionRef.current;
+
+      if (position) {
+        onCellMouseUp(position);
+      }
+    } else {
+      onBoardMouseLeave();
     }
 
-    activePointerIdRef.current = null;
+    drawingPointerIdRef.current = null;
 
     lastHoveredCellRef.current = null;
 
     lastValidPositionRef.current = null;
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+
+    finishPointer(event, false);
   };
 
   const handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (activePointerIdRef.current !== event.pointerId) {
-      return;
-    }
-
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-
-    activePointerIdRef.current = null;
-
-    lastHoveredCellRef.current = null;
-
-    lastValidPositionRef.current = null;
-
-    onBoardMouseLeave();
+    finishPointer(event, true);
   };
 
   const handlePointerLeave = () => {
-    if (activePointerIdRef.current !== null) {
+    if (drawingPointerIdRef.current !== null || navigationLockedRef.current) {
       return;
     }
-
-    lastHoveredCellRef.current = null;
-
-    lastValidPositionRef.current = null;
-
-    onBoardMouseLeave();
-  };
-
-  const handleLostPointerCapture = (
-    event: React.PointerEvent<HTMLDivElement>,
-  ) => {
-    if (activePointerIdRef.current !== event.pointerId) {
-      return;
-    }
-
-    activePointerIdRef.current = null;
 
     lastHoveredCellRef.current = null;
 
@@ -405,6 +663,7 @@ export default function RectanglesBoard({
 
   return (
     <div
+      ref={boardRef}
       className="rectanglesBoard"
       style={{
         width: `${boardWidth}px`,
@@ -415,7 +674,6 @@ export default function RectanglesBoard({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
       onPointerLeave={handlePointerLeave}
-      onLostPointerCapture={handleLostPointerCapture}
       onContextMenu={(event) => event.preventDefault()}
     >
       <svg
@@ -449,12 +707,14 @@ export default function RectanglesBoard({
             .join(" ")}
           style={{
             width: `${previewRectangle.width * cellSize}px`,
+
             height: `${previewRectangle.height * cellSize}px`,
+
             transform: `translate3d(
-        ${previewRectangle.col * cellSize}px,
-        ${previewRectangle.row * cellSize}px,
-        0
-      )`,
+                ${previewRectangle.col * cellSize}px,
+                ${previewRectangle.row * cellSize}px,
+                0
+              )`,
           }}
         />
       )}

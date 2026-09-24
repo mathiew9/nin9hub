@@ -207,6 +207,7 @@
       "settings": {
         "showErrors": "Show errors",
         "previewCounter": "Preview counter",
+        "previewCounterRight": "Counter on right",
         "coloredRectangles": "Colored rectangles",
         "fillRectangles": "Fill rectangles",
         "showTimer": "Show timer"

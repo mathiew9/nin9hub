@@ -207,6 +207,7 @@
       "settings": {
         "showErrors": "Mostrar errores",
         "previewCounter": "Contador de vista previa",
+        "previewCounterRight": "Contador a la derecha",
         "coloredRectangles": "Rectángulos coloreados",
         "fillRectangles": "Rellenar rectángulos",
         "showTimer": "Mostrar cronometro"

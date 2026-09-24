@@ -51,6 +51,7 @@ function loadRectanglesStorage(): RectanglesStorageState {
 const DEFAULT_RECTANGLES_SETTINGS: RectanglesSettingsState = {
   showRuleErrors: true,
   showPreviewArea: true,
+  previewCounterRight: false,
   coloredRectangles: true,
   filledRectangles: true,
   showTimer: true,
@@ -312,6 +313,9 @@ export default function Rectangles() {
   const [showPreviewArea, setShowPreviewArea] = useState(
     initialSettings.showPreviewArea,
   );
+  const [previewCounterRight, setPreviewCounterRight] = useState(
+    initialSettings.previewCounterRight,
+  );
   const [toggleColoredRectangles, setToggleColoredRectangles] = useState(
     initialSettings.coloredRectangles,
   );
@@ -339,6 +343,7 @@ export default function Rectangles() {
     const settings: RectanglesSettingsState = {
       showRuleErrors,
       showPreviewArea,
+      previewCounterRight,
       coloredRectangles: toggleColoredRectangles,
       filledRectangles: toggleFilledRectangles,
       showTimer,
@@ -349,6 +354,7 @@ export default function Rectangles() {
   }, [
     showRuleErrors,
     showPreviewArea,
+    previewCounterRight,
     toggleColoredRectangles,
     toggleFilledRectangles,
     showTimer,
@@ -540,6 +546,9 @@ export default function Rectangles() {
   };
 
   const handleClearRectangles = () => {
+    if (gameWon) {
+      return;
+    }
     setRectangles([]);
     resetInteractionState();
   };
@@ -569,7 +578,12 @@ export default function Rectangles() {
               <div className="rectangles--actionButtons">
                 <button
                   type="button"
-                  className="rectangles--sideButton"
+                  className={[
+                    "rectangles--sideButton",
+                    gameWon ? "rectangles--sideButtonHighlight" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
                   onClick={() => {
                     handleNewGrid();
                     setMobileMenuOpen(null);
@@ -581,6 +595,7 @@ export default function Rectangles() {
                 <button
                   type="button"
                   className="rectangles--sideButton"
+                  disabled={gameWon}
                   onClick={() => {
                     handleClearRectangles();
                     setMobileMenuOpen(null);
@@ -655,8 +670,16 @@ export default function Rectangles() {
           <div className="rectangles--actionButtons">
             <button
               type="button"
-              className="rectangles--sideButton"
-              onClick={handleNewGrid}
+              className={[
+                "rectangles--sideButton",
+                gameWon ? "rectangles--sideButtonHighlight" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              onClick={() => {
+                handleNewGrid();
+                setMobileMenuOpen(null);
+              }}
             >
               {t("common.actions.newGrid")}
             </button>
@@ -664,7 +687,11 @@ export default function Rectangles() {
             <button
               type="button"
               className="rectangles--sideButton"
-              onClick={handleClearRectangles}
+              disabled={gameWon}
+              onClick={() => {
+                handleClearRectangles();
+                setMobileMenuOpen(null);
+              }}
             >
               {t("common.actions.erase")}
             </button>
@@ -711,10 +738,12 @@ export default function Rectangles() {
             size={puzzle.size}
             clues={puzzle.clues}
             zoom={zoom}
+            onZoomChange={setZoom}
             rectangles={rectangles}
             previewRectangle={previewRectangle}
             invalidRectangleKeys={invalidRectangleKeys}
             showRuleErrors={showRuleErrors}
+            previewCounterRight={previewCounterRight}
             toggleColoredRectangles={toggleColoredRectangles}
             toggleFilledRectangles={toggleFilledRectangles}
             onCellMouseDown={handleCellMouseDown}
@@ -802,6 +831,22 @@ export default function Rectangles() {
 
                 <span>{t("games.rectangles.settings.previewCounter")}</span>
               </label>
+
+              {showPreviewArea && (
+                <label className="rectangles--toggleRow rectangles--toggleRowSub">
+                  <input
+                    type="checkbox"
+                    checked={previewCounterRight}
+                    onChange={(event) =>
+                      setPreviewCounterRight(event.target.checked)
+                    }
+                  />
+
+                  <span>
+                    {t("games.rectangles.settings.previewCounterRight")}
+                  </span>
+                </label>
+              )}
 
               <label className="rectangles--toggleRow">
                 <input
