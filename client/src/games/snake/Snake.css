@@ -23,6 +23,10 @@ body[data-theme="light"] .snake {
 
 /* === SNAKE BOARD === */
 .snake .snake-board {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   position: relative;
   display: flex;
   flex-direction: column;

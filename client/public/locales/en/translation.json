@@ -1,7 +1,7 @@
 {
   "common": {
     "meta": {
-      "availableSoon": "Available soon",
+      "availableSoon": "Coming soon",
       "ofTheDay": "{{game}} of the day"
     },
     "actions": {

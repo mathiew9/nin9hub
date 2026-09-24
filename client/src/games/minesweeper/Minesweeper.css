@@ -1,13 +1,51 @@
 /* === LAYOUT GENERAL === */
 .minesweeper {
+  width: 100%;
+  min-width: 0;
+  padding: 0 20px 100px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  box-sizing: border-box;
+}
+
+/* === ZONE DE JEU === */
+.minesweeperViewport {
+  width: 100%;
+  max-width: 100%;
+
+  overflow: auto;
+
+  box-sizing: border-box;
+
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 /* === GRILLE === */
 .minesweeperGrid {
-  margin: 10px 0;
+  width: max-content;
+
+  margin: 10px auto;
+  padding: 4px;
+
+  flex-shrink: 0;
+
+  background-color: #aaa;
+
+  border: 3px solid;
+  border-top-color: #fff;
+  border-left-color: #fff;
+  border-right-color: #555;
+  border-bottom-color: #555;
+
+  box-shadow:
+    2px 2px 0 #222,
+    inset 1px 1px 0 #ccc;
+
+  box-sizing: border-box;
 }
 
 .minesweeperGrid .row {
@@ -15,30 +53,37 @@
 }
 
 .minesweeperGrid .row .cell {
-  width: 30px;
-  height: 30px;
+  width: var(--minesweeper-cell-size, 30px);
+  height: var(--minesweeper-cell-size, 30px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
   background-color: #aaa;
   color: black;
-  font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-  box-sizing: border-box;
+
   border: 2px solid;
   border-top-color: #fff;
   border-left-color: #fff;
   border-right-color: #666;
   border-bottom-color: #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
+
+  box-sizing: border-box;
+
+  font-size: var(--minesweeper-font-size, 16px);
+  font-weight: bold;
+
+  cursor: pointer;
+  user-select: none;
+
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
-.minesweeperGrid .row .cell.active {
-  background-color: #ddd;
-  border: 1px solid #999;
-}
-
+.minesweeperGrid .row .cell.active,
 .minesweeperGrid .row .cell.revealed {
   background-color: #ddd;
   border: 1px solid #999;
@@ -50,6 +95,7 @@
 
 .minesweeperGrid .row .cell .wrongFlag {
   position: relative;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -57,33 +103,42 @@
 
 .minesweeperGrid .row .cell .wrongFlag .crossIcon {
   position: absolute;
+
   color: red;
   font-size: 2em;
+
   pointer-events: none;
 }
 
-/* === NUMÉROS === */
+/* === NUMEROS === */
 .minesweeperGrid .row .cell .number-1 {
   color: #0000ff;
 }
+
 .minesweeperGrid .row .cell .number-2 {
   color: #008000;
 }
+
 .minesweeperGrid .row .cell .number-3 {
   color: #ff0000;
 }
+
 .minesweeperGrid .row .cell .number-4 {
   color: #000080;
 }
+
 .minesweeperGrid .row .cell .number-5 {
   color: #800000;
 }
+
 .minesweeperGrid .row .cell .number-6 {
   color: #008080;
 }
+
 .minesweeperGrid .row .cell .number-7 {
   color: #000000;
 }
+
 .minesweeperGrid .row .cell .number-8 {
   color: #808080;
 }
@@ -95,54 +150,335 @@
 }
 
 .gameOver {
+  margin-bottom: 5px;
+
   color: red;
   font-weight: bold;
-  margin-bottom: 5px;
 }
 
 .victory {
+  margin-bottom: 5px;
+
   color: green;
   font-weight: bold;
-  margin-bottom: 5px;
 }
 
-/* === BOUTON RECOMMENCER === */
-/* .restartButton {
-  padding: 8px 16px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-} */
-
-/* body[data-theme="dark"] .restartButton {
-  background-color: #22c55e;
-  color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-body[data-theme="dark"] .restartButton:hover {
-  background-color: #16a34a;
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-}
-
-body[data-theme="light"] .restartButton {
-  background-color: #34d399;
-  color: #222;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-body[data-theme="light"] .restartButton:hover {
-  background-color: #10b981;
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-} */
-
-/* === FLAG COUNTER === */
 .flagCounter {
-  font-size: 16px;
   margin-bottom: 8px;
+  font-size: 16px;
+}
+
+/* === CHANGEMENT DE TAILLE === */
+.minesweeperSizeButtons {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.minesweeper--floatingControls {
+  position: fixed;
+
+  left: 20px;
+  bottom: 80px;
+
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  gap: 10px;
+}
+
+.minesweeper--floatingButtons {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.minesweeper--floatingToggle {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(20, 20, 20, 0.9);
+  color: #ffffff;
+
+  font-size: 1.35rem;
+
+  cursor: pointer;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.minesweeper--floatingToggle:hover {
+  background: rgba(35, 35, 35, 0.95);
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+
+.minesweeper--floatingToggle:active {
+  transform: translateY(0);
+}
+
+.minesweeper--floatingToggleActive {
+  background: rgba(50, 50, 50, 0.95);
+}
+
+.minesweeper--floatingToggle svg {
+  font-size: 1.55rem;
+}
+
+.minesweeper--zoomPanel {
+  box-sizing: border-box;
+
+  width: 280px;
+
+  padding: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+
+  background: rgba(20, 20, 20, 0.92);
+  color: #f8fafc;
+
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+
+  animation: minesweeperPanelFadeIn 0.18s ease;
+}
+
+.minesweeper--zoomLabel {
+  margin-bottom: 10px;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  color: #e5e7eb;
+}
+
+/* === ZOOM === */
+
+.minesweeper--zoomPanel {
+  width: 260px;
+  padding: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+
+  background: rgba(20, 20, 30, 0.92);
+
+  box-sizing: border-box;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+
+  backdrop-filter: blur(12px);
+}
+
+.minesweeper--zoomLabel {
+  margin-bottom: 10px;
+
+  color: #f8fafc;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.minesweeper--zoomControls {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.minesweeper--zoomAction {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: none;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.minesweeper--zoomAction:hover {
+  background: rgba(255, 255, 255, 0.16);
+
+  transform: scale(1.05);
+}
+
+.minesweeper--zoomRange {
+  appearance: none;
+  -webkit-appearance: none;
+
+  flex: 1;
+  min-width: 0;
+  height: 5px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.2);
+
+  outline: none;
+
+  cursor: pointer;
+}
+
+.minesweeper--zoomRange::-webkit-slider-runnable-track {
+  height: 5px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.minesweeper--zoomRange::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 15px;
+  height: 15px;
+
+  margin-top: -5px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.minesweeper--zoomRange::-moz-range-track {
+  height: 5px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.minesweeper--zoomRange::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.minesweeper--zoomToggle {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+
+  background: rgba(20, 20, 30, 0.92);
+  color: #f8fafc;
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+
+  backdrop-filter: blur(12px);
+}
+
+/* === MOBILE === */
+@media (max-width: 600px) {
+  .minesweeper {
+    padding: 0 10px 90px;
+  }
+
+  .minesweeperViewport {
+    width: 100%;
+    max-width: 100%;
+
+    max-height: calc(100dvh - 230px);
+
+    overflow: auto;
+
+    box-sizing: border-box;
+
+    touch-action: none;
+    overscroll-behavior: contain;
+  }
+
+  .minesweeperGrid {
+    width: max-content;
+    min-width: max-content;
+
+    margin: 10px auto;
+  }
+
+  .gameStatus {
+    margin-top: 12px;
+  }
+
+  .minesweeperSizeButtons {
+    order: 10;
+
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .minesweeperSizeButtons > * {
+    flex: 1 1 auto;
+    min-width: 90px;
+    max-width: 150px;
+  }
+
+  .minesweeper--zoomToggle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .minesweeper--zoomPanel {
+    width: 240px;
+  }
 }

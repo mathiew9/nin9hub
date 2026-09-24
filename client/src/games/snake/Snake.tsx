@@ -10,6 +10,8 @@ type Position = {
   y: number;
 };
 
+type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
+
 const BOARD_SIZE = 20;
 
 function getRandomPosition(exclude: Position[]): Position {
@@ -29,12 +31,11 @@ export default function Snake() {
   const [food, setFood] = useState<Position>(
     getRandomPosition([{ x: 5, y: 5 }]),
   );
-  const [direction, setDirection] = useState<
-    "UP" | "DOWN" | "LEFT" | "RIGHT" | null
-  >(null);
-  const pendingDirection = useRef<"UP" | "DOWN" | "LEFT" | "RIGHT" | null>(
-    null,
-  );
+
+  const [direction, setDirection] = useState<Direction | null>(null);
+  const pendingDirection = useRef<Direction | null>(null);
+  const touchStartRef = useRef<Position | null>(null);
+
   const [isGameOver, setIsGameOver] = useState(false);
   const gameInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const [timer, setTimer] = useState(0);
@@ -61,34 +62,113 @@ export default function Snake() {
       .padStart(2, "0")}`;
   }
 
+  const changeDirection = (nextDirection: Direction) => {
+    if (isGameOver) return;
+
+    const current = pendingDirection.current || direction;
+
+    if (
+      (nextDirection === "UP" && current === "DOWN") ||
+      (nextDirection === "DOWN" && current === "UP") ||
+      (nextDirection === "LEFT" && current === "RIGHT") ||
+      (nextDirection === "RIGHT" && current === "LEFT")
+    ) {
+      return;
+    }
+
+    if (!isRunning) {
+      setIsRunning(true);
+    }
+
+    pendingDirection.current = nextDirection;
+
+    if (!direction) {
+      setDirection(nextDirection);
+    }
+  };
+
   // Gestion clavier
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isGameOver) return;
-      if (!isRunning) setIsRunning(true);
-      const current = direction;
+      if (
+        e.key === "ArrowUp" ||
+        e.key === "ArrowDown" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight"
+      ) {
+        e.preventDefault();
+      }
 
-      if (e.key === "ArrowUp" && current !== "DOWN") {
-        pendingDirection.current = "UP";
-        if (!current) setDirection("UP");
+      if (isGameOver) return;
+
+      if (e.key === "ArrowUp") {
+        changeDirection("UP");
       }
-      if (e.key === "ArrowDown" && current !== "UP") {
-        pendingDirection.current = "DOWN";
-        if (!current) setDirection("DOWN");
+
+      if (e.key === "ArrowDown") {
+        changeDirection("DOWN");
       }
-      if (e.key === "ArrowLeft" && current !== "RIGHT") {
-        pendingDirection.current = "LEFT";
-        if (!current) setDirection("LEFT");
+
+      if (e.key === "ArrowLeft") {
+        changeDirection("LEFT");
       }
-      if (e.key === "ArrowRight" && current !== "LEFT") {
-        pendingDirection.current = "RIGHT";
-        if (!current) setDirection("RIGHT");
+
+      if (e.key === "ArrowRight") {
+        changeDirection("RIGHT");
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [direction, isGameOver]);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [direction, isGameOver, isRunning]);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length !== 1) return;
+
+    const touch = e.touches[0];
+
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchStartRef.current) return;
+
+    const touch = e.changedTouches[0];
+
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+
+    touchStartRef.current = null;
+
+    const MIN_SWIPE_DISTANCE = 30;
+
+    if (
+      Math.abs(deltaX) < MIN_SWIPE_DISTANCE &&
+      Math.abs(deltaY) < MIN_SWIPE_DISTANCE
+    ) {
+      return;
+    }
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > 0) {
+        changeDirection("RIGHT");
+      } else {
+        changeDirection("LEFT");
+      }
+    } else {
+      if (deltaY > 0) {
+        changeDirection("DOWN");
+      } else {
+        changeDirection("UP");
+      }
+    }
+  };
 
   // Mouvement + gestion des collisions
   useEffect(() => {
@@ -165,7 +245,11 @@ export default function Snake() {
   const restartGame = () => {
     setSnake([{ x: 5, y: 5 }]);
     setFood(getRandomPosition([{ x: 5, y: 5 }]));
+
     setDirection(null);
+    pendingDirection.current = null;
+    touchStartRef.current = null;
+
     setIsGameOver(false);
     setIsRunning(false);
     setTimer(0);
@@ -182,7 +266,11 @@ export default function Snake() {
         />
       )}
 
-      <div className={`snake-board ${isGameOver ? "gameover" : ""}`}>
+      <div
+        className={`snake-board ${isGameOver ? "gameover" : ""}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {Array.from({ length: BOARD_SIZE }).map((_, y) => (
           <div className="row" key={y}>
             {Array.from({ length: BOARD_SIZE }).map((_, x) => {

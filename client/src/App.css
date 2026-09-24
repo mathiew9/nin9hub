@@ -263,6 +263,13 @@ body[data-theme="light"] .select_game_button:hover {
 
     border-radius: 10px;
   }
+
+  .app_container > main {
+    width: 100%;
+    min-height: calc(100dvh - 60px);
+    height: auto;
+    flex-shrink: 0;
+  }
 }
 
 /* === TRÈS PETITS TÉLÉPHONES === */
