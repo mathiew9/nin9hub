@@ -16,22 +16,33 @@
 body[data-theme="light"] {
   background-color: white;
 }
-/* Centrage complet uniquement pour la home */
+
 .home_layout {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
 }
 
 .game_selection {
-  text-align: center;
+  width: 100%;
+  max-width: 1000px;
+
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  justify-items: center;
-  padding: 20px;
+  grid-template-columns: repeat(3, 250px);
+
+  justify-content: center;
+  align-content: start;
+
+  gap: 28px;
+
+  padding: 40px 24px;
+  box-sizing: border-box;
+
+  text-align: center;
 }
 .game_selection a {
   cursor: default;
+  display: block;
 }
 
 .game_selection h1 {
@@ -68,21 +79,29 @@ body[data-theme="light"] .game_selection h1 {
 /* === BOUTON DE SÉLECTION DE JEU === */
 .select_game_button {
   position: relative;
+
   width: 250px;
   height: 120px;
-  margin: 20px;
+
+  margin: 0;
+
   font-size: 24px;
   font-weight: bold;
+  font-family: "Rajdhani";
+
   border: none;
+  border-radius: 12px;
+
   background-size: cover;
   background-position: center;
-  border-radius: 12px;
+
   cursor: pointer;
+
   transition:
     transform 0.2s,
     box-shadow 0.2s;
+
   text-shadow: 2px 2px 5px #000;
-  font-family: "Rajdhani";
 }
 
 .gameButtonIcon {
@@ -175,4 +194,86 @@ body[data-theme="light"] .select_game_button:hover {
 }
 .rectangles_button {
   background-image: url("/images/rectangles.png");
+}
+
+/* === GRANDS ÉCRANS === */
+@media (min-width: 1500px) {
+  .game_selection {
+    max-width: 1100px;
+    grid-template-columns: repeat(3, 280px);
+    gap: 32px;
+  }
+
+  .select_game_button {
+    width: 280px;
+    height: 130px;
+    font-size: 26px;
+  }
+}
+
+/* === TRÈS GRANDS ÉCRANS / 4K === */
+@media (min-width: 2200px) {
+  .game_selection {
+    max-width: 1200px;
+    grid-template-columns: repeat(3, 300px);
+    gap: 36px;
+    padding-top: 50px;
+  }
+
+  .select_game_button {
+    width: 300px;
+    height: 140px;
+    font-size: 28px;
+  }
+}
+
+/* === TABLETTES === */
+@media (max-width: 900px) {
+  .game_selection {
+    max-width: 650px;
+    grid-template-columns: repeat(2, 250px);
+    gap: 28px;
+    padding: 30px 20px;
+  }
+}
+
+/* === TÉLÉPHONES === */
+@media (max-width: 600px) {
+  .game_selection {
+    width: 100%;
+    max-width: 420px;
+
+    grid-template-columns: 1fr;
+
+    gap: 24px;
+
+    padding: 24px 16px;
+  }
+
+  .game_selection > a,
+  .game_selection > div {
+    width: 100%;
+  }
+
+  .select_game_button {
+    width: 100%;
+    height: 100px;
+
+    font-size: 28px;
+
+    border-radius: 10px;
+  }
+}
+
+/* === TRÈS PETITS TÉLÉPHONES === */
+@media (max-width: 380px) {
+  .game_selection {
+    padding: 20px 12px;
+    gap: 24px;
+  }
+
+  .select_game_button {
+    height: 82px;
+    font-size: 24px;
+  }
 }
